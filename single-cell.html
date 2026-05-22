@@ -1,0 +1,231 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Single-cell Proteomics — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html">Prep</a></li><li><a href="acquisition.html">MS</a></li><li><a href="identification.html">ID</a></li><li><a href="quantification.html">Quant</a></li><li><a href="qc.html">QC</a></li><li><a href="normalization.html">Norm</a></li><li><a href="imputation.html">Impute</a></li><li><a href="differential-expression.html">DE</a></li><li><a href="enrichment.html">Enrich</a></li><li><a href="ptm.html">PTM</a></li><li><a href="targeted.html">Target</a></li><li><a href="top-down.html">Top-down</a></li><li><a href="spatial.html">Spatial</a></li><li><a href="single-cell.html" class="active">scProt</a></li><li><a href="affinity.html">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">ADVANCED</div>
+<h1 data-zh="單細胞蛋白質體學 (Single-cell Proteomics)" data-en="Single-cell Proteomics">單細胞蛋白質體學 (Single-cell Proteomics)</h1>
+<p class="subtitle" data-lang="zh">從 SCoPE-MS 到 timsTOF Ultra——單細胞蛋白質體學的演進、技術瓶頸與 2025 最新進展。</p>
+<p class="subtitle" data-lang="en">From SCoPE-MS to timsTOF Ultra — the evolution of single-cell proteomics, its bottlenecks, and 2025 state-of-the-art.</p>
+</header>
+<main class="content-wrap">
+
+<section class="section">
+<div class="section-label" data-zh="概念" data-en="CONCEPT">概念</div>
+<h2 data-zh="為什麼單細胞蛋白質體學如此困難？" data-en="Why is single-cell proteomics so hard?">為什麼單細胞蛋白質體學如此困難？</h2>
+<div data-lang="zh">
+<p>單個哺乳類細胞含 <strong>~250 pg 蛋白質</strong>（vs bulk 樣品 1–100 µg），約為傳統樣品的 <strong>10⁶ 倍稀薄</strong>。挑戰包括：</p>
+<ul style="margin-left:24px;color:var(--c-ink-light);line-height:2;">
+<li><strong>樣品損失：</strong>移液、容器吸附、消化失敗都會吃掉大半信號</li>
+<li><strong>離子化效率：</strong>低濃度下 ESI 訊號顯著下降</li>
+<li><strong>偵測極限：</strong>低豐度蛋白根本進不了 MS2 觸發閾值</li>
+<li><strong>通量：</strong>單細胞數要夠才能做生物學分析</li>
+</ul>
+<p>解決方案歷經數代演進，2025 已可從<strong>單細胞鑑定 5000+ 蛋白</strong>。</p>
+</div>
+<div data-lang="en">
+<p>A single mammalian cell contains <strong>~250 pg of protein</strong> (vs 1–100 µg in bulk) — <strong>10⁶× more dilute</strong>. Challenges:</p>
+<ul style="margin-left:24px;color:var(--c-ink-light);line-height:2;">
+<li><strong>Sample loss:</strong> pipetting, tube adsorption, failed digestion can devour signal</li>
+<li><strong>Ionization:</strong> ESI efficiency drops at low concentrations</li>
+<li><strong>Detection limit:</strong> low-abundance proteins never trigger MS2</li>
+<li><strong>Throughput:</strong> need enough cells for meaningful biological analysis</li>
+</ul>
+<p>Generations of solutions later, <strong>5000+ proteins per single cell</strong> is achievable in 2025.</p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="演進時間軸" data-en="EVOLUTION">演進時間軸</h2>
+<h2 data-zh="一、技術演進時間軸" data-en="I. Technology Evolution Timeline">一、技術演進時間軸</h2>
+<div class="workflow">
+<div class="workflow-step" data-step="2018"><h4>SCoPE-MS / SCoPE2 (Slavov lab)</h4>
+<p data-lang="zh">用 <strong>TMT carrier channel</strong>（加入 200× 細胞當「carrier」）提升 fragment ion signal；單細胞當其中一個 channel。一次測 ~10 個單細胞，每個~1000 蛋白。</p>
+<p data-lang="en">Uses a <strong>TMT carrier channel</strong> (200× cell-equivalent as carrier) to boost fragment ion signal; single cells become other channels. ~10 single cells per run, ~1000 proteins each.</p></div>
+<div class="workflow-step" data-step="2018"><h4>nanoPOTS (Kelly lab)</h4>
+<p data-lang="zh">在 <strong>nanowell chip</strong>（200 nL volume）做 SP3-like 消化，最小化樣品損失。可結合 LCM、Sort。</p>
+<p data-lang="en">SP3-like digestion in <strong>nanowell chips</strong> (200 nL volume) to minimize loss. Integrates with LCM and FACS.</p></div>
+<div class="workflow-step" data-step="2020"><h4>diaPASEF + timsTOF Pro 2</h4>
+<p data-lang="zh">Bruker 結合 TIMS + DIA + PASEF，單細胞 ~2000-3000 蛋白。可實現 label-free single-cell。</p>
+<p data-lang="en">Bruker's TIMS + DIA + PASEF combo enables ~2000–3000 proteins per single cell, with label-free workflows.</p></div>
+<div class="workflow-step" data-step="2023"><h4>timsTOF Ultra / SCP</h4>
+<p data-lang="zh">Bruker 為單細胞優化：更高靈敏度 ion source。報導單細胞最多 <strong>4000+ protein ID</strong>。</p>
+<p data-lang="en">Bruker's single-cell-optimized platform with high-sensitivity ion source. Reports <strong>4000+ protein IDs</strong> per single cell.</p></div>
+<div class="workflow-step" data-step="2024-25"><h4>Orbitrap Astral + DIA</h4>
+<p data-lang="zh">Thermo Astral 加入 single-cell 競賽。超高速 DIA + 高解析度 → <strong>5000+ protein/cell</strong>，並可大規模 cohort (1000+ cells)。</p>
+<p data-lang="en">Thermo's Astral joins the race. Ultra-fast DIA + high resolution → <strong>5000+ proteins per cell</strong> at cohort scale (1000+ cells).</p></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="INTERACTIVE">互動模擬</div>
+<h2 data-zh="單細胞蛋白覆蓋率成長" data-en="Single-cell coverage growth">單細胞蛋白覆蓋率成長</h2>
+<div data-lang="zh"><p>選擇平台，觀察其在 2018 到 2025 的覆蓋率提升。值得注意：每兩年覆蓋率近乎翻倍。</p></div>
+<div data-lang="en"><p>Pick a platform and watch coverage growth from 2018 to 2025 — coverage roughly doubles every two years.</p></div>
+<div class="interactive-panel">
+<div class="toggle-row"><button class="toggle-btn active" data-p="scope">SCoPE-MS</button><button class="toggle-btn" data-p="pasef">timsTOF (PASEF)</button><button class="toggle-btn" data-p="astral">Orbitrap Astral</button><button class="toggle-btn" data-p="all" data-zh="全部" data-en="All">全部</button></div>
+<div class="chart-container"><canvas id="scChart"></canvas></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="關鍵設計" data-en="KEY DESIGNS">關鍵設計</h2>
+<h2 data-zh="二、實驗設計關鍵考量" data-en="II. Key Experimental Design">二、實驗設計關鍵考量</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4>🧊 <span data-zh="樣品收集" data-en="Sample collection">樣品收集</span></h4>
+<div data-lang="zh"><p>FACS sort to 384-well 或 nanoPOTS chip。<strong>避免 PBS 連續沖洗</strong>（會吸附蛋白）；使用低吸附 tubing；冷凍儲存於 -80°C lyse buffer。</p></div>
+<div data-lang="en"><p>FACS sort into 384-well or nanoPOTS chip. <strong>Avoid serial PBS washes</strong> (protein adsorption); use low-bind tubing; cryostore in -80°C lyse buffer.</p></div>
+</div>
+<div class="card"><h4>🧪 <span data-zh="消化策略" data-en="Digestion strategy">消化策略</span></h4>
+<div data-lang="zh"><p>用 DDM 或 sodium deoxycholate 取代 SDS；one-pot 消化避免轉移損失；Trypsin/LysC 1:25 比例，37°C 過夜。</p></div>
+<div data-lang="en"><p>Use DDM or sodium deoxycholate instead of SDS; one-pot digestion avoids transfer loss; trypsin/LysC at 1:25, 37°C overnight.</p></div>
+</div>
+<div class="card"><h4>📡 <span data-zh="MS 採集" data-en="MS acquisition">MS 採集</span></h4>
+<div data-lang="zh"><p>label-free 用 <strong>diaPASEF</strong> 或 narrow-window DIA；標籤組合用 <strong>TMTpro 18-plex + carrier channel (SCoPE2)</strong>。LC 梯度 30–60 分鐘 (compromise of speed vs depth)。</p></div>
+<div data-lang="en"><p>Label-free: <strong>diaPASEF</strong> or narrow-window DIA. Labeled: <strong>TMTpro 18-plex + carrier (SCoPE2)</strong>. LC gradient 30–60 min (speed-vs-depth balance).</p></div>
+</div>
+<div class="card"><h4>📊 <span data-zh="資料分析特殊性" data-en="Data analysis specifics">資料分析特殊性</span></h4>
+<div data-lang="zh"><p>缺失值極高（&gt; 50%），需特殊 imputation 或 missing-aware 模型（如 <strong>SCP package, scp</strong>, R Bioconductor）。整合 single-cell UMAP / annotation 借鏡 scRNA-seq 套件。</p></div>
+<div data-lang="en"><p>Very high missingness (&gt; 50%); requires specialized imputation or missing-aware models (<strong>scp</strong>, R Bioconductor). UMAP / annotation borrow scRNA-seq tooling.</p></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="實作" data-en="CODE">實作</div>
+<h2 data-zh="三、scp 套件範例" data-en="III. scp package example">三、scp 套件範例</h2>
+<div class="code-tabs"><div class="code-tab-btns">
+<button class="code-tab-btn active" onclick="switchTab(this,'r-scp')">R / scp</button>
+<button class="code-tab-btn" onclick="switchTab(this,'py-sc')">Python / scProteomics</button>
+</div>
+<div class="code-tab-content active" id="r-scp"><pre><span class="func">library</span>(scp)
+<span class="func">library</span>(QFeatures)
+
+<span class="comment"># Load PSM-level data (e.g., from MaxQuant)</span>
+scp &lt;- <span class="func">readSCP</span>(quantTable, metaTable,
+                channelCol = <span class="str">"Channel"</span>,
+                batchCol   = <span class="str">"Run"</span>)
+
+<span class="comment"># Filter: PSM-level QC</span>
+scp &lt;- <span class="func">filterFeatures</span>(scp, ~ Reverse != <span class="str">"+"</span> &amp; PEP &lt; <span class="num">0.02</span>)
+
+<span class="comment"># Compute SCR (sample-to-carrier ratio) per PSM</span>
+scp &lt;- <span class="func">computeSCR</span>(scp, i = <span class="num">1</span>:<span class="num">10</span>, colvar = <span class="str">"SampleType"</span>,
+                  samplePattern = <span class="str">"Single"</span>,
+                  carrierPattern = <span class="str">"Carrier"</span>)
+
+<span class="comment"># Aggregate to peptides → proteins</span>
+scp &lt;- <span class="func">aggregateFeaturesOverAssays</span>(scp, i = <span class="num">1</span>:<span class="num">10</span>,
+          fcol = <span class="str">"Sequence"</span>, name = <span class="func">paste0</span>(<span class="str">"peptides_"</span>, <span class="num">1</span>:<span class="num">10</span>))
+scp &lt;- <span class="func">joinAssays</span>(scp, i = <span class="func">paste0</span>(<span class="str">"peptides_"</span>, <span class="num">1</span>:<span class="num">10</span>), name = <span class="str">"peptides"</span>)
+scp &lt;- <span class="func">aggregateFeatures</span>(scp, i = <span class="str">"peptides"</span>, name = <span class="str">"proteins"</span>,
+                        fcol = <span class="str">"Leading.razor.protein"</span>, fun = colMedians)
+
+<span class="comment"># UMAP for single-cell visualization</span>
+<span class="func">library</span>(uwot)
+mat &lt;- <span class="func">assay</span>(scp[[<span class="str">"proteins"</span>]])
+mat[<span class="func">is.na</span>(mat)] &lt;- <span class="num">0</span>
+um &lt;- <span class="func">umap</span>(<span class="func">t</span>(mat), n_neighbors = <span class="num">15</span>)
+<span class="func">plot</span>(um[,<span class="num">1</span>], um[,<span class="num">2</span>], col = <span class="func">factor</span>(meta$cellType))</pre></div>
+<div class="code-tab-content" id="py-sc"><pre><span class="kw">import</span> scanpy <span class="kw">as</span> sc   <span class="comment"># reuse scRNA-seq tooling</span>
+<span class="kw">import</span> anndata <span class="kw">as</span> ad
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="comment"># Build AnnData from protein matrix (cells × proteins)</span>
+prot = pd.read_csv(<span class="str">"proteins.csv"</span>, index_col=<span class="num">0</span>).T
+meta = pd.read_csv(<span class="str">"cell_meta.csv"</span>, index_col=<span class="num">0</span>)
+adata = ad.AnnData(X=prot.values, obs=meta, var=pd.DataFrame(index=prot.columns))
+
+<span class="comment"># Filter cells &amp; proteins by missingness</span>
+sc.pp.filter_cells(adata, min_genes=<span class="num">800</span>)
+sc.pp.filter_genes(adata, min_cells=<span class="func">int</span>(<span class="num">0.3</span> * adata.n_obs))
+
+<span class="comment"># Log-transform &amp; scale</span>
+sc.pp.log1p(adata)
+sc.pp.scale(adata, max_value=<span class="num">10</span>)
+
+<span class="comment"># PCA → UMAP → Leiden</span>
+sc.tl.pca(adata, n_comps=<span class="num">30</span>)
+sc.pp.neighbors(adata, n_neighbors=<span class="num">15</span>)
+sc.tl.umap(adata)
+sc.tl.leiden(adata, resolution=<span class="num">0.6</span>)
+sc.pl.umap(adata, color=<span class="str">"leiden"</span>)</pre></div>
+</div>
+</section>
+
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">1. SCoPE-MS 中「carrier channel」的作用？</p>
+<p data-lang="en">1. What's the role of the "carrier channel" in SCoPE-MS?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 提供同位素校準</span><span data-lang="en">A. Isotope calibration</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 加入 200× 細胞當量作 carrier 提升 fragment ion signal，讓質譜更可能觸發 MS2 並產生高品質譜</span><span data-lang="en">B. Adds 200× cell equivalents as carrier to boost fragment ion signal — increasing MS2 trigger rates and spectral quality</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 替代 DDA</span><span data-lang="en">C. Replaces DDA</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 用於 QC</span><span data-lang="en">D. For QC purposes</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">2. nanoPOTS 的核心優勢？</p>
+<p data-lang="en">2. nanoPOTS's core advantage?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 在 200 nL nanowell 進行消化，最小化轉移損失與容器吸附</span><span data-lang="en">A. Digestion in 200 nL nanowells minimizes transfer loss and tube adsorption</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 不需要 LC</span><span data-lang="en">B. No LC needed</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 不需要 MS</span><span data-lang="en">C. No MS needed</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 完全自動化</span><span data-lang="en">D. Fully automated</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">3. 為何 single-cell proteomics 缺失率特別高？</p>
+<p data-lang="en">3. Why is single-cell proteomics missingness so high?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 細胞太多</span><span data-lang="en">A. Too many cells</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 質譜儀故障率高</span><span data-lang="en">B. MS instruments fail often</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 蛋白量極低，低於 LOD 的蛋白本來就比例高（典型 MNAR），加上 DDA stochastic 缺失</span><span data-lang="en">C. Protein amounts are very low, so many fall below LOD (typical MNAR) — compounded by DDA stochastic missing</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 無法用 Trypsin</span><span data-lang="en">D. Can't use trypsin</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="spatial.html"><span class="nav-dir" data-zh="← 上一篇" data-en="← Previous">← 上一篇</span><span class="nav-title" data-zh="空間蛋白質體學 (Spatial Proteomics)" data-en="Spatial Proteomics">空間蛋白質體學 (Spatial Proteomics)</span></a>
+<a href="affinity.html"><span class="nav-dir" data-zh="下一篇 →" data-en="Next →">下一篇 →</span><span class="nav-title" data-zh="親合性蛋白質體學 (Affinity Proteomics)" data-en="Affinity Proteomics">親合性蛋白質體學 (Affinity Proteomics)</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+const scChart=new Chart(document.getElementById('scChart'),{
+  type:'line',
+  data:{labels:['2018','2019','2020','2021','2022','2023','2024','2025'],datasets:[]},
+  options:{responsive:true,maintainAspectRatio:false,scales:{y:{title:{display:true,text:'# proteins per single cell'},beginAtZero:true,max:6000}},plugins:{legend:{position:'top'}}}
+});
+
+const lines={
+  scope:{label:'SCoPE-MS / SCoPE2',color:'rgba(200,127,58,0.85)',data:[800,1100,1500,1700,2200,2500,2700,2900]},
+  pasef:{label:'timsTOF (PASEF/diaPASEF)',color:'rgba(44,75,138,0.85)',data:[null,null,1800,2300,3000,4000,4500,5000]},
+  astral:{label:'Orbitrap Astral',color:'rgba(120,40,90,0.9)',data:[null,null,null,null,null,3500,4800,5500]}
+};
+
+function setMode(m){
+  scChart.data.datasets=[];
+  if(m==='all'){Object.values(lines).forEach(l=>scChart.data.datasets.push({label:l.label,data:l.data,borderColor:l.color,backgroundColor:l.color,tension:0.3}));}
+  else {const l=lines[m];scChart.data.datasets.push({label:l.label,data:l.data,borderColor:l.color,backgroundColor:l.color,tension:0.3});}
+  scChart.update('none');
+}
+document.querySelectorAll('.toggle-row .toggle-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.toggle-row .toggle-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');setMode(b.dataset.p);});
+setMode('scope');
+
+const QF={
+  zh:{q1_y:'Carrier channel 提供化學量保證 MS2 觸發 — 但近年研究也警告 carrier ratio 過高會壓抑 single-cell channel 的訊號真實性。',q1_n:'正確答案已標示。',q2_y:'200 nL 體積大幅降低樣品吸附與轉移損失，這是單細胞蛋白質體學的關鍵突破。',q2_n:'正確答案已標示。',q3_y:'低豐度蛋白進不了 LOD，這是 MNAR 典型問題；同時 DDA 隨機性加劇缺失。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'Carrier ensures MS2 triggering — but recent work warns that excessive carrier ratios suppress true single-cell channel signals.',q1_n:'Correct answer highlighted.',q2_y:'200 nL volumes drastically reduce adsorption and transfer losses — the key breakthrough for single-cell proteomics.',q2_n:'Correct answer highlighted.',q3_y:'Low-abundance proteins fall below LOD (classic MNAR), compounded by DDA stochasticity.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>

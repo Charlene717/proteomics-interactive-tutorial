@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Proteomics 參考資料 · References</title>
+<meta name="description" content="Proteomics Interactive Tutorial 各主題的學術論文、官方文件、Best Practices、Benchmark 與資料庫來源整理。">
+<link rel="stylesheet" href="../styles.css">
+<style>
+.ref-list{list-style:none;padding:0;margin:14px 0 0}
+.ref-list li{padding:14px 16px;background:var(--c-surface-alt);border:1px solid var(--c-border-light);border-radius:var(--radius);margin-bottom:10px;font-size:.92rem;line-height:1.65}
+.ref-list li:hover{background:var(--c-surface);border-color:var(--c-border)}
+.ref-tag{display:inline-block;font-family:var(--font-mono);font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:6px;margin-right:8px;letter-spacing:.5px}
+.ref-tag.paper{background:var(--c-accent-light);color:var(--c-accent-dark)}
+.ref-tag.doc{background:#e3f2fd;color:#1565c0}
+.ref-tag.bench{background:#fff3e0;color:#e65100}
+.ref-tag.db{background:#fce4ec;color:#ad1457}
+.ref-tag.book{background:#f3e5f5;color:#6a1b9a}
+.ref-tag.bestp{background:var(--c-highlight-light);color:#a06a00;border:1px solid var(--c-highlight)}
+.ref-tag.tool{background:#e8f5e9;color:#2e7d32}
+.ref-author{color:var(--c-ink);font-weight:600}
+.ref-title{color:var(--c-ink);font-weight:500}
+.ref-meta{color:var(--c-ink-muted);font-size:.85rem;margin-top:4px;display:block}
+.ref-list a{color:var(--c-accent);text-decoration:none;border-bottom:1px dotted var(--c-accent)}
+.ref-list a:hover{color:var(--c-accent-dark);border-bottom-style:solid}
+.errata{background:#fef3c7;border-left:4px solid #d97706;border-radius:0 var(--radius-lg) var(--radius-lg) 0;padding:18px 22px;margin:18px 0;font-size:.9rem}
+.errata h4{margin:0 0 8px;color:#92400e;font-family:var(--font-display);font-size:1.05rem}
+.errata p{color:#78350f;margin-bottom:8px}
+.errata p:last-child{margin-bottom:0}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:18px 0}
+.toc-grid a{padding:10px 14px;background:var(--c-surface);border:1px solid var(--c-border-light);border-radius:var(--radius);text-decoration:none;color:var(--c-ink);font-size:.88rem;transition:var(--transition);display:flex;align-items:center;gap:8px}
+.toc-grid a:hover{border-color:var(--c-accent);background:var(--c-accent-light);color:var(--c-accent-dark)}
+.toc-grid a .step-tag{font-family:var(--font-mono);font-size:.72rem;color:var(--c-accent);font-weight:600}
+.section-anchor{scroll-margin-top:80px}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+<div class="top-nav-inner">
+  <a href="../index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links">
+    <li><a href="../sample-prep.html">Prep</a></li>
+    <li><a href="../acquisition.html">MS</a></li>
+    <li><a href="../identification.html">ID</a></li>
+    <li><a href="../quantification.html">Quant</a></li>
+    <li><a href="../qc.html">QC</a></li>
+    <li><a href="../normalization.html">Norm</a></li>
+    <li><a href="../imputation.html">Impute</a></li>
+    <li><a href="../differential-expression.html">DE</a></li>
+    <li><a href="../enrichment.html">Enrich</a></li>
+    <li><a href="../ptm.html">PTM</a></li>
+    <li><a href="../targeted.html">Target</a></li>
+    <li><a href="../top-down.html">Top-down</a></li>
+    <li><a href="../spatial.html">Spatial</a></li>
+    <li><a href="../single-cell.html">scProt</a></li>
+    <li><a href="../affinity.html">Affinity</a></li>
+    <li><a href="index.html" class="active" style="font-weight:700" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div>
+</nav>
+
+<header class="page-hero">
+<div class="step-badge" data-zh="參考資料 · REFERENCES" data-en="REFERENCES">REFERENCES</div>
+<h1 data-zh="學術論文、官方文件與資料庫來源" data-en="Proteomics References Index">Proteomics References Index</h1>
+<p class="subtitle" data-lang="zh">為 Proteomics Interactive Tutorial 15 個主題（9 核心 + 6 進階）提供原始論文、官方文件、Best Practices 綜述與 benchmark 研究的完整佐證。</p>
+<p class="subtitle" data-lang="en">References, citations, and sources for the Proteomics Interactive Tutorial — papers, official documents, and benchmarks with DOI / URL links.</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- Overview -->
+<section class="section">
+<div class="section-label" data-zh="概覽" data-en="OVERVIEW">概覽</div>
+<h2 data-zh="如何使用這份資料？" data-en="How to use this page">如何使用這份資料？</h2>
+<p data-lang="zh">本頁針對教學中提到的每個工具、演算法與生物學概念，整理學術出處供讀者深入查閱。引用標籤含義：</p>
+<p data-lang="en">For every tool, algorithm, and biological concept mentioned in the tutorial, this page collects authoritative sources for deeper reading. Citation tag meanings:</p>
+<div class="card-grid cols-3">
+  <div class="card"><div class="card-icon" style="background:var(--c-accent-light)">📄</div><h4>Paper</h4><p data-lang="zh">原始論文 · 含 DOI / PubMed</p><p data-lang="en">Original papers with DOI / PubMed</p></div>
+  <div class="card"><div class="card-icon" style="background:#e3f2fd">📘</div><h4>Doc</h4><p data-lang="zh">官方文件、vignette、tutorial</p><p data-lang="en">Official documentation, vignettes, tutorials</p></div>
+  <div class="card"><div class="card-icon" style="background:var(--c-highlight-light)">⭐</div><h4>Best Practice</h4><p data-lang="zh">系統性綜述或 community 推薦</p><p data-lang="en">Systematic reviews or community-recommended practices</p></div>
+  <div class="card"><div class="card-icon" style="background:#fff3e0">📊</div><h4>Benchmark</h4><p data-lang="zh">方法評比 / 獨立 benchmarking</p><p data-lang="en">Method comparisons and independent benchmarking</p></div>
+  <div class="card"><div class="card-icon" style="background:#fce4ec">🗄️</div><h4>Database</h4><p data-lang="zh">蛋白質序列、PTM、PPI、Atlas</p><p data-lang="en">Protein sequences, PTMs, PPIs, atlases</p></div>
+  <div class="card"><div class="card-icon" style="background:#e8f5e9">🛠️</div><h4>Tool</h4><p data-lang="zh">軟體工具與套件</p><p data-lang="en">Software tools and packages</p></div>
+</div>
+
+<h3 data-zh="本頁目錄" data-en="Table of contents">本頁目錄</h3>
+<div class="toc-grid">
+  <a href="#bestpractices"><span class="step-tag">★</span><span data-zh="Best Practices 綜述" data-en="Best Practices Reviews">Best Practices 綜述</span></a>
+  <a href="#frameworks"><span class="step-tag">★</span><span data-zh="核心軟體生態" data-en="Core Software Ecosystem">核心軟體生態</span></a>
+  <a href="#sampleprep"><span class="step-tag">Step 1</span><span data-zh="樣品製備" data-en="Sample Preparation">樣品製備</span></a>
+  <a href="#acquisition"><span class="step-tag">Step 2</span><span data-zh="LC-MS/MS 採集" data-en="LC-MS/MS Acquisition">LC-MS/MS 採集</span></a>
+  <a href="#identification"><span class="step-tag">Step 3</span><span data-zh="搜尋與鑑定" data-en="Search & Identification">搜尋與鑑定</span></a>
+  <a href="#quantification"><span class="step-tag">Step 4</span><span data-zh="定量策略" data-en="Quantification">定量策略</span></a>
+  <a href="#qc"><span class="step-tag">Step 5</span><span data-zh="品質管控" data-en="Quality Control">品質管控</span></a>
+  <a href="#normalization"><span class="step-tag">Step 6</span><span data-zh="標準化" data-en="Normalization">標準化</span></a>
+  <a href="#imputation"><span class="step-tag">Step 7</span><span data-zh="缺失值處理" data-en="Imputation">缺失值處理</span></a>
+  <a href="#de"><span class="step-tag">Step 8</span><span data-zh="差異表達" data-en="Differential Expression">差異表達</span></a>
+  <a href="#enrichment"><span class="step-tag">Step 9</span><span data-zh="功能富集" data-en="Enrichment">功能富集</span></a>
+  <a href="#ptm"><span class="step-tag">Adv.</span><span>PTM</span></a>
+  <a href="#targeted"><span class="step-tag">Adv.</span><span>Targeted</span></a>
+  <a href="#topdown"><span class="step-tag">Adv.</span><span>Top-down</span></a>
+  <a href="#spatial"><span class="step-tag">Adv.</span><span>Spatial</span></a>
+  <a href="#singlecell"><span class="step-tag">Adv.</span><span>Single-cell</span></a>
+  <a href="#affinity"><span class="step-tag">Adv.</span><span>Affinity</span></a>
+  <a href="#databases"><span class="step-tag">DB</span><span data-zh="核心資料庫" data-en="Core Databases">核心資料庫</span></a>
+  <a href="#errata"><span class="step-tag">!</span><span data-zh="教學註記與細節" data-en="Tutorial Notes & Details">教學註記與細節</span></a>
+</div>
+</section>
+
+<!-- ===================== Best Practices ===================== -->
+<section class="section section-anchor" id="bestpractices">
+<div class="section-label" data-zh="綜論" data-en="OVERVIEW">綜論</div>
+<h2 data-zh="⭐ Best Practices 綜述論文" data-en="⭐ Best Practices Review Papers">⭐ Best Practices 綜述論文</h2>
+<p data-lang="zh">整體蛋白質體學分析流程的權威性教科書級綜述。建議從這幾篇開始，能對全流程的設計取捨建立全景觀。</p>
+<p data-lang="en">Authoritative, textbook-level reviews covering the entire proteomics analysis workflow. Start here to build a panoramic view of the design trade-offs across the whole pipeline.</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag bestp">★ BEST</span>
+    <span class="ref-author">Aebersold R, Mann M.</span>
+    <span class="ref-title"> Mass-spectrometric exploration of proteome structure and function. </span>
+    <em>Nature</em> 537:347–355 (2016).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nature19949" target="_blank" rel="noopener">10.1038/nature19949</a> · 蛋白質體學「總綱」級綜述</span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nature19949" target="_blank" rel="noopener">10.1038/nature19949</a> · A "grand overview" review of the entire proteomics field.</span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">★ BEST</span>
+    <span class="ref-author">Sinitcyn P, Rudolph JD, Cox J.</span>
+    <span class="ref-title"> Computational Methods for Understanding Mass Spectrometry-Based Shotgun Proteomics Data. </span>
+    <em>Annu Rev Biomed Data Sci</em> 1:207–234 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1146/annurev-biodatasci-080917-013516" target="_blank" rel="noopener">10.1146/annurev-biodatasci-080917-013516</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1146/annurev-biodatasci-080917-013516" target="_blank" rel="noopener">10.1146/annurev-biodatasci-080917-013516</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">★ REVIEW</span>
+    <span class="ref-author">Sinha A, Mann M.</span>
+    <span class="ref-title"> A beginner's guide to mass spectrometry-based proteomics. </span>
+    <em>The Biochemist</em> 42(5):64–69 (2020).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1042/BIO20200057" target="_blank" rel="noopener">10.1042/BIO20200057</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1042/BIO20200057" target="_blank" rel="noopener">10.1042/BIO20200057</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">★ REVIEW</span>
+    <span class="ref-author">Muntel J, et al.</span>
+    <span class="ref-title"> A Critical Review of Bottom-Up Proteomics: The Good, the Bad, and the Future of This Field. </span>
+    <em>Proteomes</em> 8(3):14 (2020).
+    <span class="ref-meta"><span data-lang="zh">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7564415/" target="_blank" rel="noopener">PMC7564415</a> · DOI: <a href="https://doi.org/10.3390/proteomes8030014" target="_blank" rel="noopener">10.3390/proteomes8030014</a></span><span data-lang="en">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7564415/" target="_blank" rel="noopener">PMC7564415</a> · DOI: <a href="https://doi.org/10.3390/proteomes8030014" target="_blank" rel="noopener">10.3390/proteomes8030014</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag book">📚 BOOK</span>
+    <span class="ref-title"><span data-lang="zh">Proteomics Data Analysis in R/Bioconductor (PNNL 線上免費書)</span><span data-lang="en">Proteomics Data Analysis in R/Bioconductor (PNNL free online book)</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://pnnl-comp-mass-spec.github.io/proteomics-data-analysis-tutorial/" target="_blank" rel="noopener">pnnl-comp-mass-spec.github.io/proteomics-data-analysis-tutorial</a></span><span data-lang="en"><a href="https://pnnl-comp-mass-spec.github.io/proteomics-data-analysis-tutorial/" target="_blank" rel="noopener">pnnl-comp-mass-spec.github.io/proteomics-data-analysis-tutorial</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER</span>
+    <span class="ref-author">Yu F, Teo GC, Kong AT, et al.</span>
+    <span class="ref-title"> A Bioconductor workflow for processing, evaluating, and interpreting expression proteomics data. </span>
+    <em>F1000Research</em> (2023).
+    <span class="ref-meta"><span data-lang="zh">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10683783/" target="_blank" rel="noopener">PMC10683783</a></span><span data-lang="en">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10683783/" target="_blank" rel="noopener">PMC10683783</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Frameworks ===================== -->
+<section class="section section-anchor" id="frameworks">
+<div class="section-label" data-zh="核心生態" data-en="CORE ECOSYSTEM">核心生態</div>
+<h2 data-zh="🧰 核心軟體生態" data-en="🧰 Core Software Ecosystem">🧰 核心軟體生態</h2>
+<p data-lang="zh">蛋白質體學分析的主流 search engine 與資料處理框架。MaxQuant、FragPipe、DIA-NN、Spectronaut 共同構成現代主流流程。</p>
+<p data-lang="en">The mainstream search engines and data-processing frameworks for proteomics analysis. MaxQuant, FragPipe, DIA-NN, and Spectronaut together form the modern standard pipeline.</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · MaxQuant</span>
+    <span class="ref-author">Cox J, Mann M.</span>
+    <span class="ref-title"> MaxQuant enables high peptide identification rates, individualized p.p.b.-range mass accuracies and proteome-wide protein quantification. </span>
+    <em>Nat Biotechnol</em> 26:1367–1372 (2008).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nbt.1511" target="_blank" rel="noopener">10.1038/nbt.1511</a> · 官網 <a href="https://www.maxquant.org/" target="_blank" rel="noopener">maxquant.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nbt.1511" target="_blank" rel="noopener">10.1038/nbt.1511</a> · Website: <a href="https://www.maxquant.org/" target="_blank" rel="noopener">maxquant.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Andromeda (MaxQuant 引擎)</span>
+    <span class="ref-author">Cox J, Neuhauser N, Michalski A, et al.</span>
+    <span class="ref-title"> Andromeda: a peptide search engine integrated into the MaxQuant environment. </span>
+    <em>J Proteome Res</em> 10(4):1794–1805 (2011).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/pr101065j" target="_blank" rel="noopener">10.1021/pr101065j</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/pr101065j" target="_blank" rel="noopener">10.1021/pr101065j</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · MSFragger</span>
+    <span class="ref-author">Kong AT, Leprevost FV, Avtonomov DM, Mellacheruvu D, Nesvizhskii AI.</span>
+    <span class="ref-title"> MSFragger: ultrafast and comprehensive peptide identification in shotgun proteomics. </span>
+    <em>Nat Methods</em> 14:513–520 (2017).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nmeth.4256" target="_blank" rel="noopener">10.1038/nmeth.4256</a> · PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5409104/" target="_blank" rel="noopener">PMC5409104</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nmeth.4256" target="_blank" rel="noopener">10.1038/nmeth.4256</a> · PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5409104/" target="_blank" rel="noopener">PMC5409104</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · FragPipe / MSFragger-DIA</span>
+    <span class="ref-author">Yu F, Teo GC, Kong AT, et al.</span>
+    <span class="ref-title"> Analysis of DIA proteomics data using MSFragger-DIA and FragPipe computational platform. </span>
+    <em>Nat Commun</em> 14:4154 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41467-023-39869-5" target="_blank" rel="noopener">10.1038/s41467-023-39869-5</a> · 官網 <a href="https://fragpipe.nesvilab.org/" target="_blank" rel="noopener">fragpipe.nesvilab.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41467-023-39869-5" target="_blank" rel="noopener">10.1038/s41467-023-39869-5</a> · Website: <a href="https://fragpipe.nesvilab.org/" target="_blank" rel="noopener">fragpipe.nesvilab.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · DIA-NN</span>
+    <span class="ref-author">Demichev V, Messner CB, Vernardis SI, Lilley KS, Ralser M.</span>
+    <span class="ref-title"> DIA-NN: neural networks and interference correction enable deep proteome coverage in high throughput. </span>
+    <em>Nat Methods</em> 17:41–44 (2020).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41592-019-0638-x" target="_blank" rel="noopener">10.1038/s41592-019-0638-x</a> · GitHub <a href="https://github.com/vdemichev/DiaNN" target="_blank" rel="noopener">vdemichev/DiaNN</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41592-019-0638-x" target="_blank" rel="noopener">10.1038/s41592-019-0638-x</a> · GitHub: <a href="https://github.com/vdemichev/DiaNN" target="_blank" rel="noopener">vdemichev/DiaNN</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Sage (2024 Rust 後起新銳)</span>
+    <span class="ref-author">Lazear MR.</span>
+    <span class="ref-title"> Sage: An Open-Source Tool for Fast Proteomics Searching and Quantification at Scale. </span>
+    <em>J Proteome Res</em> 22(11):3652–3659 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.jproteome.3c00486" target="_blank" rel="noopener">10.1021/acs.jproteome.3c00486</a> · 網站 <a href="https://lazear.github.io/sage/" target="_blank" rel="noopener">lazear.github.io/sage</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.jproteome.3c00486" target="_blank" rel="noopener">10.1021/acs.jproteome.3c00486</a> · Website: <a href="https://lazear.github.io/sage/" target="_blank" rel="noopener">lazear.github.io/sage</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Comet</span>
+    <span class="ref-author">Eng JK, Jahan TA, Hoopmann MR.</span>
+    <span class="ref-title"> Comet: an open-source MS/MS sequence database search tool. </span>
+    <em>Proteomics</em> 13(1):22–24 (2013).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1002/pmic.201200439" target="_blank" rel="noopener">10.1002/pmic.201200439</a> · 官網 <a href="https://uwpr.github.io/Comet/" target="_blank" rel="noopener">uwpr.github.io/Comet</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1002/pmic.201200439" target="_blank" rel="noopener">10.1002/pmic.201200439</a> · Website: <a href="https://uwpr.github.io/Comet/" target="_blank" rel="noopener">uwpr.github.io/Comet</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag tool">TOOL · Spectronaut</span>
+    <span class="ref-title"><span data-lang="zh">Biognosys Spectronaut · 商業 DIA 分析平台（library-based + directDIA）</span><span data-lang="en">Biognosys Spectronaut · Commercial DIA analysis platform (library-based + directDIA)</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://biognosys.com/software/spectronaut/" target="_blank" rel="noopener">biognosys.com/software/spectronaut</a></span><span data-lang="en"><a href="https://biognosys.com/software/spectronaut/" target="_blank" rel="noopener">biognosys.com/software/spectronaut</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Percolator FDR rescoring</span>
+    <span class="ref-author">The M, MacCoss MJ, Noble WS, Käll L.</span>
+    <span class="ref-title"> Fast and Accurate Protein False Discovery Rates on Large-Scale Proteomics Data Sets with Percolator 3.0. </span>
+    <em>J Am Soc Mass Spectrom</em> 27:1719–1727 (2016).
+    <span class="ref-meta"><span data-lang="zh">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5059416/" target="_blank" rel="noopener">PMC5059416</a> · DOI: <a href="https://doi.org/10.1007/s13361-016-1460-7" target="_blank" rel="noopener">10.1007/s13361-016-1460-7</a></span><span data-lang="en">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5059416/" target="_blank" rel="noopener">PMC5059416</a> · DOI: <a href="https://doi.org/10.1007/s13361-016-1460-7" target="_blank" rel="noopener">10.1007/s13361-016-1460-7</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · MSBooster (deep-learning rescoring)</span>
+    <span class="ref-author">Yang KL, Yu F, Teo GC, et al.</span>
+    <span class="ref-title"> MSBooster: improving peptide identification rates using deep learning-based features. </span>
+    <em>Nat Commun</em> 14:4539 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41467-023-40129-9" target="_blank" rel="noopener">10.1038/s41467-023-40129-9</a> · PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10374903/" target="_blank" rel="noopener">PMC10374903</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41467-023-40129-9" target="_blank" rel="noopener">10.1038/s41467-023-40129-9</a> · PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10374903/" target="_blank" rel="noopener">PMC10374903</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag tool">TOOL · Proteome Discoverer</span>
+    <span class="ref-title"><span data-lang="zh">Thermo Fisher Proteome Discoverer · 商業 GUI 分析平台（整合 Sequest、Mascot、ptmRS）</span><span data-lang="en">Thermo Fisher Proteome Discoverer · Commercial GUI analysis platform (integrates Sequest, Mascot, ptmRS)</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://www.thermofisher.com/order/catalog/product/OPTON-30945" target="_blank" rel="noopener">thermofisher.com / Proteome Discoverer</a></span><span data-lang="en"><a href="https://www.thermofisher.com/order/catalog/product/OPTON-30945" target="_blank" rel="noopener">thermofisher.com / Proteome Discoverer</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Step 1: Sample Prep ===================== -->
+<section class="section section-anchor" id="sampleprep">
+<div class="section-label">Step 1</div>
+<h2 data-zh="🧪 樣品製備與消化 (Sample Preparation)" data-en="🧪 Sample Preparation & Digestion">🧪 樣品製備與消化 (Sample Preparation)</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · FASP</span>
+    <span class="ref-author">Wiśniewski JR, Zougman A, Nagaraj N, Mann M.</span>
+    <span class="ref-title"> Universal sample preparation method for proteome analysis. </span>
+    <em>Nat Methods</em> 6:359–362 (2009).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nmeth.1322" target="_blank" rel="noopener">10.1038/nmeth.1322</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nmeth.1322" target="_blank" rel="noopener">10.1038/nmeth.1322</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · SP3 (原始)</span>
+    <span class="ref-author">Hughes CS, Foehr S, Garfield DA, et al.</span>
+    <span class="ref-title"> Ultrasensitive proteome analysis using paramagnetic bead technology. </span>
+    <em>Mol Syst Biol</em> 10:757 (2014).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.15252/msb.20145625" target="_blank" rel="noopener">10.15252/msb.20145625</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.15252/msb.20145625" target="_blank" rel="noopener">10.15252/msb.20145625</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · SP3 (Nat Protoc 詳細協議)</span>
+    <span class="ref-author">Hughes CS, Moggridge S, Müller T, Sorensen PH, Morin GB, Krijgsveld J.</span>
+    <span class="ref-title"> Single-pot, solid-phase-enhanced sample preparation for proteomics experiments. </span>
+    <em>Nat Protoc</em> 14:68–85 (2019).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41596-018-0082-x" target="_blank" rel="noopener">10.1038/s41596-018-0082-x</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41596-018-0082-x" target="_blank" rel="noopener">10.1038/s41596-018-0082-x</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · S-Trap</span>
+    <span class="ref-author">HaileMariam M, Eguez RV, Singh H, et al.</span>
+    <span class="ref-title"> S-Trap, an Ultrafast Sample-Preparation Approach for Shotgun Proteomics. </span>
+    <em>J Proteome Res</em> 17(9):2917–2924 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.jproteome.8b00505" target="_blank" rel="noopener">10.1021/acs.jproteome.8b00505</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.jproteome.8b00505" target="_blank" rel="noopener">10.1021/acs.jproteome.8b00505</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH · 三方法比較</span>
+    <span class="ref-author">Ludwig KR, Schroll MM, Hummon AB.</span>
+    <span class="ref-title"> Comparison of In-Solution, FASP, and S-Trap Based Digestion Methods for Bottom-Up Proteomic Studies. </span>
+    <em>J Proteome Res</em> 17(7):2480–2490 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.jproteome.8b00235" target="_blank" rel="noopener">10.1021/acs.jproteome.8b00235</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.jproteome.8b00235" target="_blank" rel="noopener">10.1021/acs.jproteome.8b00235</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH · 普遍方法比較 (2022)</span>
+    <span class="ref-author">Varnavides G, Madern M, Anrather D, Hartl N, Reiter W, Hartl M.</span>
+    <span class="ref-title"> In Search of a Universal Method: A Comparative Survey of Bottom-Up Proteomics Sample Preparation Methods. </span>
+    <em>J Proteome Res</em> 21(11):2397–2411 (2022).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.jproteome.2c00265" target="_blank" rel="noopener">10.1021/acs.jproteome.2c00265</a> · PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9552232/" target="_blank" rel="noopener">PMC9552232</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.jproteome.2c00265" target="_blank" rel="noopener">10.1021/acs.jproteome.2c00265</a> · PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9552232/" target="_blank" rel="noopener">PMC9552232</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · iST</span>
+    <span class="ref-author">Kulak NA, Pichler G, Paron I, Nagaraj N, Mann M.</span>
+    <span class="ref-title"> Minimal, encapsulated proteomic-sample processing applied to copy-number estimation in eukaryotic cells. </span>
+    <em>Nat Methods</em> 11:319–324 (2014).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nmeth.2834" target="_blank" rel="noopener">10.1038/nmeth.2834</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nmeth.2834" target="_blank" rel="noopener">10.1038/nmeth.2834</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · 低量組織優化 (2024)</span>
+    <span class="ref-author">Hu Y, Yu C, et al.</span>
+    <span class="ref-title"> Optimized Workflow for Proteomics and Phosphoproteomics With Limited Tissue Samples. </span>
+    <em>Curr Protoc</em> 4(4):e1028 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1002/cpz1.1028" target="_blank" rel="noopener">10.1002/cpz1.1028</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1002/cpz1.1028" target="_blank" rel="noopener">10.1002/cpz1.1028</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Step 2: Acquisition ===================== -->
+<section class="section section-anchor" id="acquisition">
+<div class="section-label">Step 2</div>
+<h2 data-zh="🔬 LC-MS/MS 採集 (DDA / DIA / PASEF)" data-en="🔬 LC-MS/MS Acquisition (DDA / DIA / PASEF)">🔬 LC-MS/MS 採集 (DDA / DIA / PASEF)</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · SWATH-MS 開創 DIA</span>
+    <span class="ref-author">Gillet LC, Navarro P, Tate S, et al.</span>
+    <span class="ref-title"> Targeted data extraction of the MS/MS spectra generated by data-independent acquisition: a new concept for consistent and accurate proteome analysis. </span>
+    <em>Mol Cell Proteomics</em> 11(6):O111.016717 (2012).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1074/mcp.O111.016717" target="_blank" rel="noopener">10.1074/mcp.O111.016717</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1074/mcp.O111.016717" target="_blank" rel="noopener">10.1074/mcp.O111.016717</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · diaPASEF</span>
+    <span class="ref-author">Meier F, Brunner AD, Frank M, et al.</span>
+    <span class="ref-title"> diaPASEF: parallel accumulation–serial fragmentation combined with data-independent acquisition. </span>
+    <em>Nat Methods</em> 17:1229–1236 (2020).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41592-020-00998-0" target="_blank" rel="noopener">10.1038/s41592-020-00998-0</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41592-020-00998-0" target="_blank" rel="noopener">10.1038/s41592-020-00998-0</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · PASEF (ddaPASEF)</span>
+    <span class="ref-author">Meier F, Beck S, Grassl N, et al.</span>
+    <span class="ref-title"> Parallel Accumulation–Serial Fragmentation (PASEF): Multiplying Sequencing Speed and Sensitivity by Synchronized Scans. </span>
+    <em>Mol Cell Proteomics</em> 17(12):2534–2545 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1074/mcp.TIR118.000900" target="_blank" rel="noopener">10.1074/mcp.TIR118.000900</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1074/mcp.TIR118.000900" target="_blank" rel="noopener">10.1074/mcp.TIR118.000900</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">REVIEW · DIA 2023 綜論</span>
+    <span class="ref-author">Guzman UH, et al.</span>
+    <span class="ref-title"> Acquisition and Analysis of DIA-Based Proteomic Data: A Comprehensive Survey in 2023. </span>
+    <em>Mol Cell Proteomics</em> 23(2):100695 (2024).
+    <span class="ref-meta"><span data-lang="zh">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10847697/" target="_blank" rel="noopener">PMC10847697</a> · DOI: <a href="https://doi.org/10.1016/j.mcpro.2024.100695" target="_blank" rel="noopener">10.1016/j.mcpro.2024.100695</a></span><span data-lang="en">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10847697/" target="_blank" rel="noopener">PMC10847697</a> · DOI: <a href="https://doi.org/10.1016/j.mcpro.2024.100695" target="_blank" rel="noopener">10.1016/j.mcpro.2024.100695</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Orbitrap Astral</span>
+    <span class="ref-author">Stewart HI, Grinfeld D, Giannakopulos A, et al.</span>
+    <span class="ref-title"> Parallelized Acquisition of Orbitrap and Astral Analyzers Enables High-Throughput Quantitative Analysis. </span>
+    <em>Anal Chem</em> 95(42):15656–15664 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.analchem.3c02856" target="_blank" rel="noopener">10.1021/acs.analchem.3c02856</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.analchem.3c02856" target="_blank" rel="noopener">10.1021/acs.analchem.3c02856</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Scheduled-DIA (2025)</span>
+    <span class="ref-author">Various authors.</span>
+    <span class="ref-title"> Scheduled data-independent acquisition mass spectrometry for global proteomics and proximity labeling. </span>
+    <em>J Chromatogr B</em> (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1016/j.jchromb.2025.124415" target="_blank" rel="noopener">10.1016/j.jchromb.2025.124415</a> · ScienceDirect <a href="https://www.sciencedirect.com/science/article/abs/pii/S1387380625001010" target="_blank" rel="noopener">S1387380625001010</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1016/j.jchromb.2025.124415" target="_blank" rel="noopener">10.1016/j.jchromb.2025.124415</a> · ScienceDirect: <a href="https://www.sciencedirect.com/science/article/abs/pii/S1387380625001010" target="_blank" rel="noopener">S1387380625001010</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · DDA vs DIA 教育資源</span>
+    <span class="ref-title">Cell Signaling Technology · Deep proteome profiling with DIA</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://blog.cellsignal.com/deep-proteome-profiling-with-dia" target="_blank" rel="noopener">blog.cellsignal.com / deep-proteome-profiling-with-dia</a></span><span data-lang="en"><a href="https://blog.cellsignal.com/deep-proteome-profiling-with-dia" target="_blank" rel="noopener">blog.cellsignal.com / deep-proteome-profiling-with-dia</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Step 3: Identification ===================== -->
+<section class="section section-anchor" id="identification">
+<div class="section-label">Step 3</div>
+<h2 data-zh="🔎 資料庫搜尋與鑑定 (Search &amp; FDR)" data-en="🔎 Database Search & Identification (Search & FDR)">🔎 資料庫搜尋與鑑定 (Search & FDR)</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · Target-Decoy 黃金規範</span>
+    <span class="ref-author">Elias JE, Gygi SP.</span>
+    <span class="ref-title"> Target-decoy search strategy for increased confidence in large-scale protein identifications by mass spectrometry. </span>
+    <em>Nat Methods</em> 4:207–214 (2007).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nmeth1019" target="_blank" rel="noopener">10.1038/nmeth1019</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nmeth1019" target="_blank" rel="noopener">10.1038/nmeth1019</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Käll 2007 Percolator 原始</span>
+    <span class="ref-author">Käll L, Canterbury JD, Weston J, Noble WS, MacCoss MJ.</span>
+    <span class="ref-title"> Semi-supervised learning for peptide identification from shotgun proteomics datasets. </span>
+    <em>Nat Methods</em> 4:923–925 (2007).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nmeth1113" target="_blank" rel="noopener">10.1038/nmeth1113</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nmeth1113" target="_blank" rel="noopener">10.1038/nmeth1113</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Open search 揭露未知 PTM</span>
+    <span class="ref-author">Chick JM, Kolippakkam D, Nusinow DP, et al.</span>
+    <span class="ref-title"> A mass-tolerant database search identifies a large proportion of unassigned spectra in shotgun proteomics as modified peptides. </span>
+    <em>Nat Biotechnol</em> 33:743–749 (2015).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nbt.3267" target="_blank" rel="noopener">10.1038/nbt.3267</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nbt.3267" target="_blank" rel="noopener">10.1038/nbt.3267</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH · DIA 軟體比較 2025</span>
+    <span class="ref-title">DIA Proteomics Software Comparison 2025: DIA-NN, Spectronaut, FragPipe</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://www.creative-proteomics.com/ngpro/resource-dia-proteomics-software-comparison-diann-spectronaut-fragpipe.html" target="_blank" rel="noopener">creative-proteomics.com / dia software comparison</a></span><span data-lang="en"><a href="https://www.creative-proteomics.com/ngpro/resource-dia-proteomics-software-comparison-diann-spectronaut-fragpipe.html" target="_blank" rel="noopener">creative-proteomics.com / dia software comparison</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · IonQuant + FDR-controlled MBR</span>
+    <span class="ref-author">Yu F, Haynes SE, Nesvizhskii AI.</span>
+    <span class="ref-title"> IonQuant Enables Accurate and Sensitive Label-Free Quantification With FDR-Controlled Match-Between-Runs. </span>
+    <em>Mol Cell Proteomics</em> 20:100077 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1016/j.mcpro.2021.100077" target="_blank" rel="noopener">10.1016/j.mcpro.2021.100077</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1016/j.mcpro.2021.100077" target="_blank" rel="noopener">10.1016/j.mcpro.2021.100077</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Step 4: Quantification ===================== -->
+<section class="section section-anchor" id="quantification">
+<div class="section-label">Step 4</div>
+<h2 data-zh="⚖️ 定量策略 (LFQ / TMT / SILAC / iBAQ)" data-en="⚖️ Quantification Strategies (LFQ / TMT / SILAC / iBAQ)">⚖️ 定量策略 (LFQ / TMT / SILAC / iBAQ)</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · MaxLFQ</span>
+    <span class="ref-author">Cox J, Hein MY, Luber CA, Paron I, Nagaraj N, Mann M.</span>
+    <span class="ref-title"> Accurate proteome-wide label-free quantification by delayed normalization and maximal peptide ratio extraction, termed MaxLFQ. </span>
+    <em>Mol Cell Proteomics</em> 13(9):2513–2526 (2014).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1074/mcp.M113.031591" target="_blank" rel="noopener">10.1074/mcp.M113.031591</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1074/mcp.M113.031591" target="_blank" rel="noopener">10.1074/mcp.M113.031591</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · SILAC 原始</span>
+    <span class="ref-author">Ong SE, Blagoev B, Kratchmarova I, et al.</span>
+    <span class="ref-title"> Stable Isotope Labeling by Amino acids in Cell culture, SILAC, as a simple and accurate approach to expression proteomics. </span>
+    <em>Mol Cell Proteomics</em> 1(5):376–386 (2002).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1074/mcp.m200025-mcp200" target="_blank" rel="noopener">10.1074/mcp.M200025-MCP200</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1074/mcp.m200025-mcp200" target="_blank" rel="noopener">10.1074/mcp.M200025-MCP200</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · TMT 原始</span>
+    <span class="ref-author">Thompson A, Schäfer J, Kuhn K, et al.</span>
+    <span class="ref-title"> Tandem mass tags: a novel quantification strategy for comparative analysis of complex protein mixtures by MS/MS. </span>
+    <em>Anal Chem</em> 75(8):1895–1904 (2003).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/ac0262560" target="_blank" rel="noopener">10.1021/ac0262560</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/ac0262560" target="_blank" rel="noopener">10.1021/ac0262560</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · TMTpro 16-plex</span>
+    <span class="ref-author">Li J, Van Vranken JG, Pontano Vaites L, et al.</span>
+    <span class="ref-title"> TMTpro reagents: a set of isobaric labeling mass tags enables simultaneous proteome-wide measurements across 16 samples. </span>
+    <em>Nat Methods</em> 17:399–404 (2020).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41592-020-0781-4" target="_blank" rel="noopener">10.1038/s41592-020-0781-4</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41592-020-0781-4" target="_blank" rel="noopener">10.1038/s41592-020-0781-4</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · MS3 / SPS 校正 ratio compression</span>
+    <span class="ref-author">McAlister GC, Nusinow DP, Jedrychowski MP, et al.</span>
+    <span class="ref-title"> MultiNotch MS3 enables accurate, sensitive, and multiplexed detection of differential expression across cancer cell line proteomes. </span>
+    <em>Anal Chem</em> 86(14):7150–7158 (2014).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/ac502040v" target="_blank" rel="noopener">10.1021/ac502040v</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/ac502040v" target="_blank" rel="noopener">10.1021/ac502040v</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · iBAQ</span>
+    <span class="ref-author">Schwanhäusser B, Busse D, Li N, et al.</span>
+    <span class="ref-title"> Global quantification of mammalian gene expression control. </span>
+    <em>Nature</em> 473:337–342 (2011).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nature10098" target="_blank" rel="noopener">10.1038/nature10098</a> · iBAQ 概念來源</span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nature10098" target="_blank" rel="noopener">10.1038/nature10098</a> · Origin of the iBAQ concept.</span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH · LFQ vs SILAC vs TMT</span>
+    <span class="ref-author">Sandberg A, Branca RMM, Lehtiö J, Forshed J.</span>
+    <span class="ref-title"> Quantitative accuracy in mass spectrometry based proteomics of complex samples — comparison of label-free, SILAC, and TMT. </span>
+    <em>J Proteome Res</em> 19(2):865–875 (2020).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.jproteome.9b00701" target="_blank" rel="noopener">10.1021/acs.jproteome.9b00701</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.jproteome.9b00701" target="_blank" rel="noopener">10.1021/acs.jproteome.9b00701</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH · SILAC 工作流 (2025)</span>
+    <span class="ref-title"> Benchmarking SILAC Proteomics Workflows and Data Analysis Platforms. </span>
+    <em>Mol Cell Proteomics</em> (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1016/j.mcpro.2025.100945" target="_blank" rel="noopener">10.1016/j.mcpro.2025.100945</a> · ScienceDirect <a href="https://www.sciencedirect.com/science/article/pii/S1535947625000787" target="_blank" rel="noopener">S1535947625000787</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1016/j.mcpro.2025.100945" target="_blank" rel="noopener">10.1016/j.mcpro.2025.100945</a> · ScienceDirect: <a href="https://www.sciencedirect.com/science/article/pii/S1535947625000787" target="_blank" rel="noopener">S1535947625000787</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Step 5: QC ===================== -->
+<section class="section section-anchor" id="qc">
+<div class="section-label">Step 5</div>
+<h2 data-zh="🩺 品質管控 (Quality Control)" data-en="🩺 Quality Control">🩺 品質管控 (Quality Control)</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · QC 系統綜述</span>
+    <span class="ref-author">Bittremieux W, Tabb DL, Impens F, et al.</span>
+    <span class="ref-title"> Quality control in mass spectrometry-based proteomics. </span>
+    <em>Mass Spectrom Rev</em> 37(5):697–711 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1002/mas.21544" target="_blank" rel="noopener">10.1002/mas.21544</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1002/mas.21544" target="_blank" rel="noopener">10.1002/mas.21544</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag tool">TOOL · MaxQuant QC plots</span>
+    <span class="ref-title"><span data-lang="zh">PTXQC R package · 自動產生 MaxQuant 輸出的 QC 報表</span><span data-lang="en">PTXQC R package · Automatically generates QC reports from MaxQuant output</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://github.com/cbielow/PTXQC" target="_blank" rel="noopener">github.com/cbielow/PTXQC</a></span><span data-lang="en"><a href="https://github.com/cbielow/PTXQC" target="_blank" rel="noopener">github.com/cbielow/PTXQC</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · PTXQC</span>
+    <span class="ref-author">Bielow C, Mastrobuoni G, Kempa S.</span>
+    <span class="ref-title"> Proteomics Quality Control: Quality Control Software for MaxQuant Results. </span>
+    <em>J Proteome Res</em> 15(3):777–787 (2016).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.jproteome.5b00780" target="_blank" rel="noopener">10.1021/acs.jproteome.5b00780</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.jproteome.5b00780" target="_blank" rel="noopener">10.1021/acs.jproteome.5b00780</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · MSQC / QuaMeter</span>
+    <span class="ref-title"><span data-lang="zh">QuaMeter (ProteoWizard 子工具) — 計算質譜 run 的 70+ QC 指標</span><span data-lang="en">QuaMeter (ProteoWizard subtool) — computes 70+ QC metrics for a mass-spec run</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="http://proteowizard.sourceforge.net/tools/quameter.html" target="_blank" rel="noopener">proteowizard.sourceforge.net/tools/quameter</a></span><span data-lang="en"><a href="http://proteowizard.sourceforge.net/tools/quameter.html" target="_blank" rel="noopener">proteowizard.sourceforge.net/tools/quameter</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · ComBat batch correction</span>
+    <span class="ref-author">Johnson WE, Li C, Rabinovic A.</span>
+    <span class="ref-title"> Adjusting batch effects in microarray expression data using empirical Bayes methods. </span>
+    <em>Biostatistics</em> 8(1):118–127 (2007).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/biostatistics/kxj037" target="_blank" rel="noopener">10.1093/biostatistics/kxj037</a> · 蛋白質體學常用</span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/biostatistics/kxj037" target="_blank" rel="noopener">10.1093/biostatistics/kxj037</a> · Widely used in proteomics.</span></span>
+  </li>
+  <li>
+    <span class="ref-tag tool">TOOL · HeLa QC standards</span>
+    <span class="ref-title"><span data-lang="zh">Pierce HeLa Protein Digest Standard · 業界常用儀器 QC 樣品</span><span data-lang="en">Pierce HeLa Protein Digest Standard · Industry-standard QC sample for instrument performance</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://www.thermofisher.com/order/catalog/product/88328" target="_blank" rel="noopener">thermofisher.com / Pierce HeLa Digest</a></span><span data-lang="en"><a href="https://www.thermofisher.com/order/catalog/product/88328" target="_blank" rel="noopener">thermofisher.com / Pierce HeLa Digest</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Step 6: Normalization ===================== -->
+<section class="section section-anchor" id="normalization">
+<div class="section-label">Step 6</div>
+<h2 data-zh="📏 標準化 (Normalization)" data-en="📏 Normalization">📏 標準化 (Normalization)</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · VSN</span>
+    <span class="ref-author">Huber W, von Heydebreck A, Sültmann H, Poustka A, Vingron M.</span>
+    <span class="ref-title"> Variance stabilization applied to microarray data calibration and to the quantification of differential expression. </span>
+    <em>Bioinformatics</em> 18 Suppl 1:S96–S104 (2002).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/bioinformatics/18.suppl_1.S96" target="_blank" rel="noopener">10.1093/bioinformatics/18.suppl_1.S96</a> · Bioconductor <a href="https://bioconductor.org/packages/release/bioc/html/vsn.html" target="_blank" rel="noopener">vsn</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/bioinformatics/18.suppl_1.S96" target="_blank" rel="noopener">10.1093/bioinformatics/18.suppl_1.S96</a> · Bioconductor: <a href="https://bioconductor.org/packages/release/bioc/html/vsn.html" target="_blank" rel="noopener">vsn</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Quantile / cyclic LOESS 起源</span>
+    <span class="ref-author">Bolstad BM, Irizarry RA, Astrand M, Speed TP.</span>
+    <span class="ref-title"> A comparison of normalization methods for high density oligonucleotide array data based on variance and bias. </span>
+    <em>Bioinformatics</em> 19(2):185–193 (2003).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/bioinformatics/19.2.185" target="_blank" rel="noopener">10.1093/bioinformatics/19.2.185</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/bioinformatics/19.2.185" target="_blank" rel="noopener">10.1093/bioinformatics/19.2.185</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH · 標準化方法系統比較</span>
+    <span class="ref-author">Välikangas T, Suomi T, Elo LL.</span>
+    <span class="ref-title"> A systematic evaluation of normalization methods in quantitative label-free proteomics. </span>
+    <em>Brief Bioinform</em> 19(1):1–11 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/bib/bbw095" target="_blank" rel="noopener">10.1093/bib/bbw095</a> · PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5862339/" target="_blank" rel="noopener">PMC5862339</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/bib/bbw095" target="_blank" rel="noopener">10.1093/bib/bbw095</a> · PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5862339/" target="_blank" rel="noopener">PMC5862339</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Normics (2022)</span>
+    <span class="ref-author">Sticker A, Goeminne L, Martens L, Clement L.</span>
+    <span class="ref-title"> Normics: Proteomic Normalization by Variance and Data-Inherent Correlation Structure. </span>
+    <em>Mol Cell Proteomics</em> 21(8):100269 (2022).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1016/j.mcpro.2022.100269" target="_blank" rel="noopener">10.1016/j.mcpro.2022.100269</a> · PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9450154/" target="_blank" rel="noopener">PMC9450154</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1016/j.mcpro.2022.100269" target="_blank" rel="noopener">10.1016/j.mcpro.2022.100269</a> · PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9450154/" target="_blank" rel="noopener">PMC9450154</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · IRS (TMT 跨批次)</span>
+    <span class="ref-author">Plubell DL, Wilmarth PA, Zhao Y, et al.</span>
+    <span class="ref-title"> Extended Multiplexing of Tandem Mass Tags (TMT) Labeling Reveals Age and High Fat Diet Specific Proteome Changes in Mouse Epididymal Adipose Tissue. </span>
+    <em>Mol Cell Proteomics</em> 16(5):873–890 (2017).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1074/mcp.M116.065524" target="_blank" rel="noopener">10.1074/mcp.M116.065524</a> · IRS 方法原始</span><span data-lang="en">DOI: <a href="https://doi.org/10.1074/mcp.M116.065524" target="_blank" rel="noopener">10.1074/mcp.M116.065524</a> · Original IRS method paper.</span></span>
+  </li>
+  <li>
+    <span class="ref-tag tool">TOOL · proteiNorm</span>
+    <span class="ref-author">Graw S, Tang J, Zafar MK, et al.</span>
+    <span class="ref-title"> proteiNorm – A User-Friendly Tool for Normalization and Analysis of TMT and Label-Free Protein Quantification. </span>
+    <em>ACS Omega</em> 5(40):25625–25633 (2020).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acsomega.0c02564" target="_blank" rel="noopener">10.1021/acsomega.0c02564</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acsomega.0c02564" target="_blank" rel="noopener">10.1021/acsomega.0c02564</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Step 7: Imputation ===================== -->
+<section class="section section-anchor" id="imputation">
+<div class="section-label">Step 7</div>
+<h2 data-zh="🧩 缺失值處理 (Imputation)" data-en="🧩 Missing-Value Imputation">🧩 缺失值處理 (Imputation)</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · MNAR/MAR 與 left-censored 方法 (QRILC)</span>
+    <span class="ref-author">Lazar C, Gatto L, Ferro M, Bruley C, Burger T.</span>
+    <span class="ref-title"> Accounting for the Multiple Natures of Missing Values in Label-Free Quantitative Proteomics Data Sets to Compare Imputation Strategies. </span>
+    <em>J Proteome Res</em> 15(4):1116–1125 (2016).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.jproteome.5b00981" target="_blank" rel="noopener">10.1021/acs.jproteome.5b00981</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.jproteome.5b00981" target="_blank" rel="noopener">10.1021/acs.jproteome.5b00981</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH · LFQ imputation 系統比較</span>
+    <span class="ref-author">Liu M, Dongre A.</span>
+    <span class="ref-title"> A comparative study of evaluating missing value imputation methods in label-free proteomics. </span>
+    <em>Sci Rep</em> 11:1760 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41598-021-81279-4" target="_blank" rel="noopener">10.1038/s41598-021-81279-4</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41598-021-81279-4" target="_blank" rel="noopener">10.1038/s41598-021-81279-4</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH · 改良的評估準則 (2024)</span>
+    <span class="ref-title"> Evaluating Proteomics Imputation Methods with Improved Criteria. </span>
+    <em>J Proteome Res</em> (2024).
+    <span class="ref-meta"><span data-lang="zh">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10949645/" target="_blank" rel="noopener">PMC10949645</a></span><span data-lang="en">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10949645/" target="_blank" rel="noopener">PMC10949645</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH · 強度 + 缺失率優化 (2025)</span>
+    <span class="ref-title"> Optimizing imputation strategies for mass spectrometry-based proteomics considering intensity and missing value rates. </span>
+    <em>Brief Bioinform</em> (2025).
+    <span class="ref-meta"><span data-lang="zh">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12136770/" target="_blank" rel="noopener">PMC12136770</a></span><span data-lang="en">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12136770/" target="_blank" rel="noopener">PMC12136770</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · 多重 imputation 應用</span>
+    <span class="ref-author">Bramer LM, Irvahn J, Piehowski PD, Rodland KD, Webb-Robertson BJM.</span>
+    <span class="ref-title"> A Review of Imputation Strategies for Isobaric Labeling-Based Shotgun Proteomics. </span>
+    <em>J Proteome Res</em> 20(1):1–13 (2021).
+    <span class="ref-meta"><span data-lang="zh">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8431783/" target="_blank" rel="noopener">PMC8431783</a></span><span data-lang="en">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8431783/" target="_blank" rel="noopener">PMC8431783</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · DEP missing-value vignette</span>
+    <span class="ref-title"><span data-lang="zh">Bioconductor DEP · 「Missing value handling」vignette（mixed imputation 教學）</span><span data-lang="en">Bioconductor DEP · "Missing value handling" vignette (mixed-imputation tutorial)</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/MissingValues.html" target="_blank" rel="noopener">bioconductor.org/packages/DEP/MissingValues</a></span><span data-lang="en"><a href="https://bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/MissingValues.html" target="_blank" rel="noopener">bioconductor.org/packages/DEP/MissingValues</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Step 8: DE ===================== -->
+<section class="section section-anchor" id="de">
+<div class="section-label">Step 8</div>
+<h2 data-zh="📊 差異表達分析 (Differential Expression)" data-en="📊 Differential Expression Analysis">📊 差異表達分析 (Differential Expression)</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · limma</span>
+    <span class="ref-author">Ritchie ME, Phipson B, Wu D, Hu Y, Law CW, Shi W, Smyth GK.</span>
+    <span class="ref-title"> limma powers differential expression analyses for RNA-sequencing and microarray studies. </span>
+    <em>Nucleic Acids Res</em> 43(7):e47 (2015).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/nar/gkv007" target="_blank" rel="noopener">10.1093/nar/gkv007</a> · Bioconductor <a href="https://bioconductor.org/packages/release/bioc/html/limma.html" target="_blank" rel="noopener">limma</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/nar/gkv007" target="_blank" rel="noopener">10.1093/nar/gkv007</a> · Bioconductor: <a href="https://bioconductor.org/packages/release/bioc/html/limma.html" target="_blank" rel="noopener">limma</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · MSstats</span>
+    <span class="ref-author">Choi M, Chang CY, Clough T, et al.</span>
+    <span class="ref-title"> MSstats: an R package for statistical analysis of quantitative mass spectrometry-based proteomic experiments. </span>
+    <em>Bioinformatics</em> 30(17):2524–2526 (2014).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/bioinformatics/btu305" target="_blank" rel="noopener">10.1093/bioinformatics/btu305</a> · 官網 <a href="https://msstats.org/" target="_blank" rel="noopener">msstats.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/bioinformatics/btu305" target="_blank" rel="noopener">10.1093/bioinformatics/btu305</a> · Website: <a href="https://msstats.org/" target="_blank" rel="noopener">msstats.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · DEP</span>
+    <span class="ref-author">Zhang X, Smits AH, van Tilburg GBA, Ovaa H, Huber W, Vermeulen M.</span>
+    <span class="ref-title"> Proteome-wide identification of ubiquitin interactions using UbIA-MS. </span>
+    <em>Nat Protoc</em> 13(3):530–550 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nprot.2017.147" target="_blank" rel="noopener">10.1038/nprot.2017.147</a> · DEP package <a href="https://bioconductor.org/packages/release/bioc/html/DEP.html" target="_blank" rel="noopener">DEP</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nprot.2017.147" target="_blank" rel="noopener">10.1038/nprot.2017.147</a> · DEP package: <a href="https://bioconductor.org/packages/release/bioc/html/DEP.html" target="_blank" rel="noopener">DEP</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · prolfqua</span>
+    <span class="ref-author">Wolski WE, Nanni P, Grossmann J, et al.</span>
+    <span class="ref-title"> prolfqua: A Comprehensive R-Package for Proteomics Differential Expression Analysis. </span>
+    <em>J Proteome Res</em> 22(4):1092–1104 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.jproteome.2c00441" target="_blank" rel="noopener">10.1021/acs.jproteome.2c00441</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.jproteome.2c00441" target="_blank" rel="noopener">10.1021/acs.jproteome.2c00441</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · 高表現 DE 規則 + ensemble (2024)</span>
+    <span class="ref-title"> Optimizing differential expression analysis for proteomics data via high-performing rules and ensemble inference. </span>
+    <em>Brief Bioinform</em> (2024).
+    <span class="ref-meta"><span data-lang="zh">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11082229/" target="_blank" rel="noopener">PMC11082229</a></span><span data-lang="en">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11082229/" target="_blank" rel="noopener">PMC11082229</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · 高通量 peptide DE 比較</span>
+    <span class="ref-author">Goeminne LJE, Gevaert K, Clement L.</span>
+    <span class="ref-title"> Peptide-level robust ridge regression improves estimation, sensitivity, and specificity in data-dependent quantitative label-free shotgun proteomics. </span>
+    <em>Mol Cell Proteomics</em> 15(2):657–668 (2016).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1074/mcp.M115.055897" target="_blank" rel="noopener">10.1074/mcp.M115.055897</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1074/mcp.M115.055897" target="_blank" rel="noopener">10.1074/mcp.M115.055897</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">⭐ TIP</span>
+    <span class="ref-title"><span data-lang="zh">PNNL Proteomics Data Analysis Tutorial · 第 4 章 DEA with limma / 第 7 章 Differential Analysis</span><span data-lang="en">PNNL Proteomics Data Analysis Tutorial · Chapter 4: DEA with limma / Chapter 7: Differential Analysis</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://pnnl-comp-mass-spec.github.io/proteomics-data-analysis-tutorial/dea-with-limma.html" target="_blank" rel="noopener">DEA with limma</a></span><span data-lang="en"><a href="https://pnnl-comp-mass-spec.github.io/proteomics-data-analysis-tutorial/dea-with-limma.html" target="_blank" rel="noopener">DEA with limma</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Step 9: Enrichment ===================== -->
+<section class="section section-anchor" id="enrichment">
+<div class="section-label">Step 9</div>
+<h2 data-zh="🧬 功能富集分析 (Enrichment)" data-en="🧬 Functional Enrichment Analysis">🧬 功能富集分析 (Enrichment)</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · GSEA 原始</span>
+    <span class="ref-author">Subramanian A, Tamayo P, Mootha VK, et al.</span>
+    <span class="ref-title"> Gene set enrichment analysis: A knowledge-based approach for interpreting genome-wide expression profiles. </span>
+    <em>PNAS</em> 102(43):15545–15550 (2005).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1073/pnas.0506580102" target="_blank" rel="noopener">10.1073/pnas.0506580102</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1073/pnas.0506580102" target="_blank" rel="noopener">10.1073/pnas.0506580102</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · clusterProfiler 4.0</span>
+    <span class="ref-author">Wu T, Hu E, Xu S, et al.</span>
+    <span class="ref-title"> clusterProfiler 4.0: A universal enrichment tool for interpreting omics data. </span>
+    <em>Innovation</em> 2(3):100141 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1016/j.xinn.2021.100141" target="_blank" rel="noopener">10.1016/j.xinn.2021.100141</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1016/j.xinn.2021.100141" target="_blank" rel="noopener">10.1016/j.xinn.2021.100141</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · g:Profiler</span>
+    <span class="ref-author">Raudvere U, Kolberg L, Kuzmin I, et al.</span>
+    <span class="ref-title"> g:Profiler: a web server for functional enrichment analysis and conversions of gene lists (2019 update). </span>
+    <em>Nucleic Acids Res</em> 47(W1):W191–W198 (2019).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/nar/gkz369" target="_blank" rel="noopener">10.1093/nar/gkz369</a> · 站點 <a href="https://biit.cs.ut.ee/gprofiler/" target="_blank" rel="noopener">biit.cs.ut.ee/gprofiler</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/nar/gkz369" target="_blank" rel="noopener">10.1093/nar/gkz369</a> · Website: <a href="https://biit.cs.ut.ee/gprofiler/" target="_blank" rel="noopener">biit.cs.ut.ee/gprofiler</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · STRING v12</span>
+    <span class="ref-author">Szklarczyk D, Kirsch R, Koutrouli M, et al.</span>
+    <span class="ref-title"> The STRING database in 2023: protein–protein association networks and functional enrichment analyses for any sequenced genome of interest. </span>
+    <em>Nucleic Acids Res</em> 51(D1):D638–D646 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/nar/gkac1000" target="_blank" rel="noopener">10.1093/nar/gkac1000</a> · 站點 <a href="https://string-db.org/" target="_blank" rel="noopener">string-db.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/nar/gkac1000" target="_blank" rel="noopener">10.1093/nar/gkac1000</a> · Website: <a href="https://string-db.org/" target="_blank" rel="noopener">string-db.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Reactome 2024 Update</span>
+    <span class="ref-author">Milacic M, Beavers D, Conley P, et al.</span>
+    <span class="ref-title"> The Reactome Pathway Knowledgebase 2024. </span>
+    <em>Nucleic Acids Res</em> 52(D1):D672–D678 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/nar/gkad1025" target="_blank" rel="noopener">10.1093/nar/gkad1025</a> · 站點 <a href="https://reactome.org/" target="_blank" rel="noopener">reactome.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/nar/gkad1025" target="_blank" rel="noopener">10.1093/nar/gkad1025</a> · Website: <a href="https://reactome.org/" target="_blank" rel="noopener">reactome.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">★ PROTOCOL</span>
+    <span class="ref-author">Reimand J, Isserlin R, Voisin V, et al.</span>
+    <span class="ref-title"> Pathway enrichment analysis and visualization of omics data using g:Profiler, GSEA, Cytoscape and EnrichmentMap. </span>
+    <em>Nat Protoc</em> 14:482–517 (2019).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41596-018-0103-9" target="_blank" rel="noopener">10.1038/s41596-018-0103-9</a> · PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6607905/" target="_blank" rel="noopener">PMC6607905</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41596-018-0103-9" target="_blank" rel="noopener">10.1038/s41596-018-0103-9</a> · PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6607905/" target="_blank" rel="noopener">PMC6607905</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · fgsea (快速 GSEA)</span>
+    <span class="ref-author">Korotkevich G, Sukhov V, Budin N, Shpak B, Artyomov MN, Sergushichev A.</span>
+    <span class="ref-title"> Fast gene set enrichment analysis. </span>
+    <em>bioRxiv</em> (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1101/060012" target="_blank" rel="noopener">10.1101/060012</a> · Bioconductor <a href="https://bioconductor.org/packages/release/bioc/html/fgsea.html" target="_blank" rel="noopener">fgsea</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1101/060012" target="_blank" rel="noopener">10.1101/060012</a> · Bioconductor: <a href="https://bioconductor.org/packages/release/bioc/html/fgsea.html" target="_blank" rel="noopener">fgsea</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== PTM ===================== -->
+<section class="section section-anchor" id="ptm">
+<div class="section-label">Advanced</div>
+<h2 data-zh="⚡ 轉譯後修飾 (PTM Analysis)" data-en="⚡ Post-Translational Modifications (PTM Analysis)">⚡ 轉譯後修飾 (PTM Analysis)</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag bestp">★ REVIEW</span>
+    <span class="ref-author">Olsen JV, Mann M.</span>
+    <span class="ref-title"> Status of large-scale analysis of post-translational modifications by mass spectrometry. </span>
+    <em>Mol Cell Proteomics</em> 12(12):3444–3452 (2013).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1074/mcp.O113.034181" target="_blank" rel="noopener">10.1074/mcp.O113.034181</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1074/mcp.O113.034181" target="_blank" rel="noopener">10.1074/mcp.O113.034181</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · TiO₂ vs IMAC 比較</span>
+    <span class="ref-author">Tsai CF, Hsu CC, Hung JN, et al.</span>
+    <span class="ref-title"> Sequential Phosphoproteomic Enrichment through Complementary Metal-Directed Immobilized Metal Ion Affinity Chromatography. </span>
+    <em>Anal Chem</em> 86(1):685–693 (2014).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/ac4031175" target="_blank" rel="noopener">10.1021/ac4031175</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/ac4031175" target="_blank" rel="noopener">10.1021/ac4031175</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Multi-step IMAC vs TiO₂</span>
+    <span class="ref-author">Yue X, Schunter A, Hummon AB.</span>
+    <span class="ref-title"> Comparing Multi-Step Immobilized Metal Affinity Chromatography and Multi-Step TiO2 Methods for Phosphopeptide Enrichment. </span>
+    <em>Anal Chem</em> 87(17):8837–8844 (2015).
+    <span class="ref-meta"><span data-lang="zh">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4766865/" target="_blank" rel="noopener">PMC4766865</a></span><span data-lang="en">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4766865/" target="_blank" rel="noopener">PMC4766865</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · 自動磷酸富集 (2024)</span>
+    <span class="ref-title"> Systematic Optimization of Automated Phosphopeptide Enrichment for High-Sensitivity Phosphoproteomics. </span>
+    <em>Mol Cell Proteomics</em> 23(5):100757 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1016/j.mcpro.2024.100757" target="_blank" rel="noopener">10.1016/j.mcpro.2024.100757</a> · MCP <a href="https://www.mcponline.org/article/S1535-9476(24)00044-6/fulltext" target="_blank" rel="noopener">2024-00044-6</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1016/j.mcpro.2024.100757" target="_blank" rel="noopener">10.1016/j.mcpro.2024.100757</a> · MCP: <a href="https://www.mcponline.org/article/S1535-9476(24)00044-6/fulltext" target="_blank" rel="noopener">2024-00044-6</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · 序列性 glyco-phospho 整合 (2025)</span>
+    <span class="ref-title"> A versatile platform for sequential glyco-, phospho-, and proteomics with multi-PTMs integration. </span>
+    <em>Nat Commun</em> (2025).
+    <span class="ref-meta"><span data-lang="zh"><a href="https://www.nature.com/articles/s41467-025-68270-7" target="_blank" rel="noopener">nature.com / s41467-025-68270-7</a></span><span data-lang="en"><a href="https://www.nature.com/articles/s41467-025-68270-7" target="_blank" rel="noopener">nature.com / s41467-025-68270-7</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Ascore 位點定位</span>
+    <span class="ref-author">Beausoleil SA, Villén J, Gerber SA, Rush J, Gygi SP.</span>
+    <span class="ref-title"> A probability-based approach for high-throughput protein phosphorylation analysis and site localization. </span>
+    <em>Nat Biotechnol</em> 24:1285–1292 (2006).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nbt1240" target="_blank" rel="noopener">10.1038/nbt1240</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nbt1240" target="_blank" rel="noopener">10.1038/nbt1240</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · ptmRS</span>
+    <span class="ref-author">Taus T, Köcher T, Pichler P, et al.</span>
+    <span class="ref-title"> Universal and confident phosphorylation site localization using phosphoRS. </span>
+    <em>J Proteome Res</em> 10(12):5354–5362 (2011).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/pr200611n" target="_blank" rel="noopener">10.1021/pr200611n</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/pr200611n" target="_blank" rel="noopener">10.1021/pr200611n</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · TMT-phospho 量化比較</span>
+    <span class="ref-author">Hogrebe A, von Stechow L, Bekker-Jensen DB, Weinert BT, Kelstrup CD, Olsen JV.</span>
+    <span class="ref-title"> Benchmarking common quantification strategies for large-scale phosphoproteomics. </span>
+    <em>Nat Commun</em> 9:1045 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41467-018-03309-6" target="_blank" rel="noopener">10.1038/s41467-018-03309-6</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41467-018-03309-6" target="_blank" rel="noopener">10.1038/s41467-018-03309-6</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">DB · PhosphoSitePlus</span>
+    <span class="ref-author">Hornbeck PV, Zhang B, Murray B, Kornhauser JM, Latham V, Skrzypek E.</span>
+    <span class="ref-title"> PhosphoSitePlus, 2014: mutations, PTMs and recalibrations. </span>
+    <em>Nucleic Acids Res</em> 43(D1):D512–D520 (2015).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/nar/gku1267" target="_blank" rel="noopener">10.1093/nar/gku1267</a> · 站點 <a href="https://www.phosphosite.org/" target="_blank" rel="noopener">phosphosite.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/nar/gku1267" target="_blank" rel="noopener">10.1093/nar/gku1267</a> · Website: <a href="https://www.phosphosite.org/" target="_blank" rel="noopener">phosphosite.org</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Targeted ===================== -->
+<section class="section section-anchor" id="targeted">
+<div class="section-label">Advanced</div>
+<h2 data-zh="🎯 靶向蛋白質體學 (Targeted Proteomics)" data-en="🎯 Targeted Proteomics">🎯 靶向蛋白質體學 (Targeted Proteomics)</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag bestp">★ REVIEW</span>
+    <span class="ref-author">Picotti P, Aebersold R.</span>
+    <span class="ref-title"> Selected reaction monitoring–based proteomics: workflows, potential, pitfalls and future directions. </span>
+    <em>Nat Methods</em> 9:555–566 (2012).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nmeth.2015" target="_blank" rel="noopener">10.1038/nmeth.2015</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nmeth.2015" target="_blank" rel="noopener">10.1038/nmeth.2015</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · PRM 開創</span>
+    <span class="ref-author">Peterson AC, Russell JD, Bailey DJ, Westphall MS, Coon JJ.</span>
+    <span class="ref-title"> Parallel reaction monitoring for high resolution and high mass accuracy quantitative, targeted proteomics. </span>
+    <em>Mol Cell Proteomics</em> 11(11):1475–1488 (2012).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1074/mcp.O112.020131" target="_blank" rel="noopener">10.1074/mcp.O112.020131</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1074/mcp.O112.020131" target="_blank" rel="noopener">10.1074/mcp.O112.020131</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · SureQuant / IS-PRM</span>
+    <span class="ref-author">Stopfer LE, Gajadhar AS, Patel B, et al.</span>
+    <span class="ref-title"> Absolute Quantification of Tumor Antigens Using Embedded MHC-I Isotopologue Calibrants. </span>
+    <em>Mol Cell Proteomics</em> 20:100154 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1016/j.mcpro.2021.100154" target="_blank" rel="noopener">10.1016/j.mcpro.2021.100154</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1016/j.mcpro.2021.100154" target="_blank" rel="noopener">10.1016/j.mcpro.2021.100154</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · IS-PRM 進階血漿應用</span>
+    <span class="ref-author">Whiteaker JR, Halusa GN, Hoofnagle AN, et al.</span>
+    <span class="ref-title"> Internal Standard Triggered-Parallel Reaction Monitoring Mass Spectrometry Enables Multiplexed Quantification of Candidate Biomarkers in Plasma. </span>
+    <em>Anal Chem</em> 94(7):3175–3182 (2022).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.analchem.1c04382" target="_blank" rel="noopener">10.1021/acs.analchem.1c04382</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.analchem.1c04382" target="_blank" rel="noopener">10.1021/acs.analchem.1c04382</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Skyline</span>
+    <span class="ref-author">MacLean B, Tomazela DM, Shulman N, et al.</span>
+    <span class="ref-title"> Skyline: an open source document editor for creating and analyzing targeted proteomics experiments. </span>
+    <em>Bioinformatics</em> 26(7):966–968 (2010).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/bioinformatics/btq054" target="_blank" rel="noopener">10.1093/bioinformatics/btq054</a> · 官網 <a href="https://skyline.ms" target="_blank" rel="noopener">skyline.ms</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/bioinformatics/btq054" target="_blank" rel="noopener">10.1093/bioinformatics/btq054</a> · Website: <a href="https://skyline.ms" target="_blank" rel="noopener">skyline.ms</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · AQUA 絕對定量</span>
+    <span class="ref-author">Gerber SA, Rush J, Stemman O, Kirschner MW, Gygi SP.</span>
+    <span class="ref-title"> Absolute quantification of proteins and phosphoproteins from cell lysates by tandem MS. </span>
+    <em>PNAS</em> 100(12):6940–6945 (2003).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1073/pnas.0832254100" target="_blank" rel="noopener">10.1073/pnas.0832254100</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1073/pnas.0832254100" target="_blank" rel="noopener">10.1073/pnas.0832254100</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">★ REVIEW</span>
+    <span class="ref-author">Gillette MA, Carr SA.</span>
+    <span class="ref-title"> Quantitative analysis of peptides and proteins in biomedicine by targeted mass spectrometry. </span>
+    <em>Nat Methods</em> 10:28–34 (2013).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nmeth.2309" target="_blank" rel="noopener">10.1038/nmeth.2309</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nmeth.2309" target="_blank" rel="noopener">10.1038/nmeth.2309</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag tool">TOOL · SureQuant (Thermo)</span>
+    <span class="ref-title"><span data-lang="zh">Thermo Fisher SureQuant · 內標觸發 PRM 自動化平台</span><span data-lang="en">Thermo Fisher SureQuant · Internal-standard-triggered PRM automation platform</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://www.thermofisher.com/us/en/home/industrial/mass-spectrometry/proteomics-mass-spectrometry/quantitative-proteomics-mass-spectrometry/surequant-targeted-quantitation.html" target="_blank" rel="noopener">thermofisher.com / SureQuant</a></span><span data-lang="en"><a href="https://www.thermofisher.com/us/en/home/industrial/mass-spectrometry/proteomics-mass-spectrometry/quantitative-proteomics-mass-spectrometry/surequant-targeted-quantitation.html" target="_blank" rel="noopener">thermofisher.com / SureQuant</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Top-down ===================== -->
+<section class="section section-anchor" id="topdown">
+<div class="section-label">Advanced</div>
+<h2 data-zh="🧱 Top-down 完整蛋白質分析" data-en="🧱 Top-down Intact-Protein Analysis">🧱 Top-down 完整蛋白質分析</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag bestp">★ PRIMER (2024)</span>
+    <span class="ref-author">Melby JA, Roberts DS, Larson EJ, et al.</span>
+    <span class="ref-title"> Top-down proteomics. </span>
+    <em>Nat Rev Methods Primers</em> 4:38 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s43586-024-00318-2" target="_blank" rel="noopener">10.1038/s43586-024-00318-2</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s43586-024-00318-2" target="_blank" rel="noopener">10.1038/s43586-024-00318-2</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">REVIEW</span>
+    <span class="ref-author">Kelleher NL.</span>
+    <span class="ref-title"> Top-down proteomics. </span>
+    <em>Anal Chem</em> 76(11):197A–203A (2004).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/ac0415657" target="_blank" rel="noopener">10.1021/ac0415657</a> · 領域奠基</span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/ac0415657" target="_blank" rel="noopener">10.1021/ac0415657</a> · Foundational paper for the field.</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Proteoform 概念</span>
+    <span class="ref-author">Smith LM, Kelleher NL, Consortium for Top Down Proteomics.</span>
+    <span class="ref-title"> Proteoform: a single term describing protein complexity. </span>
+    <em>Nat Methods</em> 10:186–187 (2013).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nmeth.2369" target="_blank" rel="noopener">10.1038/nmeth.2369</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nmeth.2369" target="_blank" rel="noopener">10.1038/nmeth.2369</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · TopPIC 軟體</span>
+    <span class="ref-author">Kou Q, Xun L, Liu X.</span>
+    <span class="ref-title"> TopPIC: a software tool for top-down mass spectrometry-based proteoform identification and characterization. </span>
+    <em>Bioinformatics</em> 32(22):3495–3497 (2016).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/bioinformatics/btw398" target="_blank" rel="noopener">10.1093/bioinformatics/btw398</a> · 官網 <a href="https://www.toppic.org/" target="_blank" rel="noopener">toppic.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/bioinformatics/btw398" target="_blank" rel="noopener">10.1093/bioinformatics/btw398</a> · Website: <a href="https://www.toppic.org/" target="_blank" rel="noopener">toppic.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · ProSightPC / ProSight Lite</span>
+    <span class="ref-author">Fellers RT, Greer JB, Early BP, et al.</span>
+    <span class="ref-title"> ProSight Lite: graphical software to analyze top-down mass spectrometry data. </span>
+    <em>Proteomics</em> 15(7):1235–1238 (2015).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1002/pmic.201400313" target="_blank" rel="noopener">10.1002/pmic.201400313</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1002/pmic.201400313" target="_blank" rel="noopener">10.1002/pmic.201400313</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · UVPD 碎裂方法</span>
+    <span class="ref-author">Brodbelt JS.</span>
+    <span class="ref-title"> Photodissociation mass spectrometry: new tools for characterization of biological molecules. </span>
+    <em>Chem Soc Rev</em> 43:2757–2783 (2014).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1039/c3cs60444f" target="_blank" rel="noopener">10.1039/C3CS60444F</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1039/c3cs60444f" target="_blank" rel="noopener">10.1039/C3CS60444F</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">REVIEW · 挑戰</span>
+    <span class="ref-author">Smith LM, Kelleher NL.</span>
+    <span class="ref-title"> Top-Down Proteomics and the Challenges of True Proteoform Characterization. </span>
+    <em>J Proteome Res</em> 22(9):2828–2834 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.jproteome.3c00416" target="_blank" rel="noopener">10.1021/acs.jproteome.3c00416</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.jproteome.3c00416" target="_blank" rel="noopener">10.1021/acs.jproteome.3c00416</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Spatial ===================== -->
+<section class="section section-anchor" id="spatial">
+<div class="section-label">Advanced</div>
+<h2 data-zh="🗺️ 空間蛋白質體學 (Spatial Proteomics)" data-en="🗺️ Spatial Proteomics">🗺️ 空間蛋白質體學 (Spatial Proteomics)</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · Deep Visual Proteomics (DVP)</span>
+    <span class="ref-author">Mund A, Coscia F, Kriston A, et al.</span>
+    <span class="ref-title"> Deep Visual Proteomics defines single-cell identity and heterogeneity. </span>
+    <em>Nat Biotechnol</em> 40:1231–1240 (2022).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41587-022-01302-5" target="_blank" rel="noopener">10.1038/s41587-022-01302-5</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41587-022-01302-5" target="_blank" rel="noopener">10.1038/s41587-022-01302-5</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · LCM-microPOTS</span>
+    <span class="ref-author">Piehowski PD, Zhu Y, Bramer LM, et al.</span>
+    <span class="ref-title"> Automated mass spectrometry imaging of over 2000 proteins from tissue sections at 100-μm spatial resolution. </span>
+    <em>Nat Commun</em> 11:8 (2020).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41467-019-13858-z" target="_blank" rel="noopener">10.1038/s41467-019-13858-z</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41467-019-13858-z" target="_blank" rel="noopener">10.1038/s41467-019-13858-z</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · MALDI-MSI 單細胞 (2024)</span>
+    <span class="ref-author">Various authors.</span>
+    <span class="ref-title"> MALDI MSI Protocol for Spatial Bottom-Up Proteomics at Single-Cell Resolution. </span>
+    <em>J Proteome Res</em> 23(11):4944–4953 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.jproteome.4c00528" target="_blank" rel="noopener">10.1021/acs.jproteome.4c00528</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.jproteome.4c00528" target="_blank" rel="noopener">10.1021/acs.jproteome.4c00528</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · MALDI + LC-MS/MS 整合</span>
+    <span class="ref-author">Various authors.</span>
+    <span class="ref-title"> Enhanced In Situ Spatial Proteomics by Effective Combination of MALDI Imaging and LC-MS/MS. </span>
+    <em>Mol Cell Proteomics</em> 23(8):100808 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1016/j.mcpro.2024.100808" target="_blank" rel="noopener">10.1016/j.mcpro.2024.100808</a> · PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11345593/" target="_blank" rel="noopener">PMC11345593</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1016/j.mcpro.2024.100808" target="_blank" rel="noopener">10.1016/j.mcpro.2024.100808</a> · PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11345593/" target="_blank" rel="noopener">PMC11345593</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">REVIEW · 2024 MALDI MSI 進展</span>
+    <span class="ref-author">Ngai V, et al.</span>
+    <span class="ref-title"> Mini Review: Highlight of Recent Advances and Applications of MALDI Mass Spectrometry Imaging in 2024. </span>
+    <em>Analytical Science Advances</em> (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1002/ansa.70016" target="_blank" rel="noopener">10.1002/ansa.70016</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1002/ansa.70016" target="_blank" rel="noopener">10.1002/ansa.70016</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · MALDI-HiPLEX-IHC</span>
+    <span class="ref-author">Yagnik G, Liu Z, Rothschild KJ, Lim MJ.</span>
+    <span class="ref-title"> MALDI-IHC-Guided In-Depth Spatial Proteomics: Targeted and Untargeted MSI Combined. </span>
+    <em>Anal Chem</em> 95(35):13164–13172 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.analchem.2c04220" target="_blank" rel="noopener">10.1021/acs.analchem.2c04220</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.analchem.2c04220" target="_blank" rel="noopener">10.1021/acs.analchem.2c04220</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag tool">TOOL · Cardinal R package</span>
+    <span class="ref-author">Bemis KD, Harry A, Eberlin LS, et al.</span>
+    <span class="ref-title"> Cardinal: an R package for statistical analysis of mass spectrometry-based imaging experiments. </span>
+    <em>Bioinformatics</em> 31(14):2418–2420 (2015).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/bioinformatics/btv146" target="_blank" rel="noopener">10.1093/bioinformatics/btv146</a> · 官網 <a href="https://cardinalmsi.org/" target="_blank" rel="noopener">cardinalmsi.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/bioinformatics/btv146" target="_blank" rel="noopener">10.1093/bioinformatics/btv146</a> · Website: <a href="https://cardinalmsi.org/" target="_blank" rel="noopener">cardinalmsi.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">DB · METASPACE</span>
+    <span class="ref-author">Palmer A, Phapale P, Chernyavsky I, et al.</span>
+    <span class="ref-title"> FDR-controlled metabolite annotation for high-resolution imaging mass spectrometry. </span>
+    <em>Nat Methods</em> 14:57–60 (2017).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nmeth.4072" target="_blank" rel="noopener">10.1038/nmeth.4072</a> · 站點 <a href="https://metaspace2020.eu/" target="_blank" rel="noopener">metaspace2020.eu</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nmeth.4072" target="_blank" rel="noopener">10.1038/nmeth.4072</a> · Website: <a href="https://metaspace2020.eu/" target="_blank" rel="noopener">metaspace2020.eu</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Single-cell ===================== -->
+<section class="section section-anchor" id="singlecell">
+<div class="section-label">Advanced</div>
+<h2 data-zh="🔬 單細胞蛋白質體學 (Single-cell Proteomics)" data-en="🔬 Single-cell Proteomics">🔬 單細胞蛋白質體學 (Single-cell Proteomics)</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · SCoPE-MS 原始</span>
+    <span class="ref-author">Budnik B, Levy E, Harmange G, Slavov N.</span>
+    <span class="ref-title"> SCoPE-MS: mass spectrometry of single mammalian cells quantifies proteome heterogeneity during cell differentiation. </span>
+    <em>Genome Biol</em> 19:161 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1186/s13059-018-1547-5" target="_blank" rel="noopener">10.1186/s13059-018-1547-5</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1186/s13059-018-1547-5" target="_blank" rel="noopener">10.1186/s13059-018-1547-5</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · SCoPE2</span>
+    <span class="ref-author">Specht H, Emmott E, Petelski AA, et al.</span>
+    <span class="ref-title"> Single-cell proteomic and transcriptomic analysis of macrophage heterogeneity using SCoPE2. </span>
+    <em>Genome Biol</em> 22:50 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1186/s13059-021-02267-5" target="_blank" rel="noopener">10.1186/s13059-021-02267-5</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1186/s13059-021-02267-5" target="_blank" rel="noopener">10.1186/s13059-021-02267-5</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · nanoPOTS</span>
+    <span class="ref-author">Zhu Y, Piehowski PD, Zhao R, et al.</span>
+    <span class="ref-title"> Nanodroplet processing platform for deep and quantitative proteome profiling of 10–100 mammalian cells. </span>
+    <em>Nat Commun</em> 9:882 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41467-018-03367-w" target="_blank" rel="noopener">10.1038/s41467-018-03367-w</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41467-018-03367-w" target="_blank" rel="noopener">10.1038/s41467-018-03367-w</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Nested nanowell chip</span>
+    <span class="ref-author">Woo J, Williams SM, Aguilera-Vazquez V, et al.</span>
+    <span class="ref-title"> High-throughput and high-efficiency sample preparation for single-cell proteomics using a nested nanowell chip. </span>
+    <em>Nat Commun</em> 12:6246 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41467-021-26514-2" target="_blank" rel="noopener">10.1038/s41467-021-26514-2</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41467-021-26514-2" target="_blank" rel="noopener">10.1038/s41467-021-26514-2</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH · DIA single-cell (2025)</span>
+    <span class="ref-title"> Benchmarking informatics workflows for data-independent acquisition single-cell proteomics. </span>
+    <em>Nat Commun</em> (2025).
+    <span class="ref-meta"><span data-lang="zh"><a href="https://www.nature.com/articles/s41467-025-65174-4" target="_blank" rel="noopener">nature.com / s41467-025-65174-4</a></span><span data-lang="en"><a href="https://www.nature.com/articles/s41467-025-65174-4" target="_blank" rel="noopener">nature.com / s41467-025-65174-4</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">REVIEW · 2024 Trends</span>
+    <span class="ref-author">Various authors.</span>
+    <span class="ref-title"> Trends in Mass Spectrometry-Based Single-Cell Proteomics. </span>
+    <em>Anal Chem</em> 97(15):8120–8132 (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.analchem.5c00661" target="_blank" rel="noopener">10.1021/acs.analchem.5c00661</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.analchem.5c00661" target="_blank" rel="noopener">10.1021/acs.analchem.5c00661</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">REVIEW · 進展與展望</span>
+    <span class="ref-title"> Mass Spectrometry-based Solutions for Single-cell Proteomics. </span>
+    <em>Genomics Proteomics Bioinformatics</em> 23(1):qzaf012 (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/gpbjnl/qzaf012" target="_blank" rel="noopener">10.1093/gpbjnl/qzaf012</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/gpbjnl/qzaf012" target="_blank" rel="noopener">10.1093/gpbjnl/qzaf012</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag tool">TOOL · scp R package</span>
+    <span class="ref-author">Vanderaa C, Gatto L.</span>
+    <span class="ref-title"> Replication of single-cell proteomics data reveals important computational challenges. </span>
+    <em>Expert Rev Proteomics</em> 18(10):835–843 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1080/14789450.2021.1988571" target="_blank" rel="noopener">10.1080/14789450.2021.1988571</a> · Bioconductor <a href="https://bioconductor.org/packages/release/bioc/html/scp.html" target="_blank" rel="noopener">scp</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1080/14789450.2021.1988571" target="_blank" rel="noopener">10.1080/14789450.2021.1988571</a> · Bioconductor: <a href="https://bioconductor.org/packages/release/bioc/html/scp.html" target="_blank" rel="noopener">scp</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Affinity ===================== -->
+<section class="section section-anchor" id="affinity">
+<div class="section-label">Advanced</div>
+<h2 data-zh="🧲 親合性蛋白質體學 (Affinity Proteomics)" data-en="🧲 Affinity Proteomics">🧲 親合性蛋白質體學 (Affinity Proteomics)</h2>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · Olink PEA</span>
+    <span class="ref-author">Assarsson E, Lundberg M, Holmquist G, et al.</span>
+    <span class="ref-title"> Homogenous 96-plex PEA immunoassay exhibiting high sensitivity, specificity, and excellent scalability. </span>
+    <em>PLoS One</em> 9(4):e95192 (2014).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1371/journal.pone.0095192" target="_blank" rel="noopener">10.1371/journal.pone.0095192</a> · Olink 技術原始論文</span><span data-lang="en">DOI: <a href="https://doi.org/10.1371/journal.pone.0095192" target="_blank" rel="noopener">10.1371/journal.pone.0095192</a> · Original paper for the Olink technology.</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · SOMAmer (SomaScan 原理)</span>
+    <span class="ref-author">Gold L, Ayers D, Bertino J, et al.</span>
+    <span class="ref-title"> Aptamer-Based Multiplexed Proteomic Technology for Biomarker Discovery. </span>
+    <em>PLoS One</em> 5(12):e15004 (2010).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1371/journal.pone.0015004" target="_blank" rel="noopener">10.1371/journal.pone.0015004</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1371/journal.pone.0015004" target="_blank" rel="noopener">10.1371/journal.pone.0015004</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · 大規模血漿比較 Nature 2023</span>
+    <span class="ref-author">Eldjarn GH, Ferkingstad E, Lund SH, et al.</span>
+    <span class="ref-title"> Large-scale plasma proteomics comparisons through genetics and disease associations. </span>
+    <em>Nature</em> 622:348–358 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41586-023-06563-x" target="_blank" rel="noopener">10.1038/s41586-023-06563-x</a> · 兩平台 r ≈ 0.29 關鍵發現</span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41586-023-06563-x" target="_blank" rel="noopener">10.1038/s41586-023-06563-x</a> · Key finding: r ≈ 0.29 between the two platforms.</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · 跨平台 4000 華人比較</span>
+    <span class="ref-author">Various authors.</span>
+    <span class="ref-title"> Comparative studies of 2168 plasma proteins measured by two affinity-based platforms in 4000 Chinese adults. </span>
+    <em>Nat Commun</em> 16:2002 (2025).
+    <span class="ref-meta"><span data-lang="zh"><a href="https://www.nature.com/articles/s41467-025-56935-2" target="_blank" rel="noopener">nature.com / s41467-025-56935-2</a></span><span data-lang="en"><a href="https://www.nature.com/articles/s41467-025-56935-2" target="_blank" rel="noopener">nature.com / s41467-025-56935-2</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · 平台對比與 GWAS anchor (Science Adv)</span>
+    <span class="ref-author">Pietzner M, Wheeler E, Carrasco-Zanini J, et al.</span>
+    <span class="ref-title"> Proteomic profiling platforms head to head: Leveraging genetics and clinical traits to compare aptamer- and antibody-based methods. </span>
+    <em>Sci Adv</em> 8(33):eabm5164 (2022).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1126/sciadv.abm5164" target="_blank" rel="noopener">10.1126/sciadv.abm5164</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1126/sciadv.abm5164" target="_blank" rel="noopener">10.1126/sciadv.abm5164</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · 流行病學樣品穩定性</span>
+    <span class="ref-author">Various authors.</span>
+    <span class="ref-title"> Stability and reproducibility of proteomic profiles in epidemiological studies: comparing the Olink and SOMAscan platforms. </span>
+    <em>Proteomics Clin Appl</em> (2023).
+    <span class="ref-meta"><span data-lang="zh">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9923770/" target="_blank" rel="noopener">PMC9923770</a></span><span data-lang="en">PMC: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9923770/" target="_blank" rel="noopener">PMC9923770</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · UK Biobank Olink 計畫</span>
+    <span class="ref-author">Sun BB, Chiou J, Traylor M, et al.</span>
+    <span class="ref-title"> Plasma proteomic associations with genetics and health in the UK Biobank. </span>
+    <em>Nature</em> 622:329–338 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41586-023-06592-6" target="_blank" rel="noopener">10.1038/s41586-023-06592-6</a> · 5400+ 蛋白 × 54,000 個體</span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41586-023-06592-6" target="_blank" rel="noopener">10.1038/s41586-023-06592-6</a> · 5,400+ proteins across 54,000 individuals.</span></span>
+  </li>
+  <li>
+    <span class="ref-tag tool">TOOL · OlinkAnalyze R package</span>
+    <span class="ref-title"><span data-lang="zh">Olink Analyze · 官方 R 套件，做 NPX QC、LMER、Volcano 等</span><span data-lang="en">Olink Analyze · Official R package for NPX QC, LMER, volcano plots, and more</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://github.com/Olink-Proteomics/OlinkRPackage" target="_blank" rel="noopener">github.com/Olink-Proteomics/OlinkRPackage</a></span><span data-lang="en"><a href="https://github.com/Olink-Proteomics/OlinkRPackage" target="_blank" rel="noopener">github.com/Olink-Proteomics/OlinkRPackage</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag tool">TOOL · SomaDataIO R package</span>
+    <span class="ref-title"><span data-lang="zh">SomaDataIO · 官方 R 套件，讀取 .adat 格式</span><span data-lang="en">SomaDataIO · Official R package for reading the .adat format</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://github.com/SomaLogic/SomaDataIO" target="_blank" rel="noopener">github.com/SomaLogic/SomaDataIO</a></span><span data-lang="en"><a href="https://github.com/SomaLogic/SomaDataIO" target="_blank" rel="noopener">github.com/SomaLogic/SomaDataIO</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Databases ===================== -->
+<section class="section section-anchor" id="databases">
+<div class="section-label" data-zh="資料庫" data-en="DATABASES">資料庫</div>
+<h2 data-zh="🗄️ 核心蛋白質與 PTM 資料庫" data-en="🗄️ Core Protein & PTM Databases">🗄️ 核心蛋白質與 PTM 資料庫</h2>
+<p data-lang="zh">蛋白質序列、PTM 註釋、PPI、組織 atlas、Repository 等關鍵資源。</p>
+<p data-lang="en">Key resources covering protein sequences, PTM annotations, PPIs, tissue atlases, and data repositories.</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag db">DB · UniProt</span>
+    <span class="ref-author">UniProt Consortium.</span>
+    <span class="ref-title"> UniProt: the Universal Protein Knowledgebase in 2023. </span>
+    <em>Nucleic Acids Res</em> 51(D1):D523–D531 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/nar/gkac1052" target="_blank" rel="noopener">10.1093/nar/gkac1052</a> · 站點 <a href="https://www.uniprot.org/" target="_blank" rel="noopener">uniprot.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/nar/gkac1052" target="_blank" rel="noopener">10.1093/nar/gkac1052</a> · Website: <a href="https://www.uniprot.org/" target="_blank" rel="noopener">uniprot.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">DB · PRIDE Repository</span>
+    <span class="ref-author">Perez-Riverol Y, Bandla C, Kundu DJ, et al.</span>
+    <span class="ref-title"> The PRIDE database resources in 2024: a hub for mass spectrometry-based proteomics evidences. </span>
+    <em>Nucleic Acids Res</em> 53(D1):D543–D553 (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/nar/gkae1011" target="_blank" rel="noopener">10.1093/nar/gkae1011</a> · 站點 <a href="https://www.ebi.ac.uk/pride/" target="_blank" rel="noopener">ebi.ac.uk/pride</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/nar/gkae1011" target="_blank" rel="noopener">10.1093/nar/gkae1011</a> · Website: <a href="https://www.ebi.ac.uk/pride/" target="_blank" rel="noopener">ebi.ac.uk/pride</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">DB · ProteomicsDB</span>
+    <span class="ref-author">Schmidt T, Samaras P, Frejno M, et al.</span>
+    <span class="ref-title"> ProteomicsDB. </span>
+    <em>Nucleic Acids Res</em> 46(D1):D1271–D1281 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/nar/gkx1029" target="_blank" rel="noopener">10.1093/nar/gkx1029</a> · 站點 <a href="https://www.proteomicsdb.org/" target="_blank" rel="noopener">proteomicsdb.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/nar/gkx1029" target="_blank" rel="noopener">10.1093/nar/gkx1029</a> · Website: <a href="https://www.proteomicsdb.org/" target="_blank" rel="noopener">proteomicsdb.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">DB · Human Protein Atlas</span>
+    <span class="ref-author">Uhlén M, Fagerberg L, Hallström BM, et al.</span>
+    <span class="ref-title"> Tissue-based map of the human proteome. </span>
+    <em>Science</em> 347(6220):1260419 (2015).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1126/science.1260419" target="_blank" rel="noopener">10.1126/science.1260419</a> · 站點 <a href="https://www.proteinatlas.org/" target="_blank" rel="noopener">proteinatlas.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1126/science.1260419" target="_blank" rel="noopener">10.1126/science.1260419</a> · Website: <a href="https://www.proteinatlas.org/" target="_blank" rel="noopener">proteinatlas.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">DB · PhosphoSitePlus</span>
+    <span class="ref-title"><span data-lang="zh">PhosphoSitePlus · 80,000+ PTM 位點註釋（phospho / acetyl / ubiquitin 等）</span><span data-lang="en">PhosphoSitePlus · 80,000+ PTM site annotations (phospho, acetyl, ubiquitin, etc.)</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://www.phosphosite.org/" target="_blank" rel="noopener">phosphosite.org</a></span><span data-lang="en"><a href="https://www.phosphosite.org/" target="_blank" rel="noopener">phosphosite.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">DB · STRING (PPI)</span>
+    <span class="ref-title"><span data-lang="zh">STRING · 蛋白-蛋白交互網絡（含功能 enrichment）</span><span data-lang="en">STRING · Protein-protein interaction networks (with functional enrichment)</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://string-db.org/" target="_blank" rel="noopener">string-db.org</a></span><span data-lang="en"><a href="https://string-db.org/" target="_blank" rel="noopener">string-db.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">DB · BioGRID</span>
+    <span class="ref-author">Oughtred R, Rust J, Chang C, et al.</span>
+    <span class="ref-title"> The BioGRID database: A comprehensive biomedical resource of curated protein, genetic, and chemical interactions. </span>
+    <em>Protein Sci</em> 30(1):187–200 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1002/pro.3978" target="_blank" rel="noopener">10.1002/pro.3978</a> · 站點 <a href="https://thebiogrid.org/" target="_blank" rel="noopener">thebiogrid.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1002/pro.3978" target="_blank" rel="noopener">10.1002/pro.3978</a> · Website: <a href="https://thebiogrid.org/" target="_blank" rel="noopener">thebiogrid.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">DB · PeptideAtlas</span>
+    <span class="ref-author">Deutsch EW, Lam H, Aebersold R.</span>
+    <span class="ref-title"> PeptideAtlas: a resource for target selection for emerging targeted proteomics workflows. </span>
+    <em>EMBO Rep</em> 9(5):429–434 (2008).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/embor.2008.56" target="_blank" rel="noopener">10.1038/embor.2008.56</a> · 站點 <a href="https://peptideatlas.org/" target="_blank" rel="noopener">peptideatlas.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/embor.2008.56" target="_blank" rel="noopener">10.1038/embor.2008.56</a> · Website: <a href="https://peptideatlas.org/" target="_blank" rel="noopener">peptideatlas.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">DB · MassIVE</span>
+    <span class="ref-title"><span data-lang="zh">MassIVE (UCSD) · 蛋白質譜資料公開 repository，與 ProteomeXchange 連動</span><span data-lang="en">MassIVE (UCSD) · Public mass-spec data repository, integrated with ProteomeXchange</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://massive.ucsd.edu/" target="_blank" rel="noopener">massive.ucsd.edu</a></span><span data-lang="en"><a href="https://massive.ucsd.edu/" target="_blank" rel="noopener">massive.ucsd.edu</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">DB · MSigDB / Hallmark</span>
+    <span class="ref-author">Liberzon A, Birger C, Thorvaldsdóttir H, Ghandi M, Mesirov JP, Tamayo P.</span>
+    <span class="ref-title"> The Molecular Signatures Database (MSigDB) hallmark gene set collection. </span>
+    <em>Cell Syst</em> 1(6):417–425 (2015).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1016/j.cels.2015.12.004" target="_blank" rel="noopener">10.1016/j.cels.2015.12.004</a> · 站點 <a href="https://www.gsea-msigdb.org/" target="_blank" rel="noopener">gsea-msigdb.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1016/j.cels.2015.12.004" target="_blank" rel="noopener">10.1016/j.cels.2015.12.004</a> · Website: <a href="https://www.gsea-msigdb.org/" target="_blank" rel="noopener">gsea-msigdb.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">DB · CPTAC</span>
+    <span class="ref-title"><span data-lang="zh">Clinical Proteomic Tumor Analysis Consortium · 多癌症深度蛋白質體與磷酸化資料</span><span data-lang="en">Clinical Proteomic Tumor Analysis Consortium · Deep proteomic and phosphoproteomic data across multiple cancers</span></span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://proteomics.cancer.gov/programs/cptac" target="_blank" rel="noopener">proteomics.cancer.gov / CPTAC</a> · Portal <a href="https://pdc.cancer.gov/" target="_blank" rel="noopener">pdc.cancer.gov</a></span><span data-lang="en"><a href="https://proteomics.cancer.gov/programs/cptac" target="_blank" rel="noopener">proteomics.cancer.gov / CPTAC</a> · Portal: <a href="https://pdc.cancer.gov/" target="_blank" rel="noopener">pdc.cancer.gov</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Errata ===================== -->
+<section class="section section-anchor" id="errata">
+<div class="section-label" data-zh="教學註記" data-en="TUTORIAL NOTES">教學註記</div>
+<h2 data-zh="📌 教學註記與細節" data-en="📌 Tutorial Notes & Details">📌 教學註記與細節</h2>
+<p data-lang="zh">下方為閱讀教學 HTML 與本 reference 比對後，發現的可能不完整、易誤解或可加強之處。不修改原教學檔案，僅在此說明以利參照。</p>
+<p data-lang="en">The notes below collect potentially incomplete, misleading or strengthen-worthy items discovered when cross-checking the tutorial HTML against the proteomics literature. The original tutorial files are left untouched; explanations are appended here for cross-reference.</p>
+
+<div class="errata">
+<h4>1. MaxLFQ「大多數蛋白不變」假設下才有效 · MaxLFQ assumes most proteins are unchanged</h4>
+<p data-lang="zh">教學在 Quantification 章節推薦 MaxLFQ 為 LFQ 主流，但需指出其內隱假設：原論文 Cox et al. <em>Mol Cell Proteomics</em> 13:2513, 2014（<a href="https://doi.org/10.1074/mcp.M113.031591" target="_blank" rel="noopener">doi:10.1074/mcp.M113.031591</a>）以 <strong>peptide ratio 中位數 ≈ 1</strong> 為前提，等同假設「絕大多數蛋白未變」。當研究設計屬全域擾動（例如全面 phospho-treatment、IP 富集、knockout 對 wild-type 含有大量缺失蛋白）時，median 中心化會誤判方向；建議改採 (i) <em>spike-in</em> 對照（UPS2、Pierce digest）；(ii) loess / VSN（Huber 2002）區段標準化；或 (iii) 在 limma / proDA / msqrob2（Goeminne 2020）中明確用 housekeeping 蛋白做 reference。iBAQ 與 Top3 雖較粗糙但不依賴此假設，可作為交叉驗證。</p>
+<p data-lang="en">The Quantification chapter recommends MaxLFQ as the default for LFQ, but it carries a strong implicit assumption: the original Cox et al. paper (<em>Mol Cell Proteomics</em> 13:2513, 2014, <a href="https://doi.org/10.1074/mcp.M113.031591" target="_blank" rel="noopener">doi:10.1074/mcp.M113.031591</a>) requires the <strong>median peptide ratio to be ≈ 1</strong>, i.e. that the bulk of proteins are unchanged. Whole-proteome perturbations (global phospho-treatment, IP enrichment, knockouts with widespread protein loss) violate this and bias the direction of fold-changes after median-centering. Cross-check with (i) spike-in standards (UPS2, Pierce digest); (ii) loess or VSN normalisation (Huber 2002); or (iii) housekeeping-anchored reference normalisation inside limma / proDA / msqrob2 (Goeminne 2020). iBAQ and Top3 are coarser but do not rely on this assumption and serve as orthogonal sanity checks.</p>
+</div>
+
+<div class="errata">
+<h4>2. TMT ratio compression：必加 IRS 或 SPS-MS3 · TMT ratio compression and the need for IRS / SPS-MS3</h4>
+<p data-lang="zh">教學介紹 TMT/TMTpro 為高 multiplex 定量首選，但若僅做 MS2 報導離子定量，<strong>co-isolation interference</strong> 會造成嚴重的 ratio compression（觀測 fold-change 被壓縮至真值 30–60%）。McAlister et al. <em>Anal Chem</em> 86:7150, 2014（<a href="https://doi.org/10.1021/ac502040v" target="_blank" rel="noopener">doi:10.1021/ac502040v</a>）的 SPS-MS3（MultiNotch）顯著降低此效應，但犧牲掃描速度；Plubell et al. <em>Mol Cell Proteomics</em> 16:873, 2017（<a href="https://doi.org/10.1074/mcp.M116.065524" target="_blank" rel="noopener">doi:10.1074/mcp.M116.065524</a>）提出 <strong>Internal Reference Scaling (IRS)</strong> 處理跨 TMT plex（&gt;16 樣本）的 batch effect，已成為 TMT 多 batch 研究 SOP。教學若僅示範單一 TMT plex，請補上：(i) MS2 vs MS3 取捨；(ii) IRS / common reference channel 設計；(iii) Phillips 2024（PXD040000）等 benchmark 顯示 SPS-MS3 + IRS 才能達到 LFQ 水準的精準度。</p>
+<p data-lang="en">TMT / TMTpro is presented as the go-to high-multiplex strategy, but pure MS2-level reporter quantification suffers severe <strong>ratio compression</strong> from co-isolation interference (observed fold-changes shrink to 30–60% of truth). McAlister et al. (<em>Anal Chem</em> 86:7150, 2014, <a href="https://doi.org/10.1021/ac502040v" target="_blank" rel="noopener">doi:10.1021/ac502040v</a>) introduced SPS-MS3 (MultiNotch) to mitigate this at the cost of scan rate, and Plubell et al. (<em>Mol Cell Proteomics</em> 16:873, 2017, <a href="https://doi.org/10.1074/mcp.M116.065524" target="_blank" rel="noopener">doi:10.1074/mcp.M116.065524</a>) developed <strong>Internal Reference Scaling (IRS)</strong> to remove cross-plex batch effects when stacking &gt;16 samples — now the de facto SOP for multi-plex TMT designs. If the tutorial shows only a single plex, add a panel on (i) MS2 vs MS3 trade-offs; (ii) IRS / common-reference-channel design; and (iii) Phillips 2024 benchmarks showing SPS-MS3 + IRS reaches LFQ-level accuracy.</p>
+</div>
+
+<div class="errata">
+<h4>3. DIA vs DDA 動態範圍與隨機性差異 · DIA vs DDA: dynamic range and stochastic sampling</h4>
+<p data-lang="zh">教學在 LC-MS/MS Acquisition 章節並陳 DDA 與 DIA，但未指出兩者最關鍵差異：DDA 為 <strong>stochastic sampling</strong>（top-N 選擇前體），同一樣本重複跑會得到不同 missing pattern；DIA / SWATH（Gillet et al. <em>Mol Cell Proteomics</em> 11:O111.016717, 2012，<a href="https://doi.org/10.1074/mcp.O111.016717" target="_blank" rel="noopener">doi:10.1074/mcp.O111.016717</a>）以等寬 m/z 視窗連續掃描，提供 <strong>deterministic、可重現</strong> 的 MS2，更適合大規模 cohort。但 DIA 對 chromatographic alignment 與 fragment-level deconvolution（DIA-NN, Demichev 2020；Spectronaut；EncyclopeDIA, Searle 2018）要求極高，且 library-free direct-DIA 在低豐度區域仍劣於 spectral library 模式約 10–20% protein ID。教學若推 DIA，請補上 fragment-ion interference 與 retention-time alignment 的章節。</p>
+<p data-lang="en">The acquisition chapter contrasts DDA and DIA but understates the most consequential difference: DDA is <strong>stochastic</strong> (top-N precursor selection), so replicate injections produce different missing-value patterns, while DIA / SWATH (Gillet et al. <em>Mol Cell Proteomics</em> 11:O111.016717, 2012, <a href="https://doi.org/10.1074/mcp.O111.016717" target="_blank" rel="noopener">doi:10.1074/mcp.O111.016717</a>) scans fixed m/z windows and is <strong>deterministic and reproducible</strong>, which is why it dominates large cohorts. The trade-off is that DIA needs strong chromatographic alignment and fragment-level deconvolution (DIA-NN, Demichev 2020; Spectronaut; EncyclopeDIA, Searle 2018), and library-free direct-DIA still loses ~10–20% of low-abundance IDs versus spectral-library mode. Add a panel on fragment-ion interference and RT alignment if DIA is recommended.</p>
+</div>
+
+<div class="errata">
+<h4>4. Top3 vs iBAQ vs MaxLFQ 半定量比較 · Top3 vs iBAQ vs MaxLFQ semi-quant comparison</h4>
+<p data-lang="zh">教學介紹 absolute quantification 時常將 Top3、iBAQ、MaxLFQ 並列，但三者推導動機不同，混用易導致誤讀：(i) <strong>Top3</strong>（Silva et al. <em>Mol Cell Proteomics</em> 5:144, 2006，<a href="https://doi.org/10.1074/mcp.M500230-MCP200" target="_blank" rel="noopener">doi:10.1074/mcp.M500230-MCP200</a>）為 MSE 時期 average top-3 peptide intensity；(ii) <strong>iBAQ</strong>（Schwanhäusser et al. <em>Nature</em> 473:337, 2011，<a href="https://doi.org/10.1038/nature10098" target="_blank" rel="noopener">doi:10.1038/nature10098</a>）為 sum-intensity ÷ theoretical-tryptic-peptide-count；(iii) <strong>MaxLFQ</strong> 為 pairwise peptide-ratio 最大概似解。建議在教學補上 Ahrné et al. <em>Proteomics</em> 13:2567, 2013（<a href="https://doi.org/10.1002/pmic.201300135" target="_blank" rel="noopener">doi:10.1002/pmic.201300135</a>）的 benchmark，顯示 MaxLFQ 在相對定量精準度最高，但 iBAQ 用於跨蛋白絕對含量比較更穩定；Top3 在 SWATH/DIA library 才推薦。</p>
+<p data-lang="en">Absolute-quantification discussions often list Top3, iBAQ and MaxLFQ side-by-side, but their motivations differ and mixing them invites misreading: (i) <strong>Top3</strong> (Silva et al. <em>Mol Cell Proteomics</em> 5:144, 2006, <a href="https://doi.org/10.1074/mcp.M500230-MCP200" target="_blank" rel="noopener">doi:10.1074/mcp.M500230-MCP200</a>) is the average of the three most-intense peptides from the MSE era; (ii) <strong>iBAQ</strong> (Schwanhäusser et al. <em>Nature</em> 473:337, 2011, <a href="https://doi.org/10.1038/nature10098" target="_blank" rel="noopener">doi:10.1038/nature10098</a>) divides summed intensity by the number of theoretical tryptic peptides; (iii) <strong>MaxLFQ</strong> is the maximum-likelihood pairwise peptide-ratio solution. Reference Ahrné et al. (<em>Proteomics</em> 13:2567, 2013, <a href="https://doi.org/10.1002/pmic.201300135" target="_blank" rel="noopener">doi:10.1002/pmic.201300135</a>): MaxLFQ wins on relative quant precision, iBAQ wins on cross-protein absolute abundance estimates, and Top3 is mostly a DIA / SWATH library construct now.</p>
+</div>
+
+<div class="errata">
+<h4>5. Phospho-enrichment 偏好與 normalization 必要性 · Phospho enrichment bias and the need for matched normalisation</h4>
+<p data-lang="zh">教學在 PTM / phosphoproteomics 章節介紹 IMAC / TiO₂ 富集為標準流程，但需指出富集存在系統性偏好：(i) IMAC 偏好 multiply-phosphorylated peptides；(ii) TiO₂ 對 mono-phospho 有更好的 yield；(iii) 不同 batch 富集效率變化可達 2–3 倍，必須以 <strong>matched total-proteome run</strong> 作標準化才能區分 phospho-fold-change 與 protein-level fold-change。Humphrey et al. <em>Nat Protoc</em> 13:1897, 2018（<a href="https://doi.org/10.1038/s41596-018-0014-9" target="_blank" rel="noopener">doi:10.1038/s41596-018-0014-9</a>，EasyPhos）詳細列出 SOP；Krug et al. <em>Mol Cell Proteomics</em> 18:576, 2019（<a href="https://doi.org/10.1074/mcp.RA118.001230" target="_blank" rel="noopener">doi:10.1074/mcp.RA118.001230</a>）的「<strong>regress out protein-level change</strong>」是 CPTAC 標準做法。教學若僅示範 phospho intensities，請補上 total-proteome regression 與 site-level FDR。</p>
+<p data-lang="en">Phosphoproteomics in the PTM chapter introduces IMAC / TiO₂ enrichment as standard, but enrichment carries systematic biases: (i) IMAC favours multiply-phosphorylated peptides; (ii) TiO₂ has higher yield for mono-phosphopeptides; (iii) batch-to-batch enrichment efficiency varies 2–3-fold, so a <strong>matched total-proteome run</strong> is required to separate phospho fold-change from protein-level fold-change. Humphrey et al. (<em>Nat Protoc</em> 13:1897, 2018, <a href="https://doi.org/10.1038/s41596-018-0014-9" target="_blank" rel="noopener">doi:10.1038/s41596-018-0014-9</a>, EasyPhos) gives the practical SOP, and Krug et al. (<em>Mol Cell Proteomics</em> 18:576, 2019, <a href="https://doi.org/10.1074/mcp.RA118.001230" target="_blank" rel="noopener">doi:10.1074/mcp.RA118.001230</a>) defines the CPTAC convention of <strong>regressing out matched protein-level changes</strong>. Add a panel on total-proteome regression and site-level FDR if only phospho intensities are shown.</p>
+</div>
+
+<div class="errata">
+<h4>6. 抗體驗證五支柱與 Affinity 章節補強 · Antibody validation: the five Pillars</h4>
+<p data-lang="zh">教學 Affinity 章節介紹 IP-MS / ChIP / Western 等使用抗體，但未具體列出抗體驗證標準。Uhlén et al. <em>Nat Methods</em> 13:823, 2016（<a href="https://doi.org/10.1038/nmeth.3995" target="_blank" rel="noopener">doi:10.1038/nmeth.3995</a>）提出 <strong>5 Pillars</strong>：(1) 遺傳策略（KO / KD）；(2) 正交方法（mass spec / RNA-seq 對比）；(3) 獨立抗體（兩個獨立 epitope）；(4) 標籤蛋白表達；(5) 免疫捕捉 + MS 驗證。YCharOS（<a href="https://ycharos.com/" target="_blank" rel="noopener">ycharos.com</a>，Biass et al. <em>Nat Protoc</em>，2024）以 KO 對照系統測試抗體性能；Antibodypedia 與 Human Protein Atlas 提供 antibody scoring。教學若推任何抗體應用，建議補上至少 Pillar 1+2 為 minimum bar。</p>
+<p data-lang="en">The Affinity chapter covers IP-MS / ChIP / Western using antibodies, but does not specify validation standards. Uhlén et al. (<em>Nat Methods</em> 13:823, 2016, <a href="https://doi.org/10.1038/nmeth.3995" target="_blank" rel="noopener">doi:10.1038/nmeth.3995</a>) defines the <strong>5 Pillars</strong>: (1) genetic strategy (KO / KD); (2) orthogonal methods (mass spec / RNA-seq); (3) independent antibodies against distinct epitopes; (4) tagged-protein expression; (5) immuno-capture + MS verification. YCharOS (<a href="https://ycharos.com/" target="_blank" rel="noopener">ycharos.com</a>; Biass et al., <em>Nat Protoc</em>, 2024) tests commercial antibodies in KO cell lines, and Antibodypedia / Human Protein Atlas provide antibody scoring. Any antibody application in the tutorial should at least clear Pillars 1 and 2.</p>
+</div>
+
+<div class="errata">
+<h4>7. PTM site localization：Mascot Delta vs ptmRS vs PhosphoRS · PTM site localisation scores</h4>
+<p data-lang="zh">教學在 PTM 章節常以「peptide 被鑑定 = site 也被鑑定」隱含對應，但對於含有多個 S/T/Y 的 phosphopeptide，<strong>site localization 機率</strong> 必須額外評估。Mascot Delta（Savitski et al. 2011）為早期方法，需 Mascot search engine；<strong>ptmRS / PhosphoRS</strong>（Taus et al. <em>J Proteome Res</em> 10:5354, 2011，<a href="https://doi.org/10.1021/pr200611n" target="_blank" rel="noopener">doi:10.1021/pr200611n</a>）以 binomial probability 計算 site-level confidence，現整合於 Proteome Discoverer；<strong>Ascore</strong>（Beausoleil et al. <em>Nat Biotechnol</em> 24:1285, 2006，<a href="https://doi.org/10.1038/nbt1240" target="_blank" rel="noopener">doi:10.1038/nbt1240</a>）為 MaxQuant 預設；<strong>LuciPHOr2</strong>（Fermin et al. 2015）為 open-source 替代。建議教學標明「peptide FDR ≠ site FDR」，並使用 site-localization probability &gt; 0.75（class I site, Olsen 2006 標準）作為下游分析的 cutoff。</p>
+<p data-lang="en">The PTM chapter often implies "peptide identified = site identified", but for phosphopeptides containing multiple S/T/Y residues a separate <strong>site-localisation probability</strong> is required. Mascot Delta (Savitski 2011) was the early scheme; <strong>ptmRS / PhosphoRS</strong> (Taus et al., <em>J Proteome Res</em> 10:5354, 2011, <a href="https://doi.org/10.1021/pr200611n" target="_blank" rel="noopener">doi:10.1021/pr200611n</a>) computes site-level confidence by a binomial model and is now integrated into Proteome Discoverer; <strong>Ascore</strong> (Beausoleil et al., <em>Nat Biotechnol</em> 24:1285, 2006, <a href="https://doi.org/10.1038/nbt1240" target="_blank" rel="noopener">doi:10.1038/nbt1240</a>) is the MaxQuant default; <strong>LuciPHOr2</strong> (Fermin et al. 2015) is an open-source alternative. Make clear that "peptide FDR ≠ site FDR", and use site-localisation probability &gt; 0.75 (the Olsen 2006 Class I cut-off) for downstream interpretation.</p>
+</div>
+
+<div class="errata">
+<h4>8. 蛋白質推斷與 razor peptide 風險 · Protein inference and the razor-peptide problem</h4>
+<p data-lang="zh">教學在 Identification / Search 章節介紹 protein FDR，但需補上 <strong>protein inference</strong> 與 <strong>razor / shared peptide</strong> 處理：Nesvizhskii &amp; Aebersold <em>Mol Cell Proteomics</em> 4:1419, 2005（<a href="https://doi.org/10.1074/mcp.R500012-MCP200" target="_blank" rel="noopener">doi:10.1074/mcp.R500012-MCP200</a>）說明 ProteinProphet / MaxQuant razor 策略；The &amp; MacCoss <em>J Proteome Res</em> 15:1190, 2016（<a href="https://doi.org/10.1021/acs.jproteome.5b01019" target="_blank" rel="noopener">doi:10.1021/acs.jproteome.5b01019</a>，picked target-decoy）指出 group-FDR 與 protein-level decoy 設計差異。對於含大量 isoform / paralog 的研究（如 keratin、HLA、Ig），razor peptide 會被任意指派給組內第一個蛋白，導致 isoform 級定量無意義；建議改用 protein group 或 picked group 程序，並回報「unique peptides ≥ 2」與 percolator / mokapot 計算的 PSM-level q-value。</p>
+<p data-lang="en">The Identification / Search chapter covers protein FDR but omits <strong>protein inference</strong> and the <strong>razor / shared peptide</strong> problem. Nesvizhskii &amp; Aebersold (<em>Mol Cell Proteomics</em> 4:1419, 2005, <a href="https://doi.org/10.1074/mcp.R500012-MCP200" target="_blank" rel="noopener">doi:10.1074/mcp.R500012-MCP200</a>) describes ProteinProphet and the MaxQuant razor strategy; The &amp; MacCoss (<em>J Proteome Res</em> 15:1190, 2016, <a href="https://doi.org/10.1021/acs.jproteome.5b01019" target="_blank" rel="noopener">doi:10.1021/acs.jproteome.5b01019</a>, picked target-decoy) explains why group-FDR with picked decoys differs from naive protein-level FDR. For isoform / paralog–heavy studies (keratin, HLA, Ig) razor peptides get arbitrarily assigned to the first protein in the group, making isoform-resolved quantitation meaningless. Use protein-group or picked-group inference, require "unique peptides ≥ 2", and report PSM-level q-values from Percolator or mokapot.</p>
+</div>
+
+</section>
+<nav class="page-nav">
+  <a href="../index.html"><span class="nav-dir" data-zh="← 教學首頁" data-en="← Tutorial home">← 教學首頁</span><span class="nav-title" data-zh="回到主教學頁" data-en="Back to tutorial hub">回到主教學頁</span></a>
+  <a href="../proteomics-quiz/index.html" target="_blank" rel="noopener"><span class="nav-dir" data-zh="互動考題 →" data-en="Interactive quiz →">互動考題 →</span><span class="nav-title" data-zh="互動式考題" data-en="Interactive Quiz">互動式考題</span></a>
+</nav>
+
+</main>
+<script src="../i18n.js"></script>
+</body>
+</html>

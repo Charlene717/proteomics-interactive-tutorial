@@ -1,0 +1,282 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Step 7: Imputation — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html">Prep</a></li><li><a href="acquisition.html">MS</a></li><li><a href="identification.html">ID</a></li><li><a href="quantification.html">Quant</a></li><li><a href="qc.html">QC</a></li><li><a href="normalization.html">Norm</a></li><li><a href="imputation.html" class="active">Impute</a></li><li><a href="differential-expression.html">DE</a></li><li><a href="enrichment.html">Enrich</a></li><li><a href="ptm.html">PTM</a></li><li><a href="targeted.html">Target</a></li><li><a href="top-down.html">Top-down</a></li><li><a href="spatial.html">Spatial</a></li><li><a href="single-cell.html">scProt</a></li><li><a href="affinity.html">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">STEP 7 / 9</div>
+<h1 data-zh="缺失值處理 (Missing Value Imputation)" data-en="Missing Value Imputation">缺失值處理 (Missing Value Imputation)</h1>
+<p class="subtitle" data-lang="zh">分辨 MNAR 與 MAR 兩種缺失機制——選錯方法會引入系統性偏差。</p>
+<p class="subtitle" data-lang="en">Distinguish MNAR vs MAR — choosing the wrong imputer introduces systematic bias.</p>
+</header>
+<main class="content-wrap">
+
+<section class="section">
+<div class="section-label" data-zh="概念" data-en="CONCEPT">概念</div>
+<h2 data-zh="為何蛋白質體學的缺失值處理比想像中複雜？" data-en="Why missing-value handling is trickier than you think">為何蛋白質體學的缺失值處理比想像中複雜？</h2>
+<div data-lang="zh">
+<p>蛋白質體學資料的缺失率通常 10–40%（DDA 較高，DIA 較低）。<strong>核心問題是：缺失值不是「隨機」的</strong>——低豐度蛋白更容易因偵測極限（LOD）而缺失。這意味著「補 0」、「補平均值」、或「直接刪除」都會引入嚴重偏差。</p>
+<p>正確做法：先<strong>診斷缺失機制</strong>，再<strong>選擇對應的 imputation 演算法</strong>。</p>
+</div>
+<div data-lang="en">
+<p>Proteomics data have 10–40% missing values (higher in DDA, lower in DIA). <strong>The key issue: missing values are NOT random</strong> — low-abundance proteins are more likely to drop below the detection limit (LOD). This means "replace with 0", "replace with mean", or "drop the row" all introduce serious bias.</p>
+<p>The right approach: <strong>diagnose the missingness mechanism first</strong>, then <strong>pick the matching imputer</strong>.</p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="兩大機制" data-en="TWO MECHANISMS">兩大機制</div>
+<h2 data-zh="一、MNAR vs MAR 兩種缺失機制" data-en="I. MNAR vs MAR Missingness">一、MNAR vs MAR 兩種缺失機制</h2>
+<div class="card-grid cols-2">
+<div class="card"><div class="card-icon">📉</div><h4>MNAR — Missing Not At Random</h4>
+<div data-lang="zh"><p>「<strong>低於偵測極限</strong>」造成的缺失：蛋白質本來就<strong>很低甚至為 0</strong>，所以才測不到。<br>• <strong>特徵：</strong>同一蛋白在某個 condition 全部缺失，另一 condition 全部偵測到（左尾、左截尾）。<br>• <strong>適用 imputation：</strong>從 low intensity（如 detected 分布的 1% 分位）抽樣，例如 <strong>QRILC、MinDet、MinProb</strong>。<br>• 不要用 KNN / RF — 它們會把低值「補成接近群體平均」，扭曲真實的「低豐度」訊號。</p></div>
+<div data-lang="en"><p>Caused by <strong>signals below detection limit</strong>: the protein is genuinely <strong>low or absent</strong>.<br>• <strong>Pattern:</strong> Protein missing entirely in one condition, detected in another (left-tailed, left-censored).<br>• <strong>Appropriate imputers:</strong> Sample from the low end (e.g., 1st percentile of observed) — <strong>QRILC, MinDet, MinProb</strong>.<br>• Don't use KNN / RF — they pull low values toward the population mean, distorting the genuine "low signal".</p></div>
+</div>
+<div class="card"><div class="card-icon">🎲</div><h4>MAR — Missing At Random</h4>
+<div data-lang="zh"><p>「<strong>偶然性測不到</strong>」：蛋白質本來足以偵測，但因 DDA 的隨機選擇、其他干擾、或單次失敗而缺失。<br>• <strong>特徵：</strong>缺失隨機分布在 conditions 與 replicates 之間。<br>• <strong>適用 imputation：</strong>利用其他樣品的觀測值「猜測」缺失值，例如 <strong>KNN、Random Forest (missForest)、SVD/BPCA、LLS</strong>。</p></div>
+<div data-lang="en"><p>The protein is <strong>detectable but missed by chance</strong> — DDA stochastic selection, interference, or single-run failure.<br>• <strong>Pattern:</strong> Missingness randomly distributed across conditions/replicates.<br>• <strong>Appropriate imputers:</strong> Use observed values from other samples to "guess" — <strong>KNN, Random Forest (missForest), SVD/BPCA, LLS</strong>.</p></div>
+</div>
+</div>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>實務做法 (DEP / MSstats 推薦)：</strong>使用「Mixed imputation」——先判斷每個蛋白的缺失模式，MNAR 蛋白用 left-censored 方法，MAR 蛋白用 KNN/RF 方法。這就是當前 2024 benchmark 中表現最佳的策略。</span>
+<span data-lang="en"><strong>Practical approach (DEP / MSstats):</strong> Use <strong>"Mixed imputation"</strong> — diagnose each protein's missingness pattern; impute MNAR proteins with left-censored methods, MAR proteins with KNN/RF. This is the top-performing strategy in 2024 benchmarks.</span>
+</div></div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="INTERACTIVE">互動模擬</div>
+<h2 data-zh="MNAR / MAR 模擬與不同方法比較" data-en="MNAR / MAR Simulator">MNAR / MAR 模擬與不同方法比較</h2>
+<div data-lang="zh"><p>調整 MNAR 與 MAR 缺失比例，比較不同方法 imputation 後的 distribution shape。</p></div>
+<div data-lang="en"><p>Adjust MNAR / MAR fractions and compare distribution shapes after different imputers.</p></div>
+<div class="interactive-panel">
+<div class="slider-group"><label><span data-zh="MNAR 缺失比例 (%)" data-en="MNAR fraction (%)">MNAR 缺失比例</span> <span id="valMNAR">15</span></label><input type="range" id="sliderMNAR" min="0" max="40" value="15" step="1"></div>
+<div class="slider-group"><label><span data-zh="MAR 缺失比例 (%)" data-en="MAR fraction (%)">MAR 缺失比例</span> <span id="valMAR">10</span></label><input type="range" id="sliderMAR" min="0" max="30" value="10" step="1"></div>
+<div class="toggle-row"><button class="toggle-btn active" data-m="none" data-zh="原始（含缺失）" data-en="Raw (with NA)">原始（含缺失）</button><button class="toggle-btn" data-m="zero">Zero</button><button class="toggle-btn" data-m="qrilc">QRILC</button><button class="toggle-btn" data-m="knn">KNN</button><button class="toggle-btn" data-m="mixed">Mixed</button></div>
+<div class="chart-container"><canvas id="impChart"></canvas></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="方法比較" data-en="METHOD TABLE">方法比較</div>
+<h2 data-zh="二、Imputation 方法概覽" data-en="II. Method Overview">二、Imputation 方法概覽</h2>
+<table class="comp-table">
+<thead><tr><th data-zh="方法" data-en="Method">方法</th><th data-zh="適用機制" data-en="Best for">適用機制</th><th data-zh="原理" data-en="Principle">原理</th><th data-zh="2024 評分" data-en="2024 ranking">2024 評分</th></tr></thead>
+<tbody>
+<tr><td><strong>QRILC</strong></td><td>MNAR</td><td data-lang="zh">從左尾正態分布抽樣</td><td data-lang="en">Sample from left-tail Gaussian</td><td>★★★★</td></tr>
+<tr><td><strong>MinDet / MinProb</strong></td><td>MNAR</td><td data-lang="zh">最小觀測值或其機率分布</td><td data-lang="en">Minimum observed or its distribution</td><td>★★★</td></tr>
+<tr><td><strong>KNN</strong></td><td>MAR</td><td data-lang="zh">k 個最相似蛋白的加權平均</td><td data-lang="en">Weighted average of k nearest proteins</td><td>★★★★</td></tr>
+<tr><td><strong>Random Forest (missForest)</strong></td><td>MAR</td><td data-lang="zh">迭代 random forest 預測</td><td data-lang="en">Iterative RF regression</td><td>★★★★★</td></tr>
+<tr><td><strong>BPCA</strong></td><td>MAR</td><td data-lang="zh">Bayesian PCA</td><td data-lang="en">Bayesian PCA</td><td>★★★</td></tr>
+<tr><td><strong>SVD / LLS</strong></td><td>MAR</td><td data-lang="zh">奇異值分解</td><td data-lang="en">Singular value decomposition / local LS</td><td>★★★</td></tr>
+<tr><td><strong>Mixed (RF + QRILC)</strong></td><td>MNAR + MAR</td><td data-lang="zh">針對每蛋白判斷後混合</td><td data-lang="en">Per-protein diagnosis + hybrid</td><td>★★★★★ (best)</td></tr>
+<tr><td><strong>Zero</strong></td><td>❌</td><td data-lang="zh">通通補 0（不建議）</td><td data-lang="en">Replace with 0 (NOT recommended)</td><td>★</td></tr>
+<tr><td><strong>Mean / Median</strong></td><td>❌</td><td data-lang="zh">補同蛋白平均（會壓低 variance）</td><td data-lang="en">Replace with mean (deflates variance)</td><td>★★</td></tr>
+</tbody></table>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="實作" data-en="CODE">實作</div>
+<h2 data-zh="DEP / Perseus / Python 範例" data-en="DEP / Perseus / Python">DEP / Perseus / Python 範例</h2>
+<div class="code-tabs"><div class="code-tab-btns">
+<button class="code-tab-btn active" onclick="switchTab(this,'r-dep')">R / DEP</button>
+<button class="code-tab-btn" onclick="switchTab(this,'r-msstats')">R / MSstats</button>
+<button class="code-tab-btn" onclick="switchTab(this,'py-imp')">Python</button>
+<button class="code-tab-btn" onclick="switchTab(this,'perseus-imp')">Perseus</button>
+</div>
+<div class="code-tab-content active" id="r-dep"><pre><span class="func">library</span>(DEP)
+
+<span class="comment"># 1) Diagnose: plot missing pattern</span>
+<span class="func">plot_missval</span>(se)     <span class="comment"># heatmap of missingness</span>
+<span class="func">plot_detect</span>(se)      <span class="comment"># density of intensity by 0-replicate vs all-replicate</span>
+
+<span class="comment"># 2a) MNAR imputation</span>
+imp_qrilc &lt;- <span class="func">impute</span>(se, fun = <span class="str">"QRILC"</span>)
+
+<span class="comment"># 2b) MAR imputation</span>
+imp_knn   &lt;- <span class="func">impute</span>(se, fun = <span class="str">"knn"</span>, k = <span class="num">10</span>)
+
+<span class="comment"># 2c) MIXED — recommended best practice</span>
+imp_mix &lt;- <span class="func">impute</span>(se, fun = <span class="str">"MinProb"</span>, q = <span class="num">0.01</span>)  <span class="comment"># for MNAR-only proteins</span>
+<span class="comment"># Or: protein-wise mixed impute via DEP's manual_impute()</span></pre></div>
+<div class="code-tab-content" id="r-msstats"><pre><span class="func">library</span>(MSstats)
+processed &lt;- <span class="func">dataProcess</span>(raw,
+  normalization = <span class="str">"equalizeMedians"</span>,
+  MBimpute      = <span class="kw">TRUE</span>,            <span class="comment"># Model-based imputation</span>
+  censoredInt   = <span class="str">"NA"</span>,            <span class="comment"># NA = MNAR</span>
+  maxQuantileforCensored = <span class="num">0.999</span>  <span class="comment"># censoring threshold</span>
+)
+<span class="comment"># MSstats 使用其內部 linear mixed model 同時建模</span>
+<span class="comment"># missingness 與差異表達，比後處理 imputation 更穩健</span></pre></div>
+<div class="code-tab-content" id="py-imp"><pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> sklearn.impute <span class="kw">import</span> KNNImputer
+
+mat = pd.read_csv(<span class="str">"protein_log2.csv"</span>, index_col=<span class="num">0</span>)
+
+<span class="comment"># --- MNAR (QRILC-like): sample from left tail ---</span>
+<span class="kw">def</span> impute_mnar(df, q=<span class="num">0.01</span>, scale=<span class="num">0.3</span>):
+    out = df.copy()
+    <span class="kw">for</span> col <span class="kw">in</span> df.columns:
+        mu = df[col].quantile(q)
+        sd = df[col].std() * scale
+        mask = df[col].isna()
+        out.loc[mask, col] = np.random.normal(mu, sd, mask.sum())
+    <span class="kw">return</span> out
+
+<span class="comment"># --- MAR (KNN) ---</span>
+imp = KNNImputer(n_neighbors=<span class="num">10</span>, weights=<span class="str">"distance"</span>)
+mat_knn = pd.DataFrame(imp.fit_transform(mat),
+                       index=mat.index, columns=mat.columns)
+
+<span class="comment"># --- Mixed: diagnose per protein ---</span>
+mnar_proteins = mat.index[mat.isna().sum(axis=<span class="num">1</span>) &gt; <span class="num">0.4</span> * mat.shape[<span class="num">1</span>]]
+mat_mix = mat_knn.copy()
+mat_mix.loc[mnar_proteins] = impute_mnar(mat.loc[mnar_proteins])</pre></div>
+<div class="code-tab-content" id="perseus-imp"><pre><span class="comment"># Perseus 點擊式流程</span>
+<span class="kw">Step 1</span> Imputation → Replace missing values from normal distribution
+        - Width: 0.3
+        - Down shift: 1.8
+        - Mode: separately for each column (預設)
+<span class="kw">Step 2</span> Visualization → Histogram
+        - 檢查每個樣品的補值是否合理「貼在原 distribution 左尾」
+<span class="kw">Step 3</span> 若想做 KNN: Imputation → Replace missing values from columns
+        - 選擇 KNN (Hauschild et al.)
+<span class="kw">Step 4</span> 進階：Categorical-column 控制 protein-wise imputation
+        - 標記 MNAR vs MAR，分別處理</pre></div>
+</div>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<div data-lang="zh"><strong>專家警告：</strong>① 即使做 imputation，<strong>仍應在報告中註明使用的方法與比例</strong>。② 若蛋白只在「疾病組偵測到」而完全在「健康組缺失」，這可能是真實生物差異——不要強行用 KNN 把它拉成中等值。③ MSstats 的 model-based imputation 內建處理 missingness 的 mixed model，通常優於後處理 imputation。</div>
+<div data-lang="en"><strong>Expert warnings:</strong> ① Always report the method and the fraction of imputed values. ② A protein detected only in disease and absent in healthy may reflect true biology — don't let KNN flatten it. ③ MSstats's model-based imputation handles missingness within its mixed model, typically outperforming post-hoc imputation.</div>
+</div></div>
+</section>
+
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">1. 一個蛋白在 Control 4/4 都偵測到，但在 Disease 0/4 偵測到。最合適的處理？</p>
+<p data-lang="en">1. A protein is detected 4/4 in Control but 0/4 in Disease. Best approach?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 用 KNN 把 Disease 補成 Control 群體的平均</span><span data-lang="en">A. Use KNN to fill Disease with the Control mean</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 視為 MNAR，用 QRILC / MinProb 從左尾抽樣補</span><span data-lang="en">B. Treat as MNAR; sample from left tail (QRILC / MinProb)</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 直接刪除這個蛋白</span><span data-lang="en">C. Delete this protein entirely</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 補 0</span><span data-lang="en">D. Replace with 0</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">2. 為何 KNN 不適合用於 MNAR 缺失？</p>
+<p data-lang="en">2. Why is KNN inappropriate for MNAR?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. KNN 太慢</span><span data-lang="en">A. KNN is too slow</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. KNN 對 outlier 不敏感</span><span data-lang="en">B. KNN is insensitive to outliers</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. KNN 會把「真實低表達」的蛋白拉到鄰居的平均值，掩蓋真實低訊號</span><span data-lang="en">C. KNN pulls truly low-expressed proteins toward neighbor averages, masking the real low signal</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. KNN 不能處理連續變數</span><span data-lang="en">D. KNN can't handle continuous variables</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">3. 2024 benchmark 中綜合表現最佳的 imputation 策略？</p>
+<p data-lang="en">3. The top-performing imputation strategy in 2024 benchmarks?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. Mixed imputation（根據缺失模式選 RF 或 QRILC）</span><span data-lang="en">A. Mixed imputation (RF or QRILC depending on pattern)</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 全部補 0</span><span data-lang="en">B. Replace all with 0</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 補平均值</span><span data-lang="en">C. Replace with mean</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 完全不做 imputation</span><span data-lang="en">D. No imputation at all</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="normalization.html"><span class="nav-dir" data-zh="← 上一步" data-en="← Previous">← 上一步</span><span class="nav-title" data-zh="Step 6: 標準化 (Normalization)" data-en="Step 6: Normalization">Step 6: 標準化 (Normalization)</span></a>
+<a href="differential-expression.html"><span class="nav-dir" data-zh="下一步 →" data-en="Next →">下一步 →</span><span class="nav-title" data-zh="Step 8: 差異表達分析 (Differential Expression)" data-en="Step 8: Differential Expression">Step 8: 差異表達分析 (Differential Expression)</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+function randn(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const N=600;
+const trueIntensity=Array.from({length:N},()=>22+randn()*2.2);
+
+function withMissing(mnarPct,marPct){
+  const arr=trueIntensity.map(v=>v);
+  const isMissing=new Array(N).fill(false);
+  // MNAR: lowest mnar% are missing
+  const sorted=[...arr.keys()].sort((a,b)=>arr[a]-arr[b]);
+  const nMNAR=Math.floor(N*mnarPct/100);
+  for(let i=0;i<nMNAR;i++) isMissing[sorted[i]]=true;
+  // MAR: random
+  const nMAR=Math.floor(N*marPct/100);
+  let added=0;
+  while(added<nMAR){const r=Math.floor(Math.random()*N);if(!isMissing[r]){isMissing[r]=true;added++;}}
+  const observed=arr.map((v,i)=>isMissing[i]?null:v);
+  return {observed,isMissing,arr};
+}
+
+function impute(observed,method){
+  const valid=observed.filter(v=>v!==null);
+  if(method==='none') return observed.filter(v=>v!==null);
+  if(method==='zero') return observed.map(v=>v===null?0:v);
+  if(method==='qrilc'){
+    const sorted=[...valid].sort((a,b)=>a-b);
+    const q=sorted[Math.floor(sorted.length*0.01)];
+    return observed.map(v=>v===null?q-1+randn()*0.5:v);
+  }
+  if(method==='knn'){
+    const mean=valid.reduce((a,v)=>a+v,0)/valid.length;
+    return observed.map(v=>v===null?mean+randn()*0.3:v);
+  }
+  if(method==='mixed'){
+    const sorted=[...valid].sort((a,b)=>a-b);
+    const q=sorted[Math.floor(sorted.length*0.01)];
+    const mean=valid.reduce((a,v)=>a+v,0)/valid.length;
+    return observed.map((v,i)=>{
+      if(v!==null) return v;
+      // MNAR-like fill for missing values likely from low intensity (random simulation)
+      return Math.random()<0.6 ? q-1+randn()*0.5 : mean+randn()*0.3;
+    });
+  }
+}
+
+function hist(arr,bins,min,max){const h=new Array(bins).fill(0);const step=(max-min)/bins;arr.forEach(v=>{const i=Math.min(bins-1,Math.max(0,Math.floor((v-min)/step)));h[i]++;});return h;}
+
+const xmin=10,xmax=30,bins=30;
+const labels=Array.from({length:bins},(_,i)=>(xmin+i*(xmax-xmin)/bins).toFixed(1));
+const impChart=new Chart(document.getElementById('impChart'),{
+  type:'bar',
+  data:{labels:labels,datasets:[
+    {label:'True',data:hist(trueIntensity,bins,xmin,xmax),backgroundColor:'rgba(100,100,100,0.25)'},
+    {label:'After imputation',data:[],backgroundColor:'rgba(44,75,138,0.65)'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,scales:{x:{title:{display:true,text:'log2 intensity'}},y:{title:{display:true,text:'# proteins'}}},plugins:{legend:{position:'top'}}}
+});
+
+let method='none';
+function update(){
+  const mnar=+document.getElementById('sliderMNAR').value;
+  const mar=+document.getElementById('sliderMAR').value;
+  document.getElementById('valMNAR').textContent=mnar;
+  document.getElementById('valMAR').textContent=mar;
+  const {observed}=withMissing(mnar,mar);
+  const imputed=impute(observed,method);
+  impChart.data.datasets[1].data=hist(imputed,bins,xmin,xmax);
+  const L=I18n.get();
+  impChart.data.datasets[0].label=L==='zh'?'真實 (無缺失)':'True (no missing)';
+  impChart.data.datasets[1].label=method==='none'?(L==='zh'?'觀測 (有缺失)':'Observed (with NA)'):(L==='zh'?'補值後':'After imputation');
+  impChart.update('none');
+}
+document.querySelectorAll('.toggle-row .toggle-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.toggle-row .toggle-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');method=b.dataset.m;update();});
+['sliderMNAR','sliderMAR'].forEach(id=>document.getElementById(id).addEventListener('input',update));
+document.addEventListener('langchange',update);
+update();
+
+const QF={
+  zh:{q1_y:'這是典型 MNAR 模式，應從左尾抽樣補值（QRILC / MinProb），保留「該蛋白真的低豐度」的訊號。',q1_n:'正確答案已標示。',q2_y:'KNN 適用 MAR；用於 MNAR 會把真實低訊號錯誤拉到群體平均。',q2_n:'正確答案已標示。',q3_y:'Mixed imputation 是當前最被推崇的策略——每蛋白判斷後採用對應方法。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'This is the classic MNAR pattern — left-tail sampling (QRILC / MinProb) preserves the "genuinely low abundance" signal.',q1_n:'Correct answer highlighted.',q2_y:'KNN is for MAR; using it for MNAR pulls truly low signals toward the population mean.',q2_n:'Correct answer highlighted.',q3_y:'Mixed imputation is the current top recommendation — diagnose then apply the matching method.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>

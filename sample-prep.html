@@ -1,0 +1,332 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Step 1: Sample Prep — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html" class="active">Prep</a></li><li><a href="acquisition.html">MS</a></li><li><a href="identification.html">ID</a></li><li><a href="quantification.html">Quant</a></li><li><a href="qc.html">QC</a></li><li><a href="normalization.html">Norm</a></li><li><a href="imputation.html">Impute</a></li><li><a href="differential-expression.html">DE</a></li><li><a href="enrichment.html">Enrich</a></li><li><a href="ptm.html">PTM</a></li><li><a href="targeted.html">Target</a></li><li><a href="top-down.html">Top-down</a></li><li><a href="spatial.html">Spatial</a></li><li><a href="single-cell.html">scProt</a></li><li><a href="affinity.html">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">STEP 1 / 9</div>
+<h1 data-zh="樣品製備與消化 (Sample Preparation)" data-en="Sample Preparation & Digestion">樣品製備與消化 (Sample Preparation)</h1>
+<p class="subtitle" data-lang="zh">蛋白質體學成敗的關鍵第一步——細胞裂解、變性還原、酵素消化的選擇將決定下游所能偵測的蛋白質深度與品質。</p>
+<p class="subtitle" data-lang="en">The make-or-break first step — lysis, reduction/alkylation, and enzymatic digestion choices determine the proteome depth and quality achievable downstream.</p>
+</header>
+<main class="content-wrap">
+
+<!-- ===== Section 1: Why Sample Prep ===== -->
+<section class="section">
+<div class="section-label" data-zh="概覽" data-en="OVERVIEW">概覽</div>
+<h2 data-zh="為什麼樣品製備是 MS-based 蛋白質體學的命脈？" data-en="Why is sample prep the lifeblood of MS-based proteomics?">為什麼樣品製備是 MS-based 蛋白質體學的命脈？</h2>
+<div data-lang="zh">
+<p>不像 scRNA-seq 可以仰賴成熟的商業化試劑套組，<strong>蛋白質體學的樣品製備變異是分析結果差異的最大來源</strong>。一份髒污或消化不完全的樣品，無論搭配多昂貴的質譜儀都救不回來。</p>
+<p>樣品製備的核心目標有三：(1) <strong>有效裂解</strong>細胞釋放所有蛋白質；(2) <strong>消除干擾物</strong>（清潔劑、鹽類、脂質、核酸）以免進入質譜；(3) <strong>完整消化</strong>蛋白質成適合 LC-MS/MS 分析的胜肽片段（通常為 7–30 個胺基酸）。</p>
+</div>
+<div data-lang="en">
+<p>Unlike scRNA-seq, which can rely on standardized commercial kits, <strong>sample-prep variability is the single largest source of result differences in proteomics</strong>. A poorly prepared or under-digested sample cannot be rescued by even the most expensive MS instrument.</p>
+<p>The three core goals: (1) <strong>efficient lysis</strong> to release the full proteome; (2) <strong>removal of interferents</strong> (detergents, salts, lipids, nucleic acids) that would otherwise enter the MS; (3) <strong>complete digestion</strong> into peptides (typically 7–30 amino acids) optimal for LC-MS/MS.</p>
+</div>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>核心原則：</strong>「Garbage in, garbage out」是蛋白質體學的金句。在比較不同樣品時，<strong>所有樣品必須使用完全相同的製備流程</strong>，避免技術變異被誤判為生物學差異。</span>
+<span data-lang="en"><strong>Core principle:</strong> "Garbage in, garbage out" applies forcefully here. Across compared samples, <strong>use an identical prep protocol</strong> to avoid technical variation masquerading as biology.</span>
+</div></div>
+</section>
+
+<!-- ===== Section 2: Pipeline Workflow ===== -->
+<section class="section">
+<div class="section-label" data-zh="核心流程" data-en="CORE WORKFLOW">核心流程</div>
+<h2 data-zh="一、典型 Bottom-up 樣品製備流程" data-en="I. Typical Bottom-up Sample Prep Workflow">一、典型 Bottom-up 樣品製備流程</h2>
+<div class="workflow">
+<div class="workflow-step" data-step="1"><h4 data-zh="細胞裂解 (Cell Lysis)" data-en="Cell Lysis">細胞裂解</h4>
+<p data-lang="zh">使用變性 detergent（SDS 4–5%、SDC、Urea 8 M、Guanidine HCl 6 M）破壞細胞膜並使蛋白質完全變性，避免後續分析中重新摺疊。組織樣品需先機械破碎。</p>
+<p data-lang="en">Use denaturing detergents (4–5% SDS, SDC, 8 M urea, 6 M guanidine HCl) to disrupt membranes and fully denature proteins, preventing refolding. Tissues require mechanical disruption first.</p></div>
+<div class="workflow-step" data-step="2"><h4 data-zh="還原與烷化 (Reduction & Alkylation)" data-en="Reduction & Alkylation">還原與烷化</h4>
+<p data-lang="zh">用 DTT（10–20 mM, 56°C）或 TCEP 還原雙硫鍵，再用 IAA（碘乙醯胺，20–55 mM）烷化半胱胺酸，防止重新形成雙硫鍵造成消化不完全。需在暗處進行避免 IAA 過度反應。</p>
+<p data-lang="en">Reduce disulfide bonds with DTT (10–20 mM at 56°C) or TCEP, then alkylate cysteines with iodoacetamide (IAA, 20–55 mM) to prevent re-oxidation that would impair digestion. Perform IAA step in darkness to avoid overalkylation.</p></div>
+<div class="workflow-step" data-step="3"><h4 data-zh="蛋白質純化 / 清潔劑移除" data-en="Purification / Detergent Removal">蛋白質純化 / 清潔劑移除</h4>
+<p data-lang="zh">關鍵步驟！SDS / Urea 等變性劑會抑制酵素活性與離子化效率。使用 FASP、SP3、S-Trap 或 In-solution + acetone precipitation 將蛋白質保留並去除干擾物。</p>
+<p data-lang="en">A critical step. SDS/urea inhibit enzymes and ionization. Use FASP, SP3, S-Trap, or in-solution + acetone precipitation to retain proteins while removing interferents.</p></div>
+<div class="workflow-step" data-step="4"><h4 data-zh="酵素消化 (Digestion)" data-en="Enzymatic Digestion">酵素消化</h4>
+<p data-lang="zh">最常用 <strong>胰蛋白酶 (Trypsin)</strong>，在 K/R 後切割（除非後面是 P）。Enzyme:Protein 比例約 1:50，37°C 過夜或 4–8 小時。Lys-C + Trypsin 雙重消化可提升完整度。</p>
+<p data-lang="en">Most common is <strong>trypsin</strong>, cleaving C-terminal to K/R (except before P). Enzyme:protein ≈ 1:50, 37°C overnight or 4–8 h. Lys-C + trypsin tandem digestion improves completeness.</p></div>
+<div class="workflow-step" data-step="5"><h4 data-zh="脫鹽 (Desalting / Clean-up)" data-en="Desalting / Clean-up">脫鹽</h4>
+<p data-lang="zh">使用 C18 SPE（Stage-tip、cartridge）移除鹽類與消化產物中的小分子，並濃縮樣品。送上機前必須完成。</p>
+<p data-lang="en">Use C18 SPE (Stage-tips, cartridges) to remove salts and small molecules and concentrate peptides. Mandatory before MS injection.</p></div>
+</div>
+</section>
+
+<!-- ===== Section 3: Methods Comparison Cards ===== -->
+<section class="section">
+<div class="section-label" data-zh="方法比較" data-en="METHOD COMPARISON">方法比較</div>
+<h2 data-zh="二、四大主流蛋白質純化／消化方法" data-en="II. Four Mainstream Purification/Digestion Methods">二、四大主流蛋白質純化／消化方法</h2>
+<div class="card-grid cols-2">
+<div class="card"><div class="card-icon">🧴</div><h4>In-solution</h4>
+<div data-lang="zh"><p>最簡單流程，但要求 detergent 兼容（如低濃度尿素）。使用 acetone/TCA 沉澱去除清潔劑。<br>• <strong>優點：</strong>無需特殊耗材，便宜<br>• <strong>缺點：</strong>清潔劑兼容性受限；可重複性較低</p></div>
+<div data-lang="en"><p>Simplest workflow but limited to MS-compatible buffers (e.g., low urea). Acetone/TCA precipitation can remove detergents.<br>• <strong>Pro:</strong> No special consumables, cheap<br>• <strong>Con:</strong> Limited detergent tolerance; lower reproducibility</p></div>
+</div>
+<div class="card"><div class="card-icon">🪣</div><h4>FASP (Filter-Aided)</h4>
+<div data-lang="zh"><p>使用 10/30 kDa MWCO 離心過濾管：蛋白質保留在膜上，SDS 等小分子被沖洗掉。原位消化。<br>• <strong>優點：</strong>能處理高濃度 SDS；流程經典<br>• <strong>缺點：</strong>步驟多、時間長（4–6 hr）；濾膜可能造成蛋白質損失</p></div>
+<div data-lang="en"><p>10/30 kDa MWCO spin filters retain proteins while SDS is washed away; on-filter digestion follows.<br>• <strong>Pro:</strong> Tolerates high SDS; classic protocol<br>• <strong>Con:</strong> Many steps, slow (4–6 hr); filter losses possible</p></div>
+</div>
+<div class="card"><div class="card-icon">🧲</div><h4>SP3 (磁珠法)</h4>
+<div data-lang="zh"><p>Single-Pot Solid-Phase-enhanced Sample Preparation：利用 carboxylate 修飾磁珠在乙醇/ACN 環境中吸附蛋白質，洗去干擾物後消化。<br>• <strong>優點：</strong>快速（1–2 hr）；適合 low-input；近年最受歡迎<br>• <strong>缺點：</strong>磁珠質量與比例需優化</p></div>
+<div data-lang="en"><p>Single-Pot Solid-Phase-enhanced Sample Preparation: carboxylate-modified magnetic beads capture proteins in ethanol/ACN, contaminants are washed off, then digestion proceeds.<br>• <strong>Pro:</strong> Fast (1–2 hr); excellent for low input; the most popular method in recent years<br>• <strong>Con:</strong> Bead quality and ratio require optimization</p></div>
+</div>
+<div class="card"><div class="card-icon">🏔️</div><h4>S-Trap (Suspension Trap)</h4>
+<div data-lang="zh"><p>蛋白質在酸性 + 甲醇中沉澱後被困在 trap column 的疏鬆基質中，原位高溫消化。<br>• <strong>優點：</strong>高 SDS（≤5%）容忍；快速（30–90 min）；可重複性佳<br>• <strong>缺點：</strong>商用 column 較貴；超低量（&lt;1 µg）覆蓋率受限</p></div>
+<div data-lang="en"><p>Proteins precipitate in acid+methanol, get trapped in a porous matrix, then digested in situ at elevated temperature.<br>• <strong>Pro:</strong> Tolerates ≤5% SDS; fast (30–90 min); excellent reproducibility<br>• <strong>Con:</strong> Proprietary columns are pricey; coverage limited for ultra-low input (&lt;1 µg)</p></div>
+</div>
+</div>
+</section>
+
+<!-- ===== Section 4: Interactive Sim ===== -->
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="INTERACTIVE">互動模擬</div>
+<h2 data-zh="消化效率模擬器" data-en="Digestion Efficiency Simulator">消化效率模擬器</h2>
+<div data-lang="zh"><p>調整 <strong>酵素比例</strong>、<strong>消化時間</strong>與<strong>是否使用 Lys-C 預消化</strong>，觀察 fully-cleaved（完整消化）、missed cleavage（漏切）、與超短胜肽（&lt;7 aa）的比例變化。理想狀態為 missed cleavage &lt; 25%。</p></div>
+<div data-lang="en"><p>Adjust <strong>enzyme ratio</strong>, <strong>digestion time</strong>, and whether you use <strong>Lys-C pre-digestion</strong>. Watch how fully-cleaved, missed-cleavage, and over-short (&lt;7 aa) peptide fractions change. Ideal: missed cleavage &lt; 25%.</p></div>
+<div class="interactive-panel">
+<div class="sim-stats"><span class="sim-stat pass" id="statFull">—</span><span class="sim-stat neutral" id="statMiss">—</span><span class="sim-stat fail" id="statShort">—</span></div>
+<div class="slider-group"><label><span data-zh="酵素:蛋白質比例 (1:N)" data-en="Enzyme:Protein ratio (1:N)">酵素:蛋白質比例</span> <span id="valRatio">50</span></label><input type="range" id="sliderRatio" min="20" max="200" value="50" step="10"></div>
+<div class="slider-group"><label><span data-zh="消化時間 (hr)" data-en="Digestion time (hr)">消化時間</span> <span id="valTime">12</span></label><input type="range" id="sliderTime" min="1" max="24" value="12" step="1"></div>
+<div class="toggle-row"><button class="toggle-btn active" id="btnNoLysC" data-zh="僅 Trypsin" data-en="Trypsin only">僅 Trypsin</button><button class="toggle-btn" id="btnLysC" data-zh="Lys-C → Trypsin (雙酵素)" data-en="Lys-C → Trypsin (tandem)">Lys-C → Trypsin (雙酵素)</button></div>
+<div class="chart-container"><canvas id="digChart"></canvas></div>
+</div>
+</section>
+
+<!-- ===== Section 5: Decision Tree ===== -->
+<section class="section">
+<div class="section-label" data-zh="決策引導" data-en="DECISION GUIDE">決策引導</div>
+<h2 data-zh="三、選擇樣品製備方法的決策流程" data-en="III. Choosing a Sample-Prep Method">三、選擇樣品製備方法的決策流程</h2>
+<div class="decision-tree">
+<h4>🌳 <span data-zh="樣品製備決策樹" data-en="Sample-Prep Decision Tree">樣品製備決策樹</span></h4>
+<div data-lang="zh">
+<div class="dt-node"><span class="dt-q">Q1:</span><div>樣品起始量 &lt; 10 µg（如組織針穿、單細胞 group）？ <span class="dt-arrow">→ 是 →</span> 首選 <strong>SP3</strong>；可選 <strong>iST-NHS</strong> 或 nanoPOTS（單細胞）。</div></div>
+<div class="dt-node"><span class="dt-q">Q2:</span><div>樣品含大量膜蛋白或需用高濃度 SDS？ <span class="dt-arrow">→ 是 →</span> 首選 <strong>S-Trap</strong>（5% SDS）；次選 FASP。</div></div>
+<div class="dt-node"><span class="dt-q">Q3:</span><div>需要極高通量（96-well, 自動化）？ <span class="dt-arrow">→ 是 →</span> <strong>SP3 自動化平台</strong>（Kingfisher、Bravo）。</div></div>
+<div class="dt-node"><span class="dt-q">Q4:</span><div>研究 PTM（特別是磷酸化）需要超大蛋白量？ <span class="dt-arrow">→ 是 →</span> <strong>In-solution + acetone precipitation</strong>（mg 級起始量更穩定）。</div></div>
+</div>
+<div data-lang="en">
+<div class="dt-node"><span class="dt-q">Q1:</span><div>Starting input &lt; 10 µg (needle biopsy, sorted cells)? <span class="dt-arrow">→ Yes →</span> <strong>SP3</strong> first; iST-NHS or nanoPOTS (single-cell) as alternatives.</div></div>
+<div class="dt-node"><span class="dt-q">Q2:</span><div>Membrane-rich sample or needs high-% SDS? <span class="dt-arrow">→ Yes →</span> <strong>S-Trap</strong> (handles 5% SDS); FASP as a backup.</div></div>
+<div class="dt-node"><span class="dt-q">Q3:</span><div>High-throughput needed (96-well, automation)? <span class="dt-arrow">→ Yes →</span> <strong>Automated SP3</strong> (Kingfisher, Bravo).</div></div>
+<div class="dt-node"><span class="dt-q">Q4:</span><div>PTM (especially phospho) study with abundant input? <span class="dt-arrow">→ Yes →</span> <strong>In-solution + acetone precipitation</strong> (more stable at mg-scale).</div></div>
+</div>
+</div>
+
+<table class="comp-table">
+<thead><tr>
+<th data-zh="方法" data-en="Method">方法</th>
+<th data-zh="起始量" data-en="Input">起始量</th>
+<th data-zh="速度" data-en="Speed">速度</th>
+<th data-zh="SDS 容忍" data-en="SDS tolerance">SDS 容忍</th>
+<th data-zh="2024 推薦" data-en="2024 Reco">2024 推薦</th>
+</tr></thead>
+<tbody>
+<tr><td><strong>In-solution</strong></td><td>≥ 50 µg</td><td>★★★</td><td>低</td><td>—</td></tr>
+<tr><td><strong>FASP</strong></td><td>10–500 µg</td><td>★★</td><td>高</td><td>★★★</td></tr>
+<tr><td><strong>SP3</strong></td><td>0.5–500 µg</td><td>★★★★★</td><td>中</td><td>★★★★★</td></tr>
+<tr><td><strong>S-Trap</strong></td><td>1–500 µg</td><td>★★★★</td><td>極高</td><td>★★★★</td></tr>
+</tbody></table>
+
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<div data-lang="zh"><strong>專家建議：</strong><br>① <strong>務必驗證消化效率</strong>——分析 missed cleavage rate（理想 &lt; 25%）。<br>② 多樣品比較時，<strong>同一批一起做</strong>，避免日內變異。<br>③ 含血漿樣品先做 <strong>top-12 蛋白移除</strong>（如 Albumin、IgG），否則高豐度蛋白會壓制其他訊號。<br>④ 含 RNA 的細胞核樣品要先加 <strong>Benzonase</strong> 降解核酸，避免膠狀沉澱。</div>
+<div data-lang="en"><strong>Expert tips:</strong><br>① <strong>Always verify digestion efficiency</strong> via missed-cleavage rate (ideally &lt; 25%).<br>② For multi-sample comparisons, <strong>prep all samples in the same batch</strong> to avoid day-to-day drift.<br>③ Plasma samples need <strong>top-12 depletion</strong> (albumin, IgG, etc.) — high-abundance proteins suppress the rest.<br>④ Nuclear/RNA-rich samples need <strong>Benzonase</strong> to digest nucleic acids and avoid gel-like clumps.</div>
+</div></div>
+</section>
+
+<!-- ===== Section 6: Code ===== -->
+<section class="section">
+<div class="section-label" data-zh="實作範例" data-en="PROTOCOLS">實作範例</div>
+<h2 data-zh="SP3 與 S-Trap 操作示範" data-en="SP3 and S-Trap Hands-on">SP3 與 S-Trap 操作示範</h2>
+<div class="code-tabs"><div class="code-tab-btns">
+<button class="code-tab-btn active" onclick="switchTab(this,'sp3-proto')">SP3 Protocol</button>
+<button class="code-tab-btn" onclick="switchTab(this,'strap-proto')">S-Trap Protocol</button>
+<button class="code-tab-btn" onclick="switchTab(this,'py-bca')">Python (BCA)</button>
+<button class="code-tab-btn" onclick="switchTab(this,'r-bca')">R (BCA)</button>
+</div>
+
+<div class="code-tab-content active" id="sp3-proto"><pre><span class="comment"># SP3 sample prep (Hughes et al. 2019, Nat Protoc)</span>
+<span class="comment"># 起始: 10–100 µg protein in 5% SDS + 100 mM TEAB</span>
+
+<span class="kw">STEP 1</span> Reduce: 10 mM DTT, 95°C, 10 min
+<span class="kw">STEP 2</span> Alkylate: 40 mM IAA, RT, 30 min dark
+<span class="kw">STEP 3</span> Bind to beads:
+    - Mix 1:1 hydrophilic + hydrophobic SP3 beads (5 µL of 50 µg/µL each)
+    - Add ethanol to 50% final
+    - Incubate RT, 5 min, gentle mixing
+<span class="kw">STEP 4</span> Wash on magnet:
+    - 3× 80% ethanol (500 µL each)
+    - 1× 100% acetonitrile
+<span class="kw">STEP 5</span> Digest:
+    - Resuspend beads in 100 mM TEAB
+    - Add trypsin (1:50 enzyme:protein)
+    - Sonicate briefly, incubate 37°C overnight
+<span class="kw">STEP 6</span> Elute:
+    - Collect supernatant
+    - Wash beads with 2% DMSO, combine
+    - Acidify with TFA to pH &lt; 2
+<span class="kw">STEP 7</span> Desalt with C18 Stage-tips</pre></div>
+
+<div class="code-tab-content" id="strap-proto"><pre><span class="comment"># S-Trap micro/mini column protocol</span>
+<span class="comment"># 起始: 10–300 µg protein in 5% SDS + 50 mM TEAB</span>
+
+<span class="kw">STEP 1</span> Reduce + alkylate (as SP3)
+<span class="kw">STEP 2</span> Acidify:
+    - Add 12% phosphoric acid (1:10) → final 1.2%
+    - Verify yellow color (Bromophenol Blue indicator)
+<span class="kw">STEP 3</span> Precipitate + load:
+    - Add 6× volume of S-Trap binding buffer
+      (90% methanol + 100 mM TEAB)
+    - Load onto S-Trap column, spin 4000 g
+<span class="kw">STEP 4</span> Wash 3× with binding buffer
+<span class="kw">STEP 5</span> Digest in-column:
+    - Add trypsin in 50 mM TEAB (1:25)
+    - Incubate 47°C, 1–2 hr (or 37°C overnight)
+<span class="kw">STEP 6</span> Elute peptides:
+    - 50 mM TEAB → 0.2% formic acid → 50% ACN/0.2% FA
+    - Combine all eluates
+<span class="kw">STEP 7</span> Dry in SpeedVac, resuspend, desalt</pre></div>
+
+<div class="code-tab-content" id="py-bca"><pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> scipy.interpolate <span class="kw">import</span> interp1d
+
+<span class="comment"># BCA assay: BSA standards (mg/mL) and A562 readings</span>
+bsa = np.array([<span class="num">0</span>, <span class="num">0.125</span>, <span class="num">0.25</span>, <span class="num">0.5</span>, <span class="num">1.0</span>, <span class="num">1.5</span>, <span class="num">2.0</span>])
+abs562 = np.array([<span class="num">0.04</span>, <span class="num">0.18</span>, <span class="num">0.32</span>, <span class="num">0.58</span>, <span class="num">1.05</span>, <span class="num">1.42</span>, <span class="num">1.78</span>])
+
+<span class="comment"># Fit standard curve (linear range)</span>
+slope, intercept = np.polyfit(bsa[<span class="num">1</span>:<span class="num">5</span>], abs562[<span class="num">1</span>:<span class="num">5</span>], <span class="num">1</span>)
+
+<span class="comment"># Unknown samples (already adjusted for dilution)</span>
+unknowns = {<span class="str">"S1"</span>: <span class="num">0.62</span>, <span class="str">"S2"</span>: <span class="num">0.88</span>, <span class="str">"S3"</span>: <span class="num">0.41</span>}
+<span class="kw">for</span> name, A <span class="kw">in</span> unknowns.items():
+    conc = (A - intercept) / slope
+    <span class="func">print</span>(<span class="func">f</span><span class="str">"{name}: {conc:.2f} mg/mL"</span>)</pre></div>
+
+<div class="code-tab-content" id="r-bca"><pre><span class="comment"># BCA quantification in R</span>
+bsa &lt;- <span class="func">c</span>(<span class="num">0</span>, <span class="num">0.125</span>, <span class="num">0.25</span>, <span class="num">0.5</span>, <span class="num">1.0</span>, <span class="num">1.5</span>, <span class="num">2.0</span>)
+abs562 &lt;- <span class="func">c</span>(<span class="num">0.04</span>, <span class="num">0.18</span>, <span class="num">0.32</span>, <span class="num">0.58</span>, <span class="num">1.05</span>, <span class="num">1.42</span>, <span class="num">1.78</span>)
+
+<span class="comment"># Linear fit on quantitative range</span>
+fit &lt;- <span class="func">lm</span>(abs562[<span class="num">2</span>:<span class="num">5</span>] ~ bsa[<span class="num">2</span>:<span class="num">5</span>])
+<span class="func">summary</span>(fit)$r.squared
+
+<span class="comment"># Apply to unknowns</span>
+unknowns &lt;- <span class="func">c</span>(S1 = <span class="num">0.62</span>, S2 = <span class="num">0.88</span>, S3 = <span class="num">0.41</span>)
+conc &lt;- (unknowns - <span class="func">coef</span>(fit)[<span class="num">1</span>]) / <span class="func">coef</span>(fit)[<span class="num">2</span>]
+<span class="func">print</span>(<span class="func">round</span>(conc, <span class="num">2</span>))</pre></div>
+</div>
+<div class="callout tip"><span class="callout-icon">📌</span><div>
+<span data-lang="zh"><strong>記得：</strong>送上機前先做 BCA / Bradford / 660 nm assay 確認最終胜肽濃度，並調整每個樣品到相同濃度（例如 0.5 µg/µL）以利後續定量。</span>
+<span data-lang="en"><strong>Remember:</strong> Before MS, perform BCA / Bradford / 660 nm assay to verify final peptide concentration and normalize all samples to the same concentration (e.g., 0.5 µg/µL) for downstream quantification.</span>
+</div></div>
+</section>
+
+<!-- ===== Quiz ===== -->
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">1. 你正在處理一份冷凍肝組織（10 mg），預期會有大量膜蛋白與少量結締組織。最適合的樣品製備策略？</p>
+<p data-lang="en">1. You're processing a frozen liver tissue (10 mg) expected to have many membrane proteins and some connective tissue. Best prep approach?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. In-solution + 0.1% RapiGest（怕清潔劑干擾）</span><span data-lang="en">A. In-solution + 0.1% RapiGest (avoid detergent interference)</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. SP3 + 1% Triton X-100</span><span data-lang="en">B. SP3 + 1% Triton X-100</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. S-Trap 搭配 5% SDS 裂解（足以溶解膜蛋白）</span><span data-lang="en">C. S-Trap with 5% SDS lysis (sufficient to solubilize membrane proteins)</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 直接送上機不需要清潔劑移除</span><span data-lang="en">D. Inject directly without detergent removal</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">2. 還原烷化步驟中使用 IAA，為什麼必須在暗處進行？</p>
+<p data-lang="en">2. Why must the IAA alkylation step be performed in the dark?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 光照會破壞蛋白質結構</span><span data-lang="en">A. Light damages protein structure</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 光照促進 IAA 過度反應，會使其與 Met、His、Lys 等發生非特異性烷化</span><span data-lang="en">B. Light accelerates side reactions where IAA can alkylate Met, His, Lys non-specifically</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. DTT 在光下會失活</span><span data-lang="en">C. DTT loses activity under light</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 並非必要，僅為慣例</span><span data-lang="en">D. Not necessary, just convention</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">3. 觀察消化後資料時，missed cleavage rate 達 45%。最可能的解釋與對策？</p>
+<p data-lang="en">3. After digestion, missed cleavage rate hits 45%. Most likely cause & fix?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 酵素活性不足或時間不夠 → 增加酵素比例 / 延長時間 / 加 Lys-C 預消化</span><span data-lang="en">A. Insufficient enzyme activity or time → raise enzyme ratio / extend time / add Lys-C pre-digestion</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 樣品太乾淨，無需處理</span><span data-lang="en">B. Sample is too clean, no action needed</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 質譜儀解析度太高</span><span data-lang="en">C. MS instrument resolution is too high</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 應換用 chymotrypsin（任意切位）</span><span data-lang="en">D. Switch to chymotrypsin (random cleavage)</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="index.html"><span class="nav-dir" data-zh="← 返回" data-en="← Back">← 返回</span><span class="nav-title" data-zh="目錄" data-en="Home">目錄</span></a>
+<a href="acquisition.html"><span class="nav-dir" data-zh="下一步 →" data-en="Next →">下一步 →</span><span class="nav-title" data-zh="Step 2: LC-MS/MS 採集" data-en="Step 2: LC-MS/MS Acquisition">Step 2: LC-MS/MS 採集</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+// Digestion simulator
+let useLysC=false;
+document.getElementById('btnNoLysC').onclick=()=>{useLysC=false;document.getElementById('btnNoLysC').classList.add('active');document.getElementById('btnLysC').classList.remove('active');update();};
+document.getElementById('btnLysC').onclick=()=>{useLysC=true;document.getElementById('btnLysC').classList.add('active');document.getElementById('btnNoLysC').classList.remove('active');update();};
+
+const digChart=new Chart(document.getElementById('digChart'),{
+  type:'bar',
+  data:{labels:[],datasets:[
+    {label:'Full',data:[],backgroundColor:'rgba(44,75,138,0.7)'},
+    {label:'Missed',data:[],backgroundColor:'rgba(200,127,58,0.7)'},
+    {label:'Short(<7aa)',data:[],backgroundColor:'rgba(181,58,43,0.6)'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,title:{display:true,text:'Replicate'}},y:{stacked:true,title:{display:true,text:'% peptides'},max:100}},plugins:{legend:{position:'top'}}}
+});
+
+function update(){
+  const ratio=+document.getElementById('sliderRatio').value;
+  const time=+document.getElementById('sliderTime').value;
+  document.getElementById('valRatio').textContent=ratio;
+  document.getElementById('valTime').textContent=time;
+  // Efficiency model
+  // base full% goes up with smaller ratio (more enzyme) and longer time
+  const enzymeFactor=Math.min(1,(1/(ratio/30))*0.85);
+  const timeFactor=Math.min(1,time/14);
+  let full=55+enzymeFactor*30+timeFactor*10;
+  if(useLysC) full+=6;
+  full=Math.max(45,Math.min(92,full));
+  let short=Math.max(2,(ratio<30?6:3)+(time>20?4:0));
+  if(useLysC) short=Math.max(2,short-1);
+  let miss=Math.max(2,100-full-short);
+  const L=I18n.get();
+  const labels=L==='zh'?['樣品 A','樣品 B','樣品 C']:['Sample A','Sample B','Sample C'];
+  digChart.data.labels=labels;
+  digChart.data.datasets[0].data=[full,full+2,full-3].map(v=>Math.max(0,Math.min(100,v)));
+  digChart.data.datasets[1].data=[miss,miss-1,miss+2].map(v=>Math.max(0,Math.min(100,v)));
+  digChart.data.datasets[2].data=[short,short+0.5,short-0.5].map(v=>Math.max(0,Math.min(100,v)));
+  digChart.data.datasets[0].label=L==='zh'?'完整消化':'Full cleavage';
+  digChart.data.datasets[1].label=L==='zh'?'漏切 (missed)':'Missed cleavage';
+  digChart.data.datasets[2].label=L==='zh'?'過短 (<7 aa)':'Too short (<7 aa)';
+  document.getElementById('statFull').textContent=(L==='zh'?'完整: ':'Full: ')+full.toFixed(0)+'%';
+  document.getElementById('statMiss').textContent=(L==='zh'?'漏切: ':'Missed: ')+miss.toFixed(0)+'%';
+  document.getElementById('statShort').textContent=(L==='zh'?'過短: ':'Short: ')+short.toFixed(0)+'%';
+  digChart.update('none');
+}
+['sliderRatio','sliderTime'].forEach(id=>document.getElementById(id).addEventListener('input',update));
+document.addEventListener('langchange',update);
+update();
+
+// Quiz
+const QF={
+  zh:{q1_y:'S-Trap 是少數能直接處理 5% SDS 的方法，對膜蛋白覆蓋極佳。',q1_n:'正確答案已標示。',
+      q2_y:'IAA 在光下會反應更廣泛，可能造成 Met/His/Lys 非特異烷化、產生 +57 質量偏移誤判。',q2_n:'正確答案已標示。',
+      q3_y:'高漏切通常意味酵素活性或時間不夠；增加酵素、延長時間、或加入 Lys-C 預消化都是有效對策。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'S-Trap is one of the few methods compatible with 5% SDS — ideal for membrane proteins.',q1_n:'Correct answer highlighted.',
+      q2_y:'Under light, IAA reacts more broadly, alkylating Met/His/Lys and producing spurious +57 modifications.',q2_n:'Correct answer highlighted.',
+      q3_y:'High missed cleavage usually means insufficient enzyme/time; raise enzyme ratio, extend time, or add Lys-C pre-digestion.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>

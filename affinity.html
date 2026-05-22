@@ -1,0 +1,252 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Affinity Proteomics — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html">Prep</a></li><li><a href="acquisition.html">MS</a></li><li><a href="identification.html">ID</a></li><li><a href="quantification.html">Quant</a></li><li><a href="qc.html">QC</a></li><li><a href="normalization.html">Norm</a></li><li><a href="imputation.html">Impute</a></li><li><a href="differential-expression.html">DE</a></li><li><a href="enrichment.html">Enrich</a></li><li><a href="ptm.html">PTM</a></li><li><a href="targeted.html">Target</a></li><li><a href="top-down.html">Top-down</a></li><li><a href="spatial.html">Spatial</a></li><li><a href="single-cell.html">scProt</a></li><li><a href="affinity.html" class="active">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">ADVANCED</div>
+<h1 data-zh="親合性蛋白質體學 (Affinity Proteomics)" data-en="Affinity Proteomics">親合性蛋白質體學 (Affinity Proteomics)</h1>
+<p class="subtitle" data-lang="zh">Olink 與 SomaScan——兩大非質譜蛋白質體學平台的原理、特點與如何選擇。</p>
+<p class="subtitle" data-lang="en">Olink and SomaScan — the two leading non-MS proteomics platforms, their principles, traits, and how to choose.</p>
+</header>
+<main class="content-wrap">
+
+<section class="section">
+<div class="section-label" data-zh="概念" data-en="CONCEPT">概念</div>
+<h2 data-zh="為什麼需要非質譜的蛋白質體學？" data-en="Why do we need non-MS proteomics?">為什麼需要非質譜的蛋白質體學？</h2>
+<div data-lang="zh">
+<p>MS-based proteomics 在血漿等高動態範圍樣品有先天限制：白蛋白（Albumin）佔總蛋白 50% 以上，<strong>壓抑訊號</strong>讓低豐度的 cytokines / hormones（pg-ng/mL）難以偵測。</p>
+<p>Affinity proteomics（基於抗體或 aptamer 親合試劑）能<strong>高通量同時測量 3000–10000+ 蛋白，含許多 MS 偵測不到的低豐度 biomarker</strong>。已成為大規模 cohort（UK Biobank 50,000+ 樣品）的主流。</p>
+</div>
+<div data-lang="en">
+<p>MS-based proteomics struggles with high-dynamic-range samples like plasma: albumin alone is 50%+ of total protein, <strong>suppressing signals</strong> for low-abundance cytokines/hormones (pg-ng/mL).</p>
+<p>Affinity proteomics (antibody- or aptamer-based) <strong>measures 3000–10000+ proteins in parallel — including many low-abundance biomarkers MS misses</strong>. It dominates large cohorts (UK Biobank 50,000+ samples).</p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="兩大平台" data-en="TWO PLATFORMS">兩大平台</h2>
+<h2 data-zh="一、Olink vs SomaScan 的本質區別" data-en="I. Olink vs SomaScan: the core difference">一、Olink vs SomaScan 的本質區別</h2>
+<div class="card-grid cols-2">
+<div class="card"><div class="card-icon">🔵</div><h4>Olink — Proximity Extension Assay (PEA)</h4>
+<div data-lang="zh"><p><strong>原理：</strong>使用<strong>一對抗體</strong>標記不同 DNA oligo 標籤；當兩個抗體都成功結合到同一蛋白時，DNA oligo 形成 hybrid → PCR/NGS 定量。<br><strong>優勢：</strong>「雙重認證」大幅降低非專一性；對 PTM、isoform 較不敏感；<strong>specificity 較高</strong>。<br><strong>規模：</strong>Olink Explore HT (5400+ 蛋白) / Explore 3072。<br><strong>佔比：</strong>UK Biobank 已採用做 50,000+ 樣品。</p></div>
+<div data-lang="en"><p><strong>Principle:</strong> <strong>antibody pairs</strong> each carrying a unique DNA oligo; when both bind the same protein, the oligos hybridize → PCR/NGS readout.<br><strong>Strength:</strong> "Dual authentication" greatly reduces non-specific signal; less PTM/isoform interference; <strong>higher specificity</strong>.<br><strong>Scale:</strong> Olink Explore HT (5400+ proteins) / Explore 3072.<br><strong>Adoption:</strong> Used by UK Biobank for 50,000+ samples.</p></div>
+</div>
+<div class="card"><div class="card-icon">🔴</div><h4>SomaScan — SOMAmer (aptamer)</h4>
+<div data-lang="zh"><p><strong>原理：</strong>使用<strong>慢解離率修飾單股 DNA (SOMAmer)</strong> 與蛋白結合 → 變性洗去未結合者 → 微陣列 / NGS 定量。<br><strong>優勢：</strong>覆蓋率最廣（v4.1 達 11000+ 蛋白）；<strong>精密度</strong>佳，動態範圍寬。<br><strong>限制：</strong>單一試劑，無「雙重認證」；對結構性 epitope 較敏感。<br><strong>佔比：</strong>Atherosclerosis Risk in Communities (ARIC) 主要平台。</p></div>
+<div data-lang="en"><p><strong>Principle:</strong> <strong>Slow-off-rate modified single-stranded DNA (SOMAmer)</strong> binds proteins → denaturing wash → microarray/NGS readout.<br><strong>Strength:</strong> Broadest coverage (v4.1 has 11000+ proteins); <strong>excellent precision</strong>; wide dynamic range.<br><strong>Limits:</strong> Single-reagent — no "dual authentication"; sensitive to structural epitopes.<br><strong>Adoption:</strong> ARIC's primary platform.</p></div>
+</div>
+</div>
+<table class="comp-table">
+<thead><tr><th></th><th>Olink</th><th>SomaScan</th></tr></thead>
+<tbody>
+<tr><td data-zh="試劑" data-en="Reagent"><strong>試劑</strong></td><td data-lang="zh">抗體對 (DNA-tag)</td><td data-lang="zh">SOMAmer (DNA aptamer)</td><td data-lang="en">Antibody pair (DNA-tag)</td><td data-lang="en">SOMAmer (DNA aptamer)</td></tr>
+<tr><td data-zh="蛋白覆蓋" data-en="Coverage"><strong>蛋白覆蓋</strong></td><td>5400+ (Explore HT)</td><td>11000+ (v4.1 / 5K Plus)</td></tr>
+<tr><td data-zh="專一性" data-en="Specificity"><strong>專一性</strong></td><td>★★★★★ (dual-recognition)</td><td>★★★ (single reagent)</td></tr>
+<tr><td data-zh="精密度" data-en="Precision"><strong>精密度</strong></td><td>★★★★</td><td>★★★★★</td></tr>
+<tr><td data-zh="動態範圍" data-en="Dyn. range"><strong>動態範圍</strong></td><td>4–6 logs</td><td>10+ logs</td></tr>
+<tr><td data-zh="絕對定量" data-en="Absolute quant"><strong>絕對定量</strong></td><td data-lang="zh">NPX (Normalized Protein eXpression)，<strong>相對值</strong></td><td data-lang="zh">RFU (Relative Fluorescence Unit)，<strong>相對值</strong></td><td data-lang="en">NPX (relative)</td><td data-lang="en">RFU (relative)</td></tr>
+<tr><td data-zh="跨平台 r" data-en="Cross-platform r"><strong>跨平台 r</strong></td><td colspan="2" data-lang="zh">中位數 r ≈ 0.29——兩平台測同一蛋白往往不一致！</td><td colspan="2" data-lang="en">Median r ≈ 0.29 — same protein often disagrees between platforms!</td></tr>
+</tbody></table>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<div data-lang="zh"><strong>關鍵發現 (Pietzner 2023 Nature)：</strong>兩平台對同一蛋白的測量結果<strong>中位數相關係數 r ≈ 0.29</strong>。原因：(1) 抗原 epitope 不同；(2) SOMAmer 可能 cross-react；(3) Olink 雙抗體 vs SomaScan 單試劑差異。建議：<strong>不要直接比較兩平台的絕對讀值</strong>，但可以用其結果與表型 GWAS 等共同 anchor 進行整合。</div>
+<div data-lang="en"><strong>Key finding (Pietzner 2023 Nature):</strong> Median cross-platform correlation is only <strong>r ≈ 0.29</strong>. Reasons: (1) different epitopes; (2) SOMAmer cross-reactivity; (3) Olink's dual-antibody vs SomaScan's single reagent. Advice: <strong>don't directly compare absolute readouts</strong>; integrate via phenotype/GWAS as a common anchor.</div>
+</div></div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="INTERACTIVE">互動模擬</div>
+<h2 data-zh="MS vs Affinity 動態範圍模擬" data-en="MS vs Affinity Dynamic Range">MS vs Affinity 動態範圍模擬</h2>
+<div data-lang="zh"><p>觀察血漿樣品中不同 abundance 範圍的蛋白：哪些 MS 可偵測、哪些只有 Affinity 能看到？</p></div>
+<div data-lang="en"><p>Compare plasma proteins by abundance range: which are MS-detectable and which only affinity can see?</p></div>
+<div class="interactive-panel">
+<div class="chart-container" style="height:380px;"><canvas id="afChart"></canvas></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="決策" data-en="DECISION">決策</div>
+<h2 data-zh="二、選擇平台的決策" data-en="II. Choosing a Platform">二、選擇平台的決策</h2>
+<div class="decision-tree">
+<h4>🌳 <span data-zh="平台選擇決策" data-en="Platform decision">平台選擇決策</span></h4>
+<div data-lang="zh">
+<div class="dt-node"><span class="dt-q">Q1:</span><div>需要深度（&gt; 10k 蛋白）且預算允許？ <span class="dt-arrow">→ 是 →</span> <strong>SomaScan v4.1</strong>。</div></div>
+<div class="dt-node"><span class="dt-q">Q2:</span><div>對 specificity 要求極高（如 clinical biomarker）？ <span class="dt-arrow">→ 是 →</span> <strong>Olink</strong>。</div></div>
+<div class="dt-node"><span class="dt-q">Q3:</span><div>需要絕對定量？ <span class="dt-arrow">→ 是 →</span> 兩者皆為相對值——建議補做 <strong>MS PRM/SureQuant</strong> validation。</div></div>
+<div class="dt-node"><span class="dt-q">Q4:</span><div>要整合多個 cohort（如跨研究）？ <span class="dt-arrow">→ 是 →</span> 採用<strong>同一平台</strong>避免 r=0.29 的不一致；如已既有混合，使用 genetics-based harmonization。</div></div>
+</div>
+<div data-lang="en">
+<div class="dt-node"><span class="dt-q">Q1:</span><div>Need depth (&gt; 10k proteins) and budget allows? <span class="dt-arrow">→ Yes →</span> <strong>SomaScan v4.1</strong>.</div></div>
+<div class="dt-node"><span class="dt-q">Q2:</span><div>Specificity is critical (clinical biomarker)? <span class="dt-arrow">→ Yes →</span> <strong>Olink</strong>.</div></div>
+<div class="dt-node"><span class="dt-q">Q3:</span><div>Absolute quantification needed? <span class="dt-arrow">→ Yes →</span> Both are relative — add <strong>MS PRM/SureQuant</strong> validation.</div></div>
+<div class="dt-node"><span class="dt-q">Q4:</span><div>Integrating multiple cohorts? <span class="dt-arrow">→ Yes →</span> Use a <strong>single platform</strong> to avoid the r=0.29 mismatch; otherwise apply genetics-based harmonization.</div></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="分析" data-en="ANALYSIS">分析</div>
+<h2 data-zh="三、資料分析特殊性" data-en="III. Analysis Specifics">三、資料分析特殊性</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4>📊 <span data-zh="NPX 與 RFU 都是相對值" data-en="NPX & RFU are relative">NPX 與 RFU 都是相對值</span></h4>
+<div data-lang="zh"><p>Olink 用 NPX (Normalized Protein eXpression, log2 scale)，SomaScan 用 RFU。兩者皆<strong>相對於 reference</strong>——不直接代表 fmol 或 pg/mL。</p></div>
+<div data-lang="en"><p>Olink uses NPX (Normalized Protein eXpression, log2 scale); SomaScan uses RFU. Both are <strong>relative to reference</strong> — not directly fmol or pg/mL.</p></div>
+</div>
+<div class="card"><h4>🧬 <span data-zh="pQTL 整合" data-en="pQTL integration">pQTL 整合</span></h4>
+<div data-lang="zh"><p>用<strong>蛋白質 quantitative trait loci (pQTLs)</strong> 作為「分子真值」——若一個變異在 Olink 和 SomaScan 對同一蛋白都產生強 cis-pQTL，則該蛋白測量可信。這是當前跨平台 harmonization 的主流方法。</p></div>
+<div data-lang="en"><p>Use <strong>protein quantitative trait loci (pQTLs)</strong> as "molecular ground truth" — if a variant produces a strong cis-pQTL on both Olink and SomaScan, the protein measurement is trustworthy. The current go-to cross-platform harmonization approach.</p></div>
+</div>
+<div class="card"><h4>📈 <span data-zh="缺失值與 LOD" data-en="Missing values & LOD">缺失值與 LOD</span></h4>
+<div data-lang="zh"><p>Olink 與 SomaScan 都有 LOD floor。低於 LOD 的測量被回報為 LOD 值（左截尾），分析時應視為 censored data 或用 Tobit regression。</p></div>
+<div data-lang="en"><p>Olink and SomaScan both have LOD floors. Sub-LOD measurements are reported as the LOD value (left-censored); analyze as censored data or use Tobit regression.</p></div>
+</div>
+<div class="card"><h4>🤝 <span data-zh="與 MS 互補" data-en="Complementary to MS">與 MS 互補</span></h4>
+<div data-lang="zh"><p>Affinity 強在低豐度血漿 biomarker；MS 強在 PTM、proteoform 與深度蛋白組學。<strong>多層次整合 (multi-platform)</strong> 是 2024-25 大型 atlas 計畫的標準。</p></div>
+<div data-lang="en"><p>Affinity excels at low-abundance plasma biomarkers; MS excels at PTMs, proteoforms, and deep proteomes. <strong>Multi-platform integration</strong> is standard for 2024-25 large-scale atlases.</p></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="實作" data-en="CODE">實作</div>
+<h2 data-zh="四、Olink / SomaScan 分析" data-en="IV. Olink / SomaScan Analysis">四、Olink / SomaScan 分析</h2>
+<div class="code-tabs"><div class="code-tab-btns">
+<button class="code-tab-btn active" onclick="switchTab(this,'r-olink')">R / OlinkAnalyze</button>
+<button class="code-tab-btn" onclick="switchTab(this,'r-soma')">R / SomaDataIO</button>
+<button class="code-tab-btn" onclick="switchTab(this,'py-affin')">Python / pandas</button>
+</div>
+<div class="code-tab-content active" id="r-olink"><pre><span class="func">library</span>(OlinkAnalyze)
+
+<span class="comment"># NPX data: long format with SampleID, OlinkID, NPX, MissingFreq</span>
+npx &lt;- <span class="func">read_NPX</span>(<span class="str">"olink_explore.csv"</span>)
+
+<span class="comment"># QC: PCA + sample outliers</span>
+<span class="func">olink_pca_plot</span>(npx, color_g = <span class="str">"Disease"</span>)
+<span class="func">olink_qc_plot</span>(npx)
+
+<span class="comment"># Differential abundance using linear model</span>
+res &lt;- <span class="func">olink_lmer</span>(df = npx, variable = <span class="func">c</span>(<span class="str">"Disease"</span>, <span class="str">"Age"</span>),
+                  random = <span class="str">"PatientID"</span>)
+
+<span class="comment"># Volcano</span>
+<span class="func">olink_volcano_plot</span>(res, x_lab = <span class="str">"NPX Difference"</span>,
+                   olink_id_col = <span class="str">"OlinkID"</span>)</pre></div>
+<div class="code-tab-content" id="r-soma"><pre><span class="func">library</span>(SomaDataIO)
+
+<span class="comment"># Read .adat file (SomaScan native format)</span>
+adat &lt;- <span class="func">read_adat</span>(<span class="str">"V4.1_5k.adat"</span>)
+
+<span class="comment"># Extract feature data + sample meta</span>
+features &lt;- <span class="func">getAnalytes</span>(adat)   <span class="comment"># SeqId, UniProt, EntrezID</span>
+meta     &lt;- <span class="func">getMeta</span>(adat)
+
+<span class="comment"># Quality flags: keep "PASS" only</span>
+clean &lt;- adat[adat$RowCheck == <span class="str">"PASS"</span>, ]
+
+<span class="comment"># Log2 transform + differential expression</span>
+<span class="func">library</span>(limma)
+mat &lt;- <span class="func">log2</span>(<span class="func">as.matrix</span>(clean[, features$AptName]))
+design &lt;- <span class="func">model.matrix</span>(~ clean$Disease)
+fit &lt;- <span class="func">eBayes</span>(<span class="func">lmFit</span>(<span class="func">t</span>(mat), design))
+<span class="func">topTable</span>(fit, coef = <span class="num">2</span>, number = <span class="num">10</span>)</pre></div>
+<div class="code-tab-content" id="py-affin"><pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> scipy <span class="kw">import</span> stats
+
+<span class="comment"># Olink NPX data (long format)</span>
+npx = pd.read_csv(<span class="str">"olink_explore.csv"</span>)
+
+<span class="comment"># Pivot to wide</span>
+wide = npx.pivot_table(index=<span class="str">"SampleID"</span>, columns=<span class="str">"Assay"</span>, values=<span class="str">"NPX"</span>)
+
+<span class="comment"># Drop high-missing assays (LOD floor too often)</span>
+wide = wide.loc[:, wide.notna().mean() &gt; <span class="num">0.7</span>]
+
+<span class="comment"># t-test per protein</span>
+meta = pd.read_csv(<span class="str">"meta.csv"</span>, index_col=<span class="num">0</span>)
+ctl = wide.loc[meta[<span class="str">"group"</span>] == <span class="str">"Ctl"</span>]
+trt = wide.loc[meta[<span class="str">"group"</span>] == <span class="str">"Tr"</span>]
+
+t, p = stats.ttest_ind(trt, ctl, axis=<span class="num">0</span>, nan_policy=<span class="str">"omit"</span>)
+fc = trt.mean() - ctl.mean()
+res = pd.DataFrame({<span class="str">"NPX_diff"</span>: fc.values, <span class="str">"pval"</span>: p},
+                   index=wide.columns)
+<span class="func">print</span>(res.sort_values(<span class="str">"pval"</span>).head(<span class="num">20</span>))</pre></div>
+</div>
+</section>
+
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">1. 你需要在血漿樣品中測量 IL-6（豐度 ~pg/mL）。MS 一直測不到，最佳替代？</p>
+<p data-lang="en">1. You need to measure plasma IL-6 (~pg/mL); MS keeps missing it. Best alternative?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 重做 MS 用更深的 LC 梯度</span><span data-lang="en">A. Redo MS with a deeper LC gradient</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. Olink 或 SomaScan affinity assay：對 ng-pg/mL 的低豐度血漿蛋白有最佳偵測</span><span data-lang="en">B. Olink or SomaScan affinity assay — best detection for ng–pg/mL plasma proteins</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. Western Blot</span><span data-lang="en">C. Western blot</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 放棄這個 biomarker</span><span data-lang="en">D. Abandon this biomarker</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">2. Olink PEA 為何 specificity 比 SomaScan 高？</p>
+<p data-lang="en">2. Why is Olink PEA more specific than SomaScan?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. Olink 較新</span><span data-lang="en">A. Olink is newer</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. Olink 用 NGS 讀取</span><span data-lang="en">B. Olink uses NGS readout</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. Olink 要求<strong>兩個</strong>抗體都成功結合才產生訊號，雙重認證大幅降低非專一性</span><span data-lang="en">C. Olink requires <strong>two</strong> antibodies to bind successfully — "dual authentication" greatly reduces non-specific signals</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. SomaScan 假陽性高</span><span data-lang="en">D. SomaScan has high false positives</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">3. 同一蛋白在 Olink 與 SomaScan 的測量值 r ≈ 0.29 意味？</p>
+<p data-lang="en">3. Same protein measured on Olink vs SomaScan correlates r ≈ 0.29. Meaning?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 兩平台測得「不一致」，不要直接合併數字；應用 pQTL 或 phenotype 做 anchor harmonization</span><span data-lang="en">A. The two platforms disagree — don't merge raw values; harmonize via pQTLs or phenotypes</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. SomaScan 錯誤</span><span data-lang="en">B. SomaScan is wrong</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. Olink 錯誤</span><span data-lang="en">C. Olink is wrong</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 不需要在意</span><span data-lang="en">D. Doesn't matter</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="single-cell.html"><span class="nav-dir" data-zh="← 上一篇" data-en="← Previous">← 上一篇</span><span class="nav-title" data-zh="單細胞蛋白質體學 (Single-cell Proteomics)" data-en="Single-cell Proteomics">單細胞蛋白質體學 (Single-cell Proteomics)</span></a>
+<a href="index.html"><span class="nav-dir" data-zh="目錄 ↑" data-en="Home ↑">目錄 ↑</span><span class="nav-title" data-zh="返回首頁" data-en="Back to Hub">返回首頁</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+// Dynamic range comparison
+const proteinsList=[
+  {name:'Albumin',abun:7,ms:true,af:true},
+  {name:'IgG',abun:5,ms:true,af:true},
+  {name:'Transferrin',abun:3,ms:true,af:true},
+  {name:'CRP',abun:0,ms:true,af:true},
+  {name:'IL-6 (basal)',abun:-3,ms:false,af:true},
+  {name:'TNFα (basal)',abun:-3,ms:false,af:true},
+  {name:'PCSK9',abun:-1,ms:false,af:true},
+  {name:'Troponin I',abun:-4,ms:false,af:true},
+  {name:'Cytokines (low)',abun:-5,ms:false,af:true}
+];
+const afChart=new Chart(document.getElementById('afChart'),{
+  type:'bar',
+  data:{labels:proteinsList.map(p=>p.name),datasets:[
+    {label:'MS detectable',data:proteinsList.map(p=>p.ms?p.abun:null),backgroundColor:'rgba(44,75,138,0.7)'},
+    {label:'Affinity detectable',data:proteinsList.map(p=>p.af?p.abun:null),backgroundColor:'rgba(200,127,58,0.7)'}
+  ]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{title:{display:true,text:'log10 abundance (mg/mL ... pg/mL)'},min:-6,max:8}},plugins:{legend:{position:'top'}}}
+});
+
+const QF={
+  zh:{q1_y:'Affinity 平台對低豐度血漿蛋白靈敏度遠超 MS-discovery，是 pg/mL 級 biomarker 的標準工具。',q1_n:'正確答案已標示。',q2_y:'雙抗體 dual-recognition 是 Olink PEA 的核心優勢——任何單一抗體的 cross-reactivity 都無法產生訊號。',q2_n:'正確答案已標示。',q3_y:'r=0.29 是 2023 Nature 的關鍵發現；建議用 pQTL/phenotype 做 anchor 整合而非直接合併數值。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'Affinity platforms outperform MS-discovery for low-abundance plasma proteins — standard for pg/mL biomarkers.',q1_n:'Correct answer highlighted.',q2_y:'Dual-recognition is Olink PEA\'s core strength — single-antibody cross-reactivity alone produces no signal.',q2_n:'Correct answer highlighted.',q3_y:'The r=0.29 finding from Nature 2023 is key; harmonize via pQTLs/phenotype anchors rather than merging raw values.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Step 3: Search & ID — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html">Prep</a></li><li><a href="acquisition.html">MS</a></li><li><a href="identification.html" class="active">ID</a></li><li><a href="quantification.html">Quant</a></li><li><a href="qc.html">QC</a></li><li><a href="normalization.html">Norm</a></li><li><a href="imputation.html">Impute</a></li><li><a href="differential-expression.html">DE</a></li><li><a href="enrichment.html">Enrich</a></li><li><a href="ptm.html">PTM</a></li><li><a href="targeted.html">Target</a></li><li><a href="top-down.html">Top-down</a></li><li><a href="spatial.html">Spatial</a></li><li><a href="single-cell.html">scProt</a></li><li><a href="affinity.html">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">STEP 3 / 9</div>
+<h1 data-zh="資料庫搜尋與鑑定" data-en="Database Search & Identification">資料庫搜尋與鑑定</h1>
+<p class="subtitle" data-lang="zh">從 MS2 譜到蛋白質名稱——理解 search engine、PSM 評分、target-decoy 與 FDR 如何共同保證鑑定可信度。</p>
+<p class="subtitle" data-lang="en">From MS2 spectra to protein IDs — how search engines, PSM scoring, target-decoy, and FDR jointly ensure reliable identification.</p>
+</header>
+<main class="content-wrap">
+
+<section class="section">
+<div class="section-label" data-zh="概念" data-en="CONCEPT">概念</div>
+<h2 data-zh="一、肽段譜匹配 (PSM) 的核心邏輯" data-en="I. The core logic of Peptide-Spectrum Matching (PSM)">一、肽段譜匹配 (PSM) 的核心邏輯</h2>
+<div data-lang="zh">
+<p>實驗 MS2 譜（一堆碎片離子峰）需要與「理論譜」比對才能識別胜肽。具體流程：</p>
+<ol style="margin-left:24px;color:var(--c-ink-light);line-height:2;">
+<li>從蛋白質序列資料庫（如 UniProt）<strong>in silico 消化</strong>生成所有理論胜肽；</li>
+<li>對於每個母離子 m/z 範圍內的候選胜肽，<strong>計算其 b/y 碎片離子的理論 m/z</strong>；</li>
+<li>用評分函數（如 Hyperscore、XCorr、E-value）比較理論譜與實驗譜，最高分者即為 <strong>PSM (Peptide-Spectrum Match)</strong>。</li>
+</ol>
+<p>注意：<strong>PSM 只是「最佳猜測」</strong>——即便分數高，也可能匹配到隨機相似度。這就是為何需要統計層面的 FDR 控制。</p>
+</div>
+<div data-lang="en">
+<p>An experimental MS2 spectrum (a pattern of fragment ion peaks) must be compared to "theoretical" spectra to identify the peptide. The workflow:</p>
+<ol style="margin-left:24px;color:var(--c-ink-light);line-height:2;">
+<li><strong>In silico digest</strong> the protein database (e.g., UniProt) into all theoretical peptides;</li>
+<li>For each candidate within the precursor m/z tolerance, <strong>compute theoretical b/y fragment ion m/z values</strong>;</li>
+<li>A scoring function (Hyperscore, XCorr, E-value) compares theoretical vs experimental spectrum; the best match is the <strong>PSM (Peptide-Spectrum Match)</strong>.</li>
+</ol>
+<p>Key point: <strong>a PSM is only a "best guess"</strong> — high scores can still arise by chance. This is why statistical FDR control is essential.</p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="搜尋引擎" data-en="SEARCH ENGINES">搜尋引擎</div>
+<h2 data-zh="二、主流搜尋引擎比較" data-en="II. Major Search Engines">二、主流搜尋引擎比較</h2>
+<table class="comp-table">
+<thead><tr><th>Engine</th><th data-zh="原理" data-en="Principle">原理</th><th data-zh="速度" data-en="Speed">速度</th><th data-zh="特色" data-en="Highlights">特色</th></tr></thead>
+<tbody>
+<tr><td><strong>MSFragger</strong></td><td data-lang="zh">Fragment-index 預編索引</td><td data-lang="en">Pre-indexed fragment lookup</td><td>★★★★★</td><td data-lang="zh">支援 open / glyco / closed search；FragPipe 套件</td><td data-lang="en">Supports open / glyco / closed search; FragPipe suite</td></tr>
+<tr><td><strong>Comet</strong></td><td data-lang="zh">XCorr（互相關）</td><td data-lang="en">XCorr (cross-correlation)</td><td>★★★</td><td data-lang="zh">開源、穩定、TPP 整合</td><td data-lang="en">Open-source, stable, TPP integration</td></tr>
+<tr><td><strong>Andromeda</strong> (MaxQuant)</td><td data-lang="zh">概率模型</td><td data-lang="en">Probabilistic model</td><td>★★</td><td data-lang="zh">經典 LFQ/SILAC；MBR 強大</td><td data-lang="en">Classic LFQ/SILAC; powerful MBR</td></tr>
+<tr><td><strong>Sage</strong> (Rust)</td><td data-lang="zh">類 MSFragger 但 Rust 實作</td><td data-lang="en">MSFragger-like, Rust-built</td><td>★★★★★</td><td data-lang="zh">2023 新銳；極快、雲端友善</td><td data-lang="en">2023 newcomer; very fast, cloud-friendly</td></tr>
+<tr><td><strong>DIA-NN</strong></td><td data-lang="zh">深度學習 + library-free DIA</td><td data-lang="en">Deep learning + library-free DIA</td><td>★★★★★</td><td data-lang="zh">DIA 的事實標準</td><td data-lang="en">De facto standard for DIA</td></tr>
+<tr><td><strong>Spectronaut</strong></td><td data-lang="zh">商業 DIA 解析</td><td data-lang="en">Commercial DIA solver</td><td>★★★★</td><td data-lang="zh">GUI 友善、報表完整</td><td data-lang="en">GUI-friendly, polished reports</td></tr>
+</tbody></table>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="FDR 控制" data-en="FDR CONTROL">FDR 控制</div>
+<h2 data-zh="三、Target-Decoy 策略與 FDR" data-en="III. Target-Decoy Strategy & FDR">三、Target-Decoy 策略與 FDR</h2>
+<div data-lang="zh">
+<p><strong>核心邏輯：</strong>在 search 時，把<strong>蛋白質資料庫</strong>（target）與一個<strong>誘餌資料庫</strong>（decoy，把序列反轉或亂序）合併送進去搜尋。Target 的高分匹配可能是真的；Decoy 的高分匹配必定是假的（因為 decoy 序列實際上不存在於樣品中）。</p>
+<p><strong>計算：</strong></p>
+</div>
+<div data-lang="en">
+<p><strong>Core logic:</strong> During search, combine the <strong>target database</strong> with a <strong>decoy database</strong> (reversed or shuffled sequences) and run them together. High-scoring target matches may be real; high-scoring decoy matches are by definition wrong (the decoys don't exist in the sample).</p>
+<p><strong>Calculation:</strong></p>
+</div>
+<div class="formula">FDR = (# Decoy PSM above threshold) / (# Target PSM above threshold)</div>
+<div data-lang="zh"><p>逐步降低分數閾值，當 FDR 達到 1% 時即為「1% FDR cutoff」。整個流程後可再用 <strong>Percolator</strong>（半監督 SVM）重新排序 PSM、提升靈敏度。</p></div>
+<div data-lang="en"><p>Progressively lower the score threshold until FDR ≤ 1% (the "1% FDR cutoff"). <strong>Percolator</strong> (semi-supervised SVM) can then re-rank PSMs for higher sensitivity.</p></div>
+
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<div data-lang="zh"><strong>三層 FDR 控制：</strong>(1) PSM-level（單一光譜匹配） (2) Peptide-level（合併重複 PSM） (3) Protein-level（合併共享胜肽）。<br>論文中報導的「1% FDR」通常指 protein-level，但實際分析時三層都應檢驗。</div>
+<div data-lang="en"><strong>Three-tier FDR control:</strong> (1) PSM-level (per-spectrum) (2) Peptide-level (collapsed PSMs) (3) Protein-level (collapsed shared peptides).<br>Papers usually report "1% FDR" at protein level, but all three tiers should be checked in practice.</div>
+</div></div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="INTERACTIVE">互動模擬</div>
+<h2 data-zh="FDR 閾值模擬器" data-en="FDR Threshold Simulator">FDR 閾值模擬器</h2>
+<div data-lang="zh"><p>拖動分數閾值，觀察 Target / Decoy 通過數量與 FDR 變化。實務上希望保持綠色 PSM 多、橘色少。</p></div>
+<div data-lang="en"><p>Drag the score threshold to watch how many Target / Decoy PSMs pass and the resulting FDR. Goal: many green PSMs, few orange ones.</p></div>
+<div class="interactive-panel">
+<div class="sim-stats"><span class="sim-stat pass" id="statTarget">—</span><span class="sim-stat fail" id="statDecoy">—</span><span class="sim-stat neutral" id="statFDR">—</span></div>
+<div class="slider-group"><label><span data-zh="分數閾值" data-en="Score threshold">分數閾值</span> <span id="valScore">25</span></label><input type="range" id="sliderScore" min="10" max="50" value="25" step="1"></div>
+<div class="chart-container"><canvas id="fdrChart"></canvas></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="實作" data-en="HANDS-ON">實作</div>
+<h2 data-zh="四、執行 search 的程式碼／參數" data-en="IV. Running a search">四、執行 search 的程式碼／參數</h2>
+<div class="code-tabs"><div class="code-tab-btns">
+<button class="code-tab-btn active" onclick="switchTab(this,'fp-config')">FragPipe (config)</button>
+<button class="code-tab-btn" onclick="switchTab(this,'comet-config')">Comet (.params)</button>
+<button class="code-tab-btn" onclick="switchTab(this,'r-fdr')">R (FDR check)</button>
+<button class="code-tab-btn" onclick="switchTab(this,'py-fdr')">Python (FDR)</button>
+</div>
+<div class="code-tab-content active" id="fp-config"><pre><span class="comment"># FragPipe LFQ workflow 的核心參數</span>
+[workflow]
+search.precursor_mass_tol = 20 ppm
+search.fragment_mass_tol  = 20 ppm
+search.enzyme             = trypsin
+search.allowed_missed     = 2
+search.fixed_mod          = Carbamidomethyl (C, +57.02)
+search.variable_mod       = Oxidation (M, +15.99),
+                            Acetyl (N-term, +42.01)
+
+[filter]
+psm_fdr                   = 0.01
+peptide_fdr               = 0.01
+protein_fdr               = 0.01
+report.razor_peptide      = true</pre></div>
+<div class="code-tab-content" id="comet-config"><pre><span class="comment"># Comet.params 關鍵欄位</span>
+database_name                  = uniprot_human_target_decoy.fasta
+decoy_search                   = 2   <span class="comment"># concatenated target-decoy</span>
+num_threads                    = 16
+peptide_mass_tolerance         = 20.0
+peptide_mass_units             = 2   <span class="comment"># ppm</span>
+fragment_bin_tol               = 0.02
+search_enzyme_number           = 1   <span class="comment"># trypsin/P</span>
+allowed_missed_cleavage        = 2
+variable_mod01                 = 15.9949 M 0 3 -1 0 0
+add_C_cysteine                 = 57.021464</pre></div>
+<div class="code-tab-content" id="r-fdr"><pre><span class="comment"># Inspect FDR with R</span>
+<span class="func">library</span>(MSnbase)
+psm &lt;- <span class="func">read.delim</span>(<span class="str">"psm.tsv"</span>)
+
+<span class="comment"># Estimate FDR by accumulated decoy count</span>
+psm &lt;- psm[<span class="func">order</span>(-psm$Score),]
+psm$decoy &lt;- <span class="func">grepl</span>(<span class="str">"^DECOY_"</span>, psm$Protein)
+psm$cum_decoy  &lt;- <span class="func">cumsum</span>(psm$decoy)
+psm$cum_target &lt;- <span class="func">cumsum</span>(!psm$decoy)
+psm$fdr &lt;- psm$cum_decoy / <span class="func">pmax</span>(psm$cum_target, <span class="num">1</span>)
+
+<span class="comment"># Cut at 1% FDR</span>
+threshold &lt;- <span class="func">min</span>(psm$Score[psm$fdr &lt;= <span class="num">0.01</span>])
+<span class="func">message</span>(<span class="str">"1% FDR score cutoff = "</span>, threshold)</pre></div>
+<div class="code-tab-content" id="py-fdr"><pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+psm = pd.read_csv(<span class="str">"psm.tsv"</span>, sep=<span class="str">"\t"</span>)
+psm = psm.sort_values(<span class="str">"Score"</span>, ascending=<span class="kw">False</span>).reset_index(drop=<span class="kw">True</span>)
+psm[<span class="str">"is_decoy"</span>] = psm[<span class="str">"Protein"</span>].str.startswith(<span class="str">"DECOY_"</span>)
+
+psm[<span class="str">"cum_decoy"</span>]  = psm[<span class="str">"is_decoy"</span>].cumsum()
+psm[<span class="str">"cum_target"</span>] = (~psm[<span class="str">"is_decoy"</span>]).cumsum()
+psm[<span class="str">"fdr"</span>] = psm[<span class="str">"cum_decoy"</span>] / psm[<span class="str">"cum_target"</span>].clip(lower=<span class="num">1</span>)
+
+cutoff = psm.loc[psm[<span class="str">"fdr"</span>] &lt;= <span class="num">0.01</span>, <span class="str">"Score"</span>].min()
+n_pass = (psm[<span class="str">"Score"</span>] &gt;= cutoff).sum()
+<span class="func">print</span>(<span class="func">f</span><span class="str">"1% FDR cutoff = {cutoff:.2f}, PSMs passing = {n_pass}"</span>)</pre></div>
+</div>
+</section>
+
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">1. 為何 search 需要 decoy database？</p>
+<p data-lang="en">1. Why does a search need a decoy database?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 增加搜尋空間覆蓋率</span><span data-lang="en">A. Expand search-space coverage</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 加速搜尋</span><span data-lang="en">B. Speed up the search</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 估計隨機匹配率（false positives），計算 FDR</span><span data-lang="en">C. Estimate the random-match rate (false positives) to compute FDR</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 防止資料外洩</span><span data-lang="en">D. Prevent data leakage</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">2. 你在 DIA 資料分析時，下列哪個工具最適合？</p>
+<p data-lang="en">2. Which tool is best for DIA data analysis?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. Andromeda（MaxQuant 內建）</span><span data-lang="en">A. Andromeda (in MaxQuant)</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. DIA-NN（library-free 或基於 library）</span><span data-lang="en">B. DIA-NN (library-free or library-based)</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. Comet（純 XCorr）</span><span data-lang="en">C. Comet (pure XCorr)</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. Mascot 1.0</span><span data-lang="en">D. Mascot 1.0</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">3. 報告 1% FDR 但 protein-level FDR 高達 5%。最可能的原因？</p>
+<p data-lang="en">3. PSM-level FDR is 1% but protein-level FDR is 5%. Likely reason?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. PSM-level FDR 不會自動 propagate 到 protein-level，必須額外控制三層</span><span data-lang="en">A. PSM-level FDR doesn't propagate to protein-level; all three tiers need their own control</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 樣品被污染</span><span data-lang="en">B. Sample contamination</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. Decoy database 太大</span><span data-lang="en">C. Decoy database is too large</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 質譜儀解析度不夠</span><span data-lang="en">D. Insufficient MS resolution</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="acquisition.html"><span class="nav-dir" data-zh="← 上一步" data-en="← Previous">← 上一步</span><span class="nav-title" data-zh="Step 2: LC-MS/MS 採集" data-en="Step 2: LC-MS/MS Acquisition">Step 2: LC-MS/MS 採集</span></a>
+<a href="quantification.html"><span class="nav-dir" data-zh="下一步 →" data-en="Next →">下一步 →</span><span class="nav-title" data-zh="Step 4: 定量策略" data-en="Step 4: Quantification Strategies">Step 4: 定量策略</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+// FDR simulator: target ~ N(28, 5), decoy ~ N(18, 4)
+function randn(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const N=4000;
+const targetScores=Array.from({length:N},()=>28+randn()*5);
+const decoyScores=Array.from({length:N},()=>18+randn()*4);
+function hist(arr,bins,min,max){const h=new Array(bins).fill(0);const step=(max-min)/bins;arr.forEach(v=>{const i=Math.min(bins-1,Math.max(0,Math.floor((v-min)/step)));h[i]++;});return h;}
+const bins=24,xmin=5,xmax=50;
+const labels=Array.from({length:bins},(_,i)=>(xmin+i*(xmax-xmin)/bins).toFixed(1));
+const tH=hist(targetScores,bins,xmin,xmax);
+const dH=hist(decoyScores,bins,xmin,xmax);
+const fdrChart=new Chart(document.getElementById('fdrChart'),{
+  type:'bar',
+  data:{labels:labels,datasets:[
+    {label:'Target',data:tH,backgroundColor:'rgba(44,75,138,0.65)',stack:'a'},
+    {label:'Decoy',data:dH,backgroundColor:'rgba(181,58,43,0.6)',stack:'a'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,scales:{x:{title:{display:true,text:'PSM score'}},y:{title:{display:true,text:'# PSMs'}}},plugins:{legend:{position:'top'}}}
+});
+function update(){
+  const t=+document.getElementById('sliderScore').value;
+  document.getElementById('valScore').textContent=t;
+  const tPass=targetScores.filter(v=>v>=t).length;
+  const dPass=decoyScores.filter(v=>v>=t).length;
+  const fdr=tPass>0?(dPass/tPass*100).toFixed(2):'—';
+  const L=I18n.get();
+  document.getElementById('statTarget').textContent=(L==='zh'?'Target 通過: ':'Target pass: ')+tPass;
+  document.getElementById('statDecoy').textContent=(L==='zh'?'Decoy 通過: ':'Decoy pass: ')+dPass;
+  document.getElementById('statFDR').textContent='FDR ≈ '+fdr+'%';
+}
+document.getElementById('sliderScore').addEventListener('input',update);
+document.addEventListener('langchange',update);
+update();
+
+const QF={
+  zh:{q1_y:'Decoy 提供「假陽性的基準線」，是 FDR 統計的基石。',q1_n:'正確答案已標示。',q2_y:'DIA-NN 是目前 DIA 資料分析的事實標準。',q2_n:'正確答案已標示。',q3_y:'PSM、peptide、protein 三層 FDR 都需獨立控制，protein-level 通常更嚴格。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'Decoys provide the "false-positive baseline" — the cornerstone of FDR statistics.',q1_n:'Correct answer highlighted.',q2_y:'DIA-NN is the de facto standard for DIA data analysis.',q2_n:'Correct answer highlighted.',q3_y:'PSM, peptide, and protein FDR each need independent control; protein-level is usually stricter.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>

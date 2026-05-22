@@ -1,0 +1,239 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Step 2: LC-MS/MS — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html">Prep</a></li><li><a href="acquisition.html" class="active">MS</a></li><li><a href="identification.html">ID</a></li><li><a href="quantification.html">Quant</a></li><li><a href="qc.html">QC</a></li><li><a href="normalization.html">Norm</a></li><li><a href="imputation.html">Impute</a></li><li><a href="differential-expression.html">DE</a></li><li><a href="enrichment.html">Enrich</a></li><li><a href="ptm.html">PTM</a></li><li><a href="targeted.html">Target</a></li><li><a href="top-down.html">Top-down</a></li><li><a href="spatial.html">Spatial</a></li><li><a href="single-cell.html">scProt</a></li><li><a href="affinity.html">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">STEP 2 / 9</div>
+<h1 data-zh="LC-MS/MS 採集" data-en="LC-MS/MS Acquisition">LC-MS/MS 採集</h1>
+<p class="subtitle" data-lang="zh">DDA 與 DIA 兩大採集策略——理解它們如何決定你的蛋白質體覆蓋率與定量精準度。</p>
+<p class="subtitle" data-lang="en">DDA vs DIA — the two acquisition strategies that determine your proteome coverage and quantification precision.</p>
+</header>
+<main class="content-wrap">
+
+<section class="section">
+<div class="section-label" data-zh="概覽" data-en="OVERVIEW">概覽</div>
+<h2 data-zh="從層析柱到 m/z：質譜採集的物理流程" data-en="From column to m/z: the physical acquisition flow">從層析柱到 m/z：質譜採集的物理流程</h2>
+<div data-lang="zh">
+<p>胜肽混合物經 <strong>nanoLC</strong> 在 75 μm × 25–50 cm 的 C18 反相管柱中以梯度 ACN（5–35%，60–180 min）分離，洗脫的胜肽通過電灑離子源 (ESI) 進入質譜儀。儀器在 <strong>MS1（全掃描）</strong>記錄母離子 m/z，再選擇性對母離子進行 <strong>碰撞活化（HCD / CID）</strong>得到 <strong>MS2 碎片離子譜</strong>，後續用於資料庫比對與定量。</p>
+<p>採集策略的核心問題是：<em>每秒能採集多少 MS2，每個 MS2 能涵蓋多廣的 m/z 範圍？</em> DDA 與 DIA 給出兩種完全不同的答案。</p>
+</div>
+<div data-lang="en">
+<p>Peptide mixtures elute from a <strong>nanoLC</strong> column (75 μm × 25–50 cm C18, ACN gradient 5–35% over 60–180 min) and enter the MS via electrospray (ESI). Each <strong>MS1 (full scan)</strong> records precursor m/z; selected precursors are then fragmented (HCD/CID) to produce <strong>MS2 spectra</strong> used for ID and quantitation.</p>
+<p>The key acquisition question: <em>how many MS2 scans per second, and how wide an m/z window per MS2?</em> DDA and DIA give very different answers.</p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="DDA vs DIA" data-en="DDA vs DIA">DDA vs DIA</div>
+<h2 data-zh="一、DDA 與 DIA 的本質差異" data-en="I. The fundamental difference between DDA and DIA">一、DDA 與 DIA 的本質差異</h2>
+<div class="card-grid cols-2">
+<div class="card"><div class="card-icon">🎯</div><h4>DDA — Data-Dependent</h4>
+<div data-lang="zh"><p>「擇強者而戰」。<br>儀器先做 MS1 全掃描，依強度<strong>挑選 Top-N（10–30 個）最強的母離子</strong>，分別 isolation（窗 1–2 m/z）後逐一碎裂。<br>• <strong>優點：</strong>MS2 純度高，鑑定可信度極佳；廣泛的 search engine 與 PTM 分析支援。<br>• <strong>缺點：</strong>每次 run 只選擇性碎裂部分母離子，導致 <strong>run-to-run 不重複（missing values）</strong>。低豐度蛋白容易漏失。</p></div>
+<div data-lang="en"><p>"Pick the strongest." The instrument first scans MS1, then <strong>selects the top-N (10–30) most intense precursors</strong>, isolates each with a 1–2 m/z window, and fragments them.<br>• <strong>Pros:</strong> Clean MS2 spectra, highly reliable ID; broad search-engine and PTM support.<br>• <strong>Cons:</strong> Stochastic selection causes <strong>run-to-run irreproducibility (missing values)</strong>. Low-abundance proteins often dropped.</p></div>
+</div>
+<div class="card"><div class="card-icon">🌊</div><h4>DIA — Data-Independent</h4>
+<div data-lang="zh"><p>「全攻全守」。<br>儀器以<strong>預先定義的固定 m/z 窗口</strong>（例如 4–25 m/z 寬，覆蓋 400–1000 m/z 全域 25–80 個 SWATH 窗口）<strong>無差別地碎裂窗內所有母離子</strong>，產生混合 MS2。<br>• <strong>優點：</strong>數據近乎完整（<5% missing），定量重現性極佳，適合大規模 cohort 研究。<br>• <strong>缺點：</strong>MS2 為混合譜，需 spectral library 或 deep-learning 模型解析（DIA-NN、Spectronaut）；PTM 分析更具挑戰。</p></div>
+<div data-lang="en"><p>"Attack the whole thing." The instrument fragments <strong>everything within predefined m/z windows</strong> (e.g., 25–80 SWATH windows of 4–25 m/z width covering 400–1000 m/z), producing chimeric MS2 spectra.<br>• <strong>Pros:</strong> Near-complete data (&lt;5% missing), excellent quantitative reproducibility, ideal for large cohorts.<br>• <strong>Cons:</strong> Chimeric MS2 requires spectral libraries or deep-learning models (DIA-NN, Spectronaut) to deconvolute; PTM analysis more challenging.</p></div>
+</div>
+</div>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh">2025 年的主流共識：<strong>探索 / PTM 研究用 DDA，定量 / 臨床 / cohort 研究用 DIA。</strong>diaPASEF（Bruker timsTOF）與 Orbitrap Astral 將兩者優點結合，已成為近兩年最強力的選項。</span>
+<span data-lang="en">2025 consensus: <strong>DDA for discovery / PTM, DIA for quantitation / clinical / cohorts.</strong> diaPASEF (Bruker timsTOF) and Orbitrap Astral combine the strengths of both — the strongest options of the last two years.</span>
+</div></div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="INTERACTIVE">互動模擬</div>
+<h2 data-zh="DDA 隨機性 vs DIA 一致性" data-en="DDA stochasticity vs DIA consistency">DDA 隨機性 vs DIA 一致性</h2>
+<div data-lang="zh"><p>模擬一個含 5000 蛋白的樣品在 <strong>3 次重複</strong>下，DDA 與 DIA 分別能鑑定的蛋白集合。觀察 Venn 重疊區（一致檢出）與獨有區（missing values）。</p></div>
+<div data-lang="en"><p>Simulate a 5000-protein sample analyzed in <strong>3 replicates</strong> by DDA vs DIA. Observe the overlap (consistently detected) and unique zones (missing values).</p></div>
+<div class="interactive-panel">
+<div class="sim-stats"><span class="sim-stat pass" id="statDDA">—</span><span class="sim-stat pass" id="statDIA">—</span></div>
+<div class="slider-group"><label><span data-zh="LC 梯度長度 (min)" data-en="LC gradient (min)">LC 梯度長度</span> <span id="valGrad">90</span></label><input type="range" id="sliderGrad" min="30" max="240" value="90" step="10"></div>
+<div class="slider-group"><label><span data-zh="樣品上機量 (µg)" data-en="Sample load (µg)">樣品上機量</span> <span id="valLoad">1.0</span></label><input type="range" id="sliderLoad" min="0.1" max="5" value="1" step="0.1"></div>
+<div class="chart-container"><canvas id="acqChart"></canvas></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="儀器選擇" data-en="INSTRUMENTS">儀器選擇</div>
+<h2 data-zh="二、現代質譜儀比較 (2024-2025)" data-en="II. Modern MS Instruments (2024-2025)">二、現代質譜儀比較 (2024-2025)</h2>
+<table class="comp-table">
+<thead><tr><th>Instrument</th><th data-zh="技術核心" data-en="Core tech">技術核心</th><th data-zh="速度 (Hz)" data-en="Speed (Hz)">速度 (Hz)</th><th data-zh="適用採集" data-en="Best for">適用採集</th><th data-zh="典型應用" data-en="Use case">典型應用</th></tr></thead>
+<tbody>
+<tr><td><strong>Orbitrap Eclipse / Ascend</strong></td><td>Orbitrap + Linear Ion Trap</td><td>~40 (DDA)</td><td>DDA + Top-down</td><td data-lang="zh">PTM 深度研究、TMT</td><td data-lang="en">PTM deep dives, TMT</td></tr>
+<tr><td><strong>Orbitrap Exploris 480</strong></td><td>Orbitrap + Quadrupole</td><td>~40</td><td>DDA / DIA</td><td data-lang="zh">通用研究主力</td><td data-lang="en">All-purpose workhorse</td></tr>
+<tr><td><strong>Orbitrap Astral</strong></td><td>Orbitrap + Astral (TOF-like)</td><td>~200</td><td>DIA</td><td data-lang="zh">超深度 single-shot</td><td data-lang="en">Ultra-deep single-shot</td></tr>
+<tr><td><strong>timsTOF Pro 2 / SCP</strong></td><td>TIMS + Q-TOF (PASEF)</td><td>~120</td><td>diaPASEF / ddaPASEF</td><td data-lang="zh">single-cell, 高通量</td><td data-lang="en">Single-cell, high-throughput</td></tr>
+<tr><td><strong>timsTOF Ultra / Ultra 2</strong></td><td>TIMS + Ultra-sensitivity</td><td>~140</td><td>DIA (diaPASEF)</td><td data-lang="zh">single-cell &gt; 5k protein</td><td data-lang="en">Single-cell &gt; 5k proteins</td></tr>
+</tbody></table>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="決策引導" data-en="DECISION GUIDE">決策引導</div>
+<h2 data-zh="三、選擇採集策略的關鍵問題" data-en="III. Choosing your acquisition strategy">三、選擇採集策略的關鍵問題</h2>
+<div class="decision-tree">
+<h4>🌳 <span data-zh="採集策略決策樹" data-en="Acquisition decision tree">採集策略決策樹</span></h4>
+<div data-lang="zh">
+<div class="dt-node"><span class="dt-q">Q1:</span><div>需要分析 PTM（特別是磷酸化）且樣品數 ≤ 12？ <span class="dt-arrow">→ 是 →</span> <strong>DDA + TMT/SILAC + 富集</strong>。</div></div>
+<div class="dt-node"><span class="dt-q">Q2:</span><div>cohort 樣品數 &gt; 30，需要完整 protein × sample 矩陣？ <span class="dt-arrow">→ 是 →</span> <strong>library-free DIA（DIA-NN / Spectronaut directDIA）</strong>。</div></div>
+<div class="dt-node"><span class="dt-q">Q3:</span><div>單細胞或極微量樣品？ <span class="dt-arrow">→ 是 →</span> <strong>diaPASEF 於 timsTOF SCP / Ultra</strong>。</div></div>
+<div class="dt-node"><span class="dt-q">Q4:</span><div>探索性研究、新 PTM 發現？ <span class="dt-arrow">→ 是 →</span> <strong>DDA + open search（MSFragger）</strong>。</div></div>
+</div>
+<div data-lang="en">
+<div class="dt-node"><span class="dt-q">Q1:</span><div>PTM (especially phospho) and ≤12 samples? <span class="dt-arrow">→ Yes →</span> <strong>DDA + TMT/SILAC + enrichment</strong>.</div></div>
+<div class="dt-node"><span class="dt-q">Q2:</span><div>Cohort &gt; 30 samples, need a complete protein × sample matrix? <span class="dt-arrow">→ Yes →</span> <strong>library-free DIA (DIA-NN / Spectronaut directDIA)</strong>.</div></div>
+<div class="dt-node"><span class="dt-q">Q3:</span><div>Single-cell or ultra-low input? <span class="dt-arrow">→ Yes →</span> <strong>diaPASEF on timsTOF SCP / Ultra</strong>.</div></div>
+<div class="dt-node"><span class="dt-q">Q4:</span><div>Discovery work, novel PTMs? <span class="dt-arrow">→ Yes →</span> <strong>DDA + open search (MSFragger)</strong>.</div></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="方法設定" data-en="METHOD SETUP">方法設定</div>
+<h2 data-zh="四、儀器方法參數示意" data-en="IV. Instrument Method Parameters">四、儀器方法參數示意</h2>
+<div class="code-tabs"><div class="code-tab-btns">
+<button class="code-tab-btn active" onclick="switchTab(this,'dda-method')">DDA Method</button>
+<button class="code-tab-btn" onclick="switchTab(this,'dia-method')">DIA Method</button>
+<button class="code-tab-btn" onclick="switchTab(this,'pasef')">diaPASEF</button>
+</div>
+<div class="code-tab-content active" id="dda-method"><pre><span class="comment"># Top-15 DDA on Orbitrap Exploris 480 (典型參數)</span>
+MS1 Scan:
+  - Resolution:          120,000 @ m/z 200
+  - Scan range:          350–1500 m/z
+  - AGC target:          3e6
+  - Max IT:              50 ms
+
+MS2 Scan (Top-15):
+  - Resolution:          15,000
+  - Isolation window:    1.4 m/z
+  - HCD NCE:             30%
+  - AGC target:          1e5
+  - Max IT:              22 ms
+  - Charge states:       2–5+
+  - Dynamic exclusion:   30 s</pre></div>
+<div class="code-tab-content" id="dia-method"><pre><span class="comment"># Staggered-window DIA on Orbitrap Exploris 480</span>
+MS1 Scan:
+  - Resolution:          60,000
+  - Scan range:          400–1000 m/z
+  - AGC:                 1e6,  Max IT 20 ms
+
+DIA MS2:
+  - Resolution:          30,000
+  - Isolation windows:   75 × 8 m/z (overlap 4 m/z)
+                         spanning 400–1000
+  - HCD NCE:             30% (centered)
+  - AGC:                 1e6,  Max IT 25 ms
+  - Cycle time:          ~2 s  (好的 cycle 應在 2–4 s)</pre></div>
+<div class="code-tab-content" id="pasef"><pre><span class="comment"># diaPASEF on timsTOF Pro 2 / SCP / Ultra</span>
+PASEF Concept:
+  - TIMS device fan-separates ions by 1/K0 (mobility)
+  - PASEF triggers MS2 in sync with mobility separation
+  - 每個 TIMS scan 內可連續取得多個 isolation window
+
+diaPASEF schema:
+  - m/z range:           400–1200 m/z
+  - 1/K0 range:          0.7–1.3 Vs/cm²
+  - Window width:        25 m/z × 4 mobility steps
+  - Cycle time:          ~1.1 s
+  - 結果：DIA + ion mobility 雙重維度，提升選擇性</pre></div>
+</div>
+</section>
+
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">1. 你的實驗有 60 個臨床血漿樣品，需要做差異表達分析並建立完整定量矩陣。最佳採集策略？</p>
+<p data-lang="en">1. You have 60 clinical plasma samples for differential expression and a complete quant matrix. Best acquisition?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. Top-30 DDA，每個樣品分開做</span><span data-lang="en">A. Top-30 DDA, each sample separately</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. TMT 16-plex 把 60 樣品分 4 批</span><span data-lang="en">B. TMT 16-plex in 4 batches</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. library-free DIA（如 DIA-NN directDIA），每樣品單獨採集</span><span data-lang="en">C. Library-free DIA (DIA-NN directDIA), each sample separately</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. Top-down，分析完整蛋白</span><span data-lang="en">D. Top-down on intact proteins</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">2. DDA 與 DIA 在 MS2 譜的本質區別？</p>
+<p data-lang="en">2. The fundamental MS2 spectrum difference between DDA and DIA?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. DDA 的 MS2 是混合譜，DIA 是純譜</span><span data-lang="en">A. DDA MS2 are chimeric, DIA MS2 are clean</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. DDA 對單一母離子做 MS2（純譜），DIA 對窗內所有母離子混合 MS2</span><span data-lang="en">B. DDA fragments single precursors (clean), DIA fragments all precursors in a window (chimeric)</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 兩者無差別</span><span data-lang="en">C. No difference</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. DIA 只能用於 PTM 分析</span><span data-lang="en">D. DIA is only for PTM analysis</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">3. 為何 diaPASEF 在 single-cell proteomics 表現特別優異？</p>
+<p data-lang="en">3. Why does diaPASEF excel at single-cell proteomics?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 結合 ion mobility + DIA，雙重維度提升選擇性與靈敏度</span><span data-lang="en">A. Combines ion mobility + DIA, adding a second dimension for sensitivity & selectivity</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 它只做 MS1，跳過 MS2 所以更快</span><span data-lang="en">B. It skips MS2 entirely</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 它使用 TMT label，無需考慮 sensitivity</span><span data-lang="en">C. It uses TMT labels so sensitivity doesn't matter</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 它的 isolation window 較大降低成本</span><span data-lang="en">D. Its isolation windows are wider, reducing cost</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="sample-prep.html"><span class="nav-dir" data-zh="← 上一步" data-en="← Previous">← 上一步</span><span class="nav-title" data-zh="Step 1: 樣品製備與消化 (Sample Preparation)" data-en="Step 1: Sample Preparation &amp; Digestion">Step 1: 樣品製備與消化 (Sample Preparation)</span></a>
+<a href="identification.html"><span class="nav-dir" data-zh="下一步 →" data-en="Next →">下一步 →</span><span class="nav-title" data-zh="Step 3: 資料庫搜尋與鑑定" data-en="Step 3: Database Search &amp; Identification">Step 3: 資料庫搜尋與鑑定</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+const acqChart=new Chart(document.getElementById('acqChart'),{
+  type:'bar',
+  data:{labels:['Rep1','Rep2','Rep3','Common (3/3)'],datasets:[
+    {label:'DDA',data:[],backgroundColor:'rgba(200,127,58,0.7)'},
+    {label:'DIA',data:[],backgroundColor:'rgba(44,75,138,0.7)'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,scales:{y:{title:{display:true,text:'# proteins identified'},beginAtZero:true,max:7500}},plugins:{legend:{position:'top'}}}
+});
+
+function update(){
+  const grad=+document.getElementById('sliderGrad').value;
+  const load=+document.getElementById('sliderLoad').value;
+  document.getElementById('valGrad').textContent=grad;
+  document.getElementById('valLoad').textContent=load.toFixed(1);
+  // Modeled # proteins
+  const gradFactor=Math.min(1.4,Math.sqrt(grad/90));
+  const loadFactor=Math.min(1.3,Math.sqrt(load/1));
+  const baseDDA=4200*gradFactor*loadFactor;
+  const baseDIA=5800*gradFactor*loadFactor;
+  // Stochastic per replicate
+  const ddaReps=[baseDDA*(0.93+Math.random()*0.07), baseDDA*(0.91+Math.random()*0.09), baseDDA*(0.95+Math.random()*0.05)];
+  const diaReps=[baseDIA*(0.98+Math.random()*0.02), baseDIA*(0.97+Math.random()*0.03), baseDIA*(0.99+Math.random()*0.01)];
+  // Common
+  const ddaCommon=baseDDA*0.78;
+  const diaCommon=baseDIA*0.96;
+  acqChart.data.datasets[0].data=[...ddaReps,ddaCommon].map(v=>Math.round(v));
+  acqChart.data.datasets[1].data=[...diaReps,diaCommon].map(v=>Math.round(v));
+  const L=I18n.get();
+  document.getElementById('statDDA').textContent='DDA '+(L==='zh'?'共同檢出: ':'common: ')+Math.round(ddaCommon)+' / 平均 '+Math.round((ddaReps[0]+ddaReps[1]+ddaReps[2])/3);
+  document.getElementById('statDIA').textContent='DIA '+(L==='zh'?'共同檢出: ':'common: ')+Math.round(diaCommon)+' / 平均 '+Math.round((diaReps[0]+diaReps[1]+diaReps[2])/3);
+  acqChart.update('none');
+}
+['sliderGrad','sliderLoad'].forEach(id=>document.getElementById(id).addEventListener('input',update));
+document.addEventListener('langchange',update);
+update();
+
+const QF={
+  zh:{q1_y:'library-free DIA 可得近完整定量矩陣，CV 與重現性遠優於 DDA，是 cohort 的首選。',q1_n:'正確答案已標示。',
+      q2_y:'這是 DDA 與 DIA 的本質差異，也決定了它們的優缺點。',q2_n:'正確答案已標示。',
+      q3_y:'TIMS 提供第二維分離（mobility），讓窗內共流出的離子能被進一步區分。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'Library-free DIA gives near-complete quant matrices with far better CV and reproducibility than DDA — the cohort go-to.',q1_n:'Correct answer highlighted.',
+      q2_y:'This is THE defining difference and explains the strengths and weaknesses of each.',q2_n:'Correct answer highlighted.',
+      q3_y:'TIMS adds a second dimension (mobility), helping to deconvolute co-eluting ions.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>

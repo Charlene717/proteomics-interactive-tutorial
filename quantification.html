@@ -1,0 +1,237 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Step 4: Quantification — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html">Prep</a></li><li><a href="acquisition.html">MS</a></li><li><a href="identification.html">ID</a></li><li><a href="quantification.html" class="active">Quant</a></li><li><a href="qc.html">QC</a></li><li><a href="normalization.html">Norm</a></li><li><a href="imputation.html">Impute</a></li><li><a href="differential-expression.html">DE</a></li><li><a href="enrichment.html">Enrich</a></li><li><a href="ptm.html">PTM</a></li><li><a href="targeted.html">Target</a></li><li><a href="top-down.html">Top-down</a></li><li><a href="spatial.html">Spatial</a></li><li><a href="single-cell.html">scProt</a></li><li><a href="affinity.html">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">STEP 4 / 9</div>
+<h1 data-zh="定量策略" data-en="Quantification Strategies">定量策略</h1>
+<p class="subtitle" data-lang="zh">LFQ、TMT、SILAC、iBAQ——四種主流策略的原理、精準度、與選擇邏輯。</p>
+<p class="subtitle" data-lang="en">LFQ, TMT, SILAC, iBAQ — principles, precision, and how to choose between them.</p>
+</header>
+<main class="content-wrap">
+
+<section class="section">
+<div class="section-label" data-zh="概覽" data-en="OVERVIEW">概覽</div>
+<h2 data-zh="為什麼定量比鑑定更難？" data-en="Why is quantification harder than identification?">為什麼定量比鑑定更難？</h2>
+<div data-lang="zh">
+<p>鑑定只需「找到」蛋白質的存在；定量則要求「比較」其在不同條件下的<strong>相對或絕對丰度</strong>。蛋白質的離子化效率、層析行為、訊號響應線性範圍都不同，使得定量遠比 RNA-seq 困難。</p>
+<p>四大主流策略可分為兩類：<strong>Label-free（LFQ、iBAQ）</strong>不加標籤、簡單便宜但變異較大；<strong>Label-based（TMT、SILAC、iTRAQ）</strong>透過化學或代謝標記提升精準度與多工性，但成本高。</p>
+</div>
+<div data-lang="en">
+<p>Identification only asks "is it there?"; quantification asks "how much, and how does it compare across conditions?" Proteins differ in ionization efficiency, chromatographic behavior, and dynamic range — making quant much harder than for RNA-seq.</p>
+<p>Four mainstream strategies divide into two families: <strong>Label-free (LFQ, iBAQ)</strong> — no labels, cheap and simple but more variable; <strong>Label-based (TMT, SILAC, iTRAQ)</strong> — chemical/metabolic labeling for precision and multiplexing, but expensive.</p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="四大策略" data-en="THE BIG FOUR">四大策略</div>
+<h2 data-zh="一、四種定量策略" data-en="I. Four Quantification Strategies">一、四種定量策略</h2>
+<div class="card-grid cols-2">
+<div class="card"><div class="card-icon">🆓</div><h4>LFQ — Label-Free</h4>
+<div data-lang="zh"><p>每個樣品分別上機；用 <strong>MS1 peak area</strong>（強度）或 <strong>spectral counts</strong> 比較相對丰度。MaxLFQ、IonQuant、DIA-NN 都實作精緻的 MS1 比對演算法。<br>• <strong>優點：</strong>成本最低；樣品數量無上限；DIA-LFQ 重現性極佳<br>• <strong>缺點：</strong>批次間變異較大；需依賴 MBR (Match-Between-Runs)</p></div>
+<div data-lang="en"><p>Each sample is acquired separately; compare relative abundance via <strong>MS1 peak area</strong> or <strong>spectral counts</strong>. MaxLFQ, IonQuant, DIA-NN implement sophisticated alignment.<br>• <strong>Pros:</strong> Cheapest; unlimited samples; DIA-LFQ has excellent reproducibility<br>• <strong>Cons:</strong> Larger batch effects; relies on MBR (Match-Between-Runs)</p></div>
+</div>
+<div class="card"><div class="card-icon">🏷️</div><h4>TMT / iTRAQ — Isobaric</h4>
+<div data-lang="zh"><p>胺基反應性 isobaric tag 在胜肽 N 端與 K 標記，化學結構相同但 MS2 報告離子質量不同（126–135 m/z 等），<strong>同一次 run 可比較 6–18 樣品</strong>。<br>• <strong>優點：</strong>多工最高（TMTpro 18-plex）；同一 run 降低變異<br>• <strong>缺點：</strong>Ratio compression（共流出干擾）；MS3 (SPS) 可校正但耗時；需大量起始量</p></div>
+<div data-lang="en"><p>Amine-reactive isobaric tags label peptide N-term and K. Same chemical mass, different MS2 reporter ion m/z (126–135 etc.) — <strong>6–18 samples per run</strong>.<br>• <strong>Pros:</strong> Highest multiplexing (TMTpro 18-plex); intra-run reduces variability<br>• <strong>Cons:</strong> Ratio compression (co-eluting interference); MS3 (SPS) corrects but slow; needs high input</p></div>
+</div>
+<div class="card"><div class="card-icon">🧬</div><h4>SILAC — Metabolic</h4>
+<div data-lang="zh"><p>細胞培養時餵食 <strong>同位素標記 Lys / Arg（¹³C₆-K、¹³C₆¹⁵N₄-R）</strong>，質量差異在 MS1 譜出現。Heavy/Light 比值即為相對表達。<br>• <strong>優點：</strong>精準度最高（特別是 PTM 分析）；可在最早階段混合，去除技術變異<br>• <strong>缺點：</strong>僅適用培養細胞；無法應用於人類樣品；最多 3-plex (light/medium/heavy)</p></div>
+<div data-lang="en"><p>Cells are fed <strong>isotope-labeled Lys/Arg (¹³C₆-K, ¹³C₆¹⁵N₄-R)</strong> during culture, creating mass shifts visible in MS1. Heavy/Light ratios give relative abundance.<br>• <strong>Pros:</strong> Highest precision (especially PTMs); samples mixed earliest, removing technical variation<br>• <strong>Cons:</strong> Cultured cells only; not for human tissue; max 3-plex (light/medium/heavy)</p></div>
+</div>
+<div class="card"><div class="card-icon">📐</div><h4>iBAQ — Absolute</h4>
+<div data-lang="zh"><p>Intensity-Based Absolute Quantification：將蛋白質的所有觀測胜肽 MS1 強度加總，再除以該蛋白「理論上可被偵測的胜肽數」，可估算<strong>同一樣品內</strong>不同蛋白的相對絕對量。<br>• <strong>適用：</strong>樣品內蛋白丰度比較、化學計量分析<br>• <strong>限制：</strong>仍非真正 absolute；不同物種 / 樣品間不可直接比</p></div>
+<div data-lang="en"><p>Intensity-Based Absolute Quantification: sum MS1 intensities of all observed peptides, divide by the number of theoretically observable peptides, to estimate <strong>within-sample</strong> absolute abundance.<br>• <strong>Use cases:</strong> Within-sample stoichiometry, complex composition<br>• <strong>Limits:</strong> Not truly absolute; not directly comparable across samples/species</p></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="互動比較" data-en="INTERACTIVE">互動比較</div>
+<h2 data-zh="四策略精準度模擬" data-en="Precision simulation of four strategies">四策略精準度模擬</h2>
+<div data-lang="zh"><p>模擬同一蛋白在 8 個樣品的相對丰度（True log2FC = 1.0），不同定量策略呈現的 CV 與 ratio compression 差異。</p></div>
+<div data-lang="en"><p>Simulate the same protein measured across 8 samples (true log2FC = 1.0), highlighting CV and ratio compression by strategy.</p></div>
+<div class="interactive-panel">
+<div class="sim-stats"><span class="sim-stat pass" id="statCV">—</span><span class="sim-stat neutral" id="statRC">—</span></div>
+<div class="toggle-row"><button class="toggle-btn active" data-q="lfq">LFQ</button><button class="toggle-btn" data-q="tmt2">TMT MS2</button><button class="toggle-btn" data-q="tmt3">TMT MS3 (SPS)</button><button class="toggle-btn" data-q="silac">SILAC</button></div>
+<div class="chart-container"><canvas id="quantChart"></canvas></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="決策" data-en="DECISION">決策</div>
+<h2 data-zh="二、選擇策略的決策樹" data-en="II. Decision Tree">二、選擇策略的決策樹</h2>
+<div class="decision-tree">
+<h4>🌳 <span data-zh="定量策略決策" data-en="Quant strategy decision">定量策略決策</span></h4>
+<div data-lang="zh">
+<div class="dt-node"><span class="dt-q">Q1:</span><div>樣品數 ≤ 16 且為深度 PTM 研究？ <span class="dt-arrow">→ 是 →</span> <strong>TMTpro + MS3 (SPS)</strong>。</div></div>
+<div class="dt-node"><span class="dt-q">Q2:</span><div>細胞培養 + 訊號傳遞 / PTM 動態？ <span class="dt-arrow">→ 是 →</span> <strong>SILAC</strong>。</div></div>
+<div class="dt-node"><span class="dt-q">Q3:</span><div>大型 cohort &gt; 30 樣品（如臨床、人類組織）？ <span class="dt-arrow">→ 是 →</span> <strong>DIA-LFQ</strong>。</div></div>
+<div class="dt-node"><span class="dt-q">Q4:</span><div>需要絕對丰度（化學計量學）？ <span class="dt-arrow">→ 是 →</span> <strong>iBAQ</strong>（同樣品內）或 <strong>SureQuant + AQUA</strong>（跨樣品）。</div></div>
+</div>
+<div data-lang="en">
+<div class="dt-node"><span class="dt-q">Q1:</span><div>≤16 samples for deep PTM? <span class="dt-arrow">→ Yes →</span> <strong>TMTpro + MS3 (SPS)</strong>.</div></div>
+<div class="dt-node"><span class="dt-q">Q2:</span><div>Cell culture + signaling/PTM dynamics? <span class="dt-arrow">→ Yes →</span> <strong>SILAC</strong>.</div></div>
+<div class="dt-node"><span class="dt-q">Q3:</span><div>Large cohort &gt;30 samples (clinical, human tissue)? <span class="dt-arrow">→ Yes →</span> <strong>DIA-LFQ</strong>.</div></div>
+<div class="dt-node"><span class="dt-q">Q4:</span><div>Absolute abundance (stoichiometry)? <span class="dt-arrow">→ Yes →</span> <strong>iBAQ</strong> (within sample) or <strong>SureQuant + AQUA</strong> (across samples).</div></div>
+</div>
+</div>
+<table class="comp-table">
+<thead><tr><th></th><th>LFQ</th><th>TMT</th><th>SILAC</th><th>iBAQ</th></tr></thead>
+<tbody>
+<tr><td data-zh="多工" data-en="Plex"><strong>Plex</strong></td><td>1</td><td>6–18</td><td>2–3</td><td>1</td></tr>
+<tr><td data-zh="精準度" data-en="Precision"><strong>Precision</strong></td><td>★★★</td><td>★★★★ (MS2) / ★★★★★ (MS3)</td><td>★★★★★</td><td>★★</td></tr>
+<tr><td data-zh="成本" data-en="Cost"><strong>Cost</strong></td><td>$</td><td>$$$</td><td>$$$ (media)</td><td>$</td></tr>
+<tr><td data-zh="樣品上限" data-en="Sample cap"><strong>Sample cap</strong></td><td data-lang="zh">無上限</td><td>~100 (6 batches)</td><td>~30</td><td data-lang="zh">無上限</td><td data-lang="en">Unlimited</td><td data-lang="en">Unlimited</td></tr>
+<tr><td data-zh="PTM 適用" data-en="PTM"><strong>PTM</strong></td><td>★★</td><td>★★★</td><td>★★★★★</td><td>★</td></tr>
+</tbody></table>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="範例程式碼" data-en="CODE">範例程式碼</div>
+<h2 data-zh="MSstats / MaxLFQ 範例" data-en="MSstats / MaxLFQ Examples">MSstats / MaxLFQ 範例</h2>
+<div class="code-tabs"><div class="code-tab-btns">
+<button class="code-tab-btn active" onclick="switchTab(this,'r-msstats')">R / MSstats</button>
+<button class="code-tab-btn" onclick="switchTab(this,'py-diann')">Python / DIA-NN report</button>
+<button class="code-tab-btn" onclick="switchTab(this,'mq-tmt')">MaxQuant TMT config</button>
+</div>
+<div class="code-tab-content active" id="r-msstats"><pre><span class="func">library</span>(MSstats)
+<span class="func">library</span>(MSstatsConvert)
+
+<span class="comment"># Read FragPipe MSstats input</span>
+raw &lt;- <span class="func">read.csv</span>(<span class="str">"msstats.csv"</span>)
+
+<span class="comment"># Convert + normalize</span>
+processed &lt;- <span class="func">dataProcess</span>(raw,
+  normalization = <span class="str">"equalizeMedians"</span>,
+  summaryMethod = <span class="str">"TMP"</span>,
+  censoredInt = <span class="str">"NA"</span>,
+  MBimpute = <span class="kw">TRUE</span>)
+
+<span class="comment"># Define contrast: Treated vs Control</span>
+contrast &lt;- <span class="func">matrix</span>(<span class="func">c</span>(-<span class="num">1</span>, <span class="num">1</span>), nrow = <span class="num">1</span>,
+  dimnames = <span class="func">list</span>(<span class="str">"Tr-Ctl"</span>, <span class="func">c</span>(<span class="str">"Ctl"</span>, <span class="str">"Tr"</span>)))
+
+result &lt;- <span class="func">groupComparison</span>(contrast.matrix = contrast,
+                          data = processed)
+<span class="func">head</span>(result$ComparisonResult)  <span class="comment"># log2FC, pvalue, adj.pvalue</span></pre></div>
+<div class="code-tab-content" id="py-diann"><pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="comment"># DIA-NN report: protein matrix at pg-level MaxLFQ</span>
+df = pd.read_csv(<span class="str">"report.pg_matrix.tsv"</span>, sep=<span class="str">"\t"</span>)
+df.set_index(<span class="str">"Protein.Group"</span>, inplace=<span class="kw">True</span>)
+
+<span class="comment"># Sample columns are MS run names — log2-transform</span>
+mat = np.log2(df.iloc[:, <span class="num">4</span>:].replace(<span class="num">0</span>, np.nan))
+<span class="func">print</span>(<span class="func">f</span><span class="str">"{mat.shape[0]} proteins × {mat.shape[1]} samples"</span>)
+
+<span class="comment"># Median normalization</span>
+mat_norm = mat.subtract(mat.median(axis=<span class="num">0</span>), axis=<span class="num">1</span>)
+
+<span class="comment"># Simple group fold-change</span>
+ctrl = mat_norm.filter(like=<span class="str">"Ctl_"</span>).mean(axis=<span class="num">1</span>)
+trt  = mat_norm.filter(like=<span class="str">"Tr_"</span>).mean(axis=<span class="num">1</span>)
+fc = trt - ctrl
+top_up = fc.nlargest(<span class="num">20</span>)
+<span class="func">print</span>(top_up)</pre></div>
+<div class="code-tab-content" id="mq-tmt"><pre><span class="comment"># MaxQuant TMT16-plex Group-Specific Parameters</span>
+Type                       = Reporter ion MS2
+Reporter mass tolerance    = 0.003 Da
+Isotope correction factors = (from TMTpro lot certificate)
+Filter by PIF              = TRUE   <span class="comment"># precursor intensity fraction</span>
+Min PIF                    = 0.75   <span class="comment"># reduce ratio compression</span>
+
+[Global Parameters]
+Match between runs         = FALSE  <span class="comment"># TMT 不建議啟用</span>
+FDR (PSM / protein)        = 0.01 / 0.01
+Min unique peptides        = 1
+Razor + unique for quant   = TRUE</pre></div>
+</div>
+</section>
+
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">1. 你的研究有 48 個臨床手術後組織樣品，預算有限，希望最大化定量重現性。最佳策略？</p>
+<p data-lang="en">1. 48 post-op clinical tissue samples, limited budget, max reproducibility. Best strategy?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. TMTpro 18-plex × 3 batch</span><span data-lang="en">A. TMTpro 18-plex × 3 batches</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. SILAC（先培養 48 種同位素小鼠）</span><span data-lang="en">B. SILAC (culture 48 isotope-labeled mice)</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. DIA-LFQ（DIA-NN）</span><span data-lang="en">C. DIA-LFQ (DIA-NN)</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. iBAQ + 化學標記</span><span data-lang="en">D. iBAQ + chemical labeling</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">2. 什麼是 TMT 的「Ratio Compression」？</p>
+<p data-lang="en">2. What is TMT "ratio compression"?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 軟體把資料壓縮存檔</span><span data-lang="en">A. Software compresses data files</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. MS2 中共流出的其他胜肽干擾 reporter 訊號，使真實比值看起來變小</span><span data-lang="en">B. Co-eluting peptides in MS2 contaminate reporter ions, making true ratios appear smaller</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. TMT 試劑成本下降的現象</span><span data-lang="en">C. TMT reagent cost reduction over time</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. SILAC 的固有限制</span><span data-lang="en">D. An inherent SILAC limitation</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">3. iBAQ 最適合用來回答下列哪個問題？</p>
+<p data-lang="en">3. iBAQ best answers which question?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 同一樣品內，蛋白質複合物中各次單元的化學計量比</span><span data-lang="en">A. Within a single sample, the stoichiometric ratio of subunits in a complex</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 兩個物種間蛋白絕對量比較</span><span data-lang="en">B. Absolute protein abundance comparison between two species</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. PTM 位點佔有率變化</span><span data-lang="en">C. Changes in PTM site occupancy</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 細胞分化過程蛋白動態</span><span data-lang="en">D. Protein dynamics during differentiation</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="identification.html"><span class="nav-dir" data-zh="← 上一步" data-en="← Previous">← 上一步</span><span class="nav-title" data-zh="Step 3: 資料庫搜尋與鑑定" data-en="Step 3: Database Search &amp; Identification">Step 3: 資料庫搜尋與鑑定</span></a>
+<a href="qc.html"><span class="nav-dir" data-zh="下一步 →" data-en="Next →">下一步 →</span><span class="nav-title" data-zh="Step 5: 品質管控 (QC)" data-en="Step 5: Quality Control (QC)">Step 5: 品質管控 (QC)</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+let mode='lfq';
+document.querySelectorAll('.toggle-row .toggle-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.toggle-row .toggle-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');mode=b.dataset.q;update();});
+
+function randn(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const quantChart=new Chart(document.getElementById('quantChart'),{
+  type:'bar',
+  data:{labels:['Ctl1','Ctl2','Ctl3','Ctl4','Tr1','Tr2','Tr3','Tr4'],datasets:[{label:'log2 intensity',data:[],backgroundColor:[]}]},
+  options:{responsive:true,maintainAspectRatio:false,scales:{y:{title:{display:true,text:'log2 intensity (centered)'}}},plugins:{legend:{display:false}}}
+});
+
+function update(){
+  // True log2FC = 1.0 between Ctl and Tr
+  const ctlMean=0, trMean=1.0;
+  // CV and compression vary by mode
+  const params={lfq:{cv:0.18,comp:0.0},tmt2:{cv:0.08,comp:0.35},tmt3:{cv:0.10,comp:0.10},silac:{cv:0.06,comp:0.02}}[mode];
+  const apparentFC=trMean*(1-params.comp);
+  const data=[];
+  for(let i=0;i<4;i++) data.push(ctlMean+randn()*params.cv);
+  for(let i=0;i<4;i++) data.push(apparentFC+randn()*params.cv);
+  const cvObs=Math.sqrt(data.slice(0,4).reduce((a,v)=>a+v*v,0)/4)*100;
+  quantChart.data.datasets[0].data=data.map(v=>+v.toFixed(2));
+  quantChart.data.datasets[0].backgroundColor=data.map((_,i)=>i<4?'rgba(44,75,138,0.7)':'rgba(200,127,58,0.75)');
+  const L=I18n.get();
+  document.getElementById('statCV').textContent=(L==='zh'?'觀測 CV: ~':'Observed CV: ~')+cvObs.toFixed(0)+'%';
+  document.getElementById('statRC').textContent=(L==='zh'?'觀測 log2FC: ':'Observed log2FC: ')+apparentFC.toFixed(2)+(L==='zh'?' (真值 1.00)':' (true 1.00)');
+  quantChart.update('none');
+}
+document.addEventListener('langchange',update);
+update();
+
+const QF={
+  zh:{q1_y:'DIA-LFQ 在 cohort 規模有最佳的成本/重現性平衡，是 2024-25 臨床蛋白質體學主流。',q1_n:'正確答案已標示。',q2_y:'這就是 ratio compression — TMT MS2 的固有限制，MS3 (SPS) 可大幅校正。',q2_n:'正確答案已標示。',q3_y:'iBAQ 設計就是估算同一樣品內蛋白的相對絕對量，最適用於 stoichiometry。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'DIA-LFQ has the best cost/reproducibility balance at cohort scale — the 2024-25 mainstream for clinical proteomics.',q1_n:'Correct answer highlighted.',q2_y:'Exactly — ratio compression is inherent to TMT MS2; MS3 (SPS) largely corrects it.',q2_n:'Correct answer highlighted.',q3_y:'iBAQ is designed to estimate within-sample absolute abundance, ideal for stoichiometry.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Spatial Proteomics — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html">Prep</a></li><li><a href="acquisition.html">MS</a></li><li><a href="identification.html">ID</a></li><li><a href="quantification.html">Quant</a></li><li><a href="qc.html">QC</a></li><li><a href="normalization.html">Norm</a></li><li><a href="imputation.html">Impute</a></li><li><a href="differential-expression.html">DE</a></li><li><a href="enrichment.html">Enrich</a></li><li><a href="ptm.html">PTM</a></li><li><a href="targeted.html">Target</a></li><li><a href="top-down.html">Top-down</a></li><li><a href="spatial.html" class="active">Spatial</a></li><li><a href="single-cell.html">scProt</a></li><li><a href="affinity.html">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">ADVANCED</div>
+<h1 data-zh="空間蛋白質體學 (Spatial Proteomics)" data-en="Spatial Proteomics">空間蛋白質體學 (Spatial Proteomics)</h1>
+<p class="subtitle" data-lang="zh">把蛋白測量「定錨在組織座標上」——MALDI-IMS、LCM-microPOTS、Deep Visual Proteomics 的整合。</p>
+<p class="subtitle" data-lang="en">Anchor protein measurements to tissue coordinates — integrating MALDI-IMS, LCM-microPOTS, and Deep Visual Proteomics.</p>
+</header>
+<main class="content-wrap">
+
+<section class="section">
+<div class="section-label" data-zh="概念" data-en="CONCEPT">概念</div>
+<h2 data-zh="為什麼需要空間？" data-en="Why spatial?">為什麼需要空間？</h2>
+<div data-lang="zh">
+<p>傳統 bulk proteomics 將組織均質化後分析，<strong>遺失了腫瘤微環境、神經元層次、發育階段等空間結構資訊</strong>。空間蛋白質體學保留 X-Y（甚至 Z）座標，回答「哪些蛋白只在腫瘤侵犯前緣、不在中心？」這類問題。</p>
+<p>當前三大主流策略：(1) <strong>MALDI-IMS</strong>（無偏好成像，但 ID 數有限）；(2) <strong>LCM-microPOTS</strong>（先用 LCM 切下感興趣區，再做深度 MS）；(3) <strong>Deep Visual Proteomics</strong>（AI 自動辨識細胞型態，再針對性 sampling）。</p>
+</div>
+<div data-lang="en">
+<p>Bulk proteomics homogenizes tissue and <strong>loses spatial structure</strong> — tumor microenvironment, neuronal layers, developmental stages. Spatial proteomics preserves X-Y (and sometimes Z) coordinates to answer "which proteins are restricted to the invasive tumor front but not the core?"</p>
+<p>Three current mainstream strategies: (1) <strong>MALDI-IMS</strong> (unbiased imaging, limited IDs); (2) <strong>LCM-microPOTS</strong> (laser-capture microdissect ROIs, then deep MS); (3) <strong>Deep Visual Proteomics</strong> (AI identifies cell morphologies, then targeted sampling).</p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="三大方法" data-en="THREE METHODS">三大方法</h2>
+<h2 data-zh="一、三大空間蛋白質體學方法" data-en="I. Three Major Spatial Methods">一、三大空間蛋白質體學方法</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4>🌈 <span data-zh="MALDI-IMS" data-en="MALDI-IMS">MALDI-IMS</span></h4>
+<div data-lang="zh"><p>樣品切片噴 matrix → 雷射逐格 ablate → 每格產生 MS1 譜 → 重建分子分布影像。<br>• <strong>解析度：</strong>5–100 μm (空間)；目前最快可達 single-cell (~5 μm)<br>• <strong>偵測：</strong>胜肽、完整蛋白或裂解片段<br>• <strong>限制：</strong>受限離子化效率，ID 數通常 &lt; 1000</p></div>
+<div data-lang="en"><p>Spray matrix on tissue section → laser ablates pixel-by-pixel → MS1 spectrum per pixel → reconstruct molecular distribution.<br>• <strong>Resolution:</strong> 5–100 μm spatial; best now ~single-cell (~5 μm)<br>• <strong>Detects:</strong> peptides, intact proteins, or lipid fragments<br>• <strong>Limit:</strong> Lower ionization efficiency; usually &lt; 1000 IDs</p></div>
+</div>
+<div class="card"><h4>✂️ <span data-zh="LCM-microPOTS" data-en="LCM-microPOTS">LCM-microPOTS / nanoPOTS</span></h4>
+<div data-lang="zh"><p>用 LCM (Laser Capture Microdissection) 切下 50–500 個細胞區域 → 在 nanowell 中做 nanoPOTS 樣品製備 → LC-MS/MS 深度 ID。<br>• <strong>解析度：</strong>10–200 μm（依 LCM 切割）<br>• <strong>偵測：</strong>數百到 5000+ 蛋白/區域<br>• <strong>適用：</strong>已知區域邊界（如腫瘤 vs 健康）</p></div>
+<div data-lang="en"><p>LCM (Laser Capture Microdissection) cuts 50–500-cell ROIs → nanoPOTS prep in nanowells → LC-MS/MS deep ID.<br>• <strong>Resolution:</strong> 10–200 μm (depends on LCM)<br>• <strong>Detects:</strong> hundreds to 5000+ proteins per ROI<br>• <strong>Use:</strong> Known region boundaries (tumor vs healthy)</p></div>
+</div>
+<div class="card"><h4>🤖 <span data-zh="Deep Visual Proteomics (DVP)" data-en="Deep Visual Proteomics (DVP)">Deep Visual Proteomics</span></h4>
+<div data-lang="zh"><p>2022 由 Mann lab 提出。流程：染色組織 → <strong>AI/Deep Learning 自動分類細胞型態</strong> → 選擇 phenotype → 自動化 LCM → MS 深度 proteomics。<br>• <strong>核心優勢：</strong>無需手動勾勒邊界，可分析罕見 cell type<br>• <strong>應用：</strong>肝癌、肌營養不良、發育生物學</p></div>
+<div data-lang="en"><p>Proposed by the Mann lab in 2022. Workflow: stain tissue → <strong>AI/deep learning classifies cell phenotypes</strong> → choose phenotype → automated LCM → deep proteomics.<br>• <strong>Key advantage:</strong> No manual boundary drawing; rare cell types analyzable<br>• <strong>Applications:</strong> Hepatocellular carcinoma, muscular dystrophies, developmental biology</p></div>
+</div>
+<div class="card"><h4>🎯 <span data-zh="MALDI-HiPLEX-IHC" data-en="MALDI-HiPLEX-IHC">MALDI-HiPLEX-IHC (2024)</span></h4>
+<div data-lang="zh"><p>2024 新方法：將抗體標記上光裂解質量標籤 → 同時做 IHC 染色 + MS 成像。可一次顯像 30+ 蛋白的空間分布，補足 MALDI-IMS 偏向 abundant proteins 的弱點。</p></div>
+<div data-lang="en"><p>2024 method: antibodies labeled with photocleavable mass tags → simultaneous IHC + MS imaging. Visualizes 30+ proteins' spatial distribution at once, complementing MALDI-IMS's abundance bias.</p></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="INTERACTIVE">互動模擬</div>
+<h2 data-zh="解析度 vs 深度權衡" data-en="Resolution vs Depth Trade-off">解析度 vs 深度權衡</h2>
+<div data-lang="zh"><p>三種方法在「空間解析度」與「蛋白鑑定深度」的取捨。理想是右上角，但目前的方法都需要犧牲一邊。</p></div>
+<div data-lang="en"><p>Three methods plotted by spatial resolution vs ID depth. Top-right is ideal but every method trades one for the other.</p></div>
+<div class="interactive-panel">
+<div class="chart-container" style="height:380px;"><canvas id="spChart"></canvas></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="案例" data-en="CASES">案例</div>
+<h2 data-zh="二、實際案例" data-en="II. Case Studies">二、實際案例</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4>🫀 <span data-zh="心肌組織異質性" data-en="Cardiac tissue heterogeneity">心肌組織異質性</span></h4>
+<div data-lang="zh"><p>2024 MCP 研究：MALDI-IMS + LC-MS/MS 結合分析心肌纖維化區域，發現 STAT3 與 collagen IV 在纖維化前緣高度共定位。</p></div>
+<div data-lang="en"><p>A 2024 MCP study used MALDI-IMS + LC-MS/MS on cardiac fibrosis regions, showing STAT3 and collagen IV co-localize at the fibrotic front.</p></div>
+</div>
+<div class="card"><h4>🧠 <span data-zh="腦部細胞型態" data-en="Brain cell types">腦部細胞型態</span></h4>
+<div data-lang="zh"><p>使用 DVP 自動分類 cortex 神經元、astrocyte、oligodendrocyte，發現 oligodendrocyte 的特異蛋白 30% 在 bulk 數據中完全被淹沒。</p></div>
+<div data-lang="en"><p>DVP automatically classified cortical neurons, astrocytes, and oligodendrocytes; 30% of oligodendrocyte-specific proteins were entirely masked in bulk data.</p></div>
+</div>
+<div class="card"><h4>🧬 <span data-zh="腫瘤微環境" data-en="Tumor microenvironment">腫瘤微環境</span></h4>
+<div data-lang="zh"><p>LCM-microPOTS 對乳癌 tumor / stroma / immune 三區分別深度 proteomics，建構區域特異性 biomarker 圖譜。</p></div>
+<div data-lang="en"><p>LCM-microPOTS profiled tumor / stroma / immune compartments in breast cancer separately, building region-specific biomarker atlases.</p></div>
+</div>
+<div class="card"><h4>🐠 <span data-zh="發育時間軸" data-en="Developmental timeline">發育時間軸</span></h4>
+<div data-lang="zh"><p>斑馬魚胚胎不同階段的空間蛋白質體學，揭露 organogenesis 的關鍵分子事件。</p></div>
+<div data-lang="en"><p>Zebrafish embryo spatial proteomics across stages revealed key molecular events of organogenesis.</p></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="工具" data-en="TOOLS">工具</div>
+<h2 data-zh="三、軟體工具" data-en="III. Software">三、軟體工具</h2>
+<div class="code-tabs"><div class="code-tab-btns">
+<button class="code-tab-btn active" onclick="switchTab(this,'imzml')">imzML / Cardinal</button>
+<button class="code-tab-btn" onclick="switchTab(this,'scils')">SCiLS Lab</button>
+<button class="code-tab-btn" onclick="switchTab(this,'metaspace')">METASPACE</button>
+</div>
+<div class="code-tab-content active" id="imzml"><pre><span class="func">library</span>(Cardinal)
+
+<span class="comment"># imzML 是 MALDI-IMS 的標準格式</span>
+img &lt;- <span class="func">readMSIData</span>(<span class="str">"section.imzML"</span>)
+
+<span class="comment"># Pre-processing</span>
+img &lt;- <span class="func">normalize</span>(img, method = <span class="str">"tic"</span>) %&gt;%
+       <span class="func">smoothSignal</span>(method = <span class="str">"gaussian"</span>, window = <span class="num">5</span>) %&gt;%
+       <span class="func">reduceBaseline</span>(method = <span class="str">"locmin"</span>) %&gt;%
+       <span class="func">peakAlign</span>(tolerance = <span class="num">200</span>, units = <span class="str">"ppm"</span>)
+
+<span class="comment"># Spatial segmentation (unsupervised)</span>
+seg &lt;- <span class="func">spatialShrunkenCentroids</span>(img, r = <span class="num">2</span>, k = <span class="num">5</span>, s = <span class="num">0</span>:<span class="num">5</span>)
+<span class="func">image</span>(seg, model = <span class="func">list</span>(s = <span class="num">3</span>))  <span class="comment"># spatial maps</span>
+
+<span class="comment"># Per-cluster markers</span>
+top_features &lt;- <span class="func">topFeatures</span>(seg, model = <span class="func">list</span>(s = <span class="num">3</span>), n = <span class="num">20</span>)</pre></div>
+<div class="code-tab-content" id="scils"><pre><span class="comment"># SCiLS Lab (Bruker, GUI) 典型工作流</span>
+<span class="kw">Step 1</span> Import data (.d / imzML)
+<span class="kw">Step 2</span> Pre-processing → Total ion count normalization
+<span class="kw">Step 3</span> Image co-registration with histology
+<span class="kw">Step 4</span> ROI definition (manual or via Otsu thresholding)
+<span class="kw">Step 5</span> Statistical analysis → ROC AUC, t-test per peak
+<span class="kw">Step 6</span> Export significant m/z 並對應 LC-MS/MS 鑑定</pre></div>
+<div class="code-tab-content" id="metaspace"><pre><span class="comment"># METASPACE (https://metaspace2020.eu) - 公開 IMS 平台</span>
+<span class="kw">Step 1</span> 上傳 imzML + IBD 檔案
+<span class="kw">Step 2</span> 選擇資料庫 (HMDB, LipidMaps for lipids / 自訂蛋白 db)
+<span class="kw">Step 3</span> 平台自動 m/z assignment + FDR control
+<span class="kw">Step 4</span> 線上 viewer 比較不同 metabolite/protein 分布
+<span class="kw">Step 5</span> 與其他公開資料集進行 cross-comparison</pre></div>
+</div>
+</section>
+
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">1. 你想知道腫瘤侵犯前緣與中心的蛋白差異，且邊界已由病理學家確定。最適合？</p>
+<p data-lang="en">1. You want to compare invasive front vs core of a tumor, with boundaries determined by a pathologist. Best fit?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. Bulk LC-MS/MS</span><span data-lang="en">A. Bulk LC-MS/MS</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. LCM-microPOTS：邊界已知，可精確切下兩區深度 proteomics</span><span data-lang="en">B. LCM-microPOTS — boundaries known, precise excision + deep proteomics</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. Western blot</span><span data-lang="en">C. Western blot</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. RNA-seq</span><span data-lang="en">D. RNA-seq</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">2. 為何 MALDI-IMS 的蛋白 ID 數通常較少 (&lt; 1000)？</p>
+<p data-lang="en">2. Why does MALDI-IMS typically identify &lt; 1000 proteins?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 直接從組織離子化效率低，且沒有 LC 分離前端</span><span data-lang="en">A. Direct-from-tissue ionization is less efficient; no LC separation upstream</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. MALDI 不適用蛋白質</span><span data-lang="en">B. MALDI doesn't work on proteins</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 軟體限制</span><span data-lang="en">C. Software limitations</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 解析度不夠</span><span data-lang="en">D. Insufficient resolution</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">3. Deep Visual Proteomics (DVP) 相對傳統 LCM 的關鍵創新？</p>
+<p data-lang="en">3. DVP's key innovation over traditional LCM?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 更便宜</span><span data-lang="en">A. Cheaper</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 更快</span><span data-lang="en">B. Faster</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 用 AI/deep learning 自動辨識細胞型態，可採樣罕見/形態複雜的 phenotype</span><span data-lang="en">C. AI/deep learning auto-classifies cell phenotypes — can sample rare/complex-morphology cells</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 不需要 MS</span><span data-lang="en">D. Doesn't need MS</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="top-down.html"><span class="nav-dir" data-zh="← 上一篇" data-en="← Previous">← 上一篇</span><span class="nav-title" data-zh="Top-down 完整蛋白質分析" data-en="Top-down Proteomics">Top-down 完整蛋白質分析</span></a>
+<a href="single-cell.html"><span class="nav-dir" data-zh="下一篇 →" data-en="Next →">下一篇 →</span><span class="nav-title" data-zh="單細胞蛋白質體學 (Single-cell Proteomics)" data-en="Single-cell Proteomics">單細胞蛋白質體學 (Single-cell Proteomics)</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+const spChart=new Chart(document.getElementById('spChart'),{
+  type:'scatter',
+  data:{datasets:[
+    {label:'MALDI-IMS',data:[{x:8,y:800}],backgroundColor:'rgba(200,127,58,0.85)',pointRadius:14},
+    {label:'LCM-microPOTS',data:[{x:50,y:4500}],backgroundColor:'rgba(44,75,138,0.85)',pointRadius:14},
+    {label:'Deep Visual Proteomics',data:[{x:25,y:5500}],backgroundColor:'rgba(120,40,90,0.85)',pointRadius:14},
+    {label:'Bulk LC-MS/MS',data:[{x:5000,y:8500}],backgroundColor:'rgba(120,120,120,0.7)',pointRadius:14},
+    {label:'Ideal',data:[{x:1,y:8500}],backgroundColor:'rgba(40,150,80,0.6)',pointRadius:14}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,scales:{x:{type:'logarithmic',title:{display:true,text:'spatial resolution (μm, lower = better)'}},y:{title:{display:true,text:'# proteins identified'},min:0,max:10000}},plugins:{legend:{position:'top'}}}
+});
+
+const QF={
+  zh:{q1_y:'LCM-microPOTS 在邊界已知時效率最高，提供深度 proteomics 與空間註釋的最佳結合。',q1_n:'正確答案已標示。',q2_y:'MALDI 從組織直接離子化、無前端 LC 分離，自然 ID 數受限——這是 IMS 的固有限制。',q2_n:'正確答案已標示。',q3_y:'AI 自動 phenotyping 是 DVP 的核心，使 sampling 從人工標註瓶頸中解放。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'LCM-microPOTS is most efficient when boundaries are known — best of deep proteomics + spatial annotation.',q1_n:'Correct answer highlighted.',q2_y:'Direct-from-tissue MALDI with no upstream LC inherently limits ID counts — a fundamental IMS limitation.',q2_n:'Correct answer highlighted.',q3_y:'AI-driven phenotyping is DVP\'s core innovation, removing manual annotation as a bottleneck.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Step 6: Normalization — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html">Prep</a></li><li><a href="acquisition.html">MS</a></li><li><a href="identification.html">ID</a></li><li><a href="quantification.html">Quant</a></li><li><a href="qc.html">QC</a></li><li><a href="normalization.html" class="active">Norm</a></li><li><a href="imputation.html">Impute</a></li><li><a href="differential-expression.html">DE</a></li><li><a href="enrichment.html">Enrich</a></li><li><a href="ptm.html">PTM</a></li><li><a href="targeted.html">Target</a></li><li><a href="top-down.html">Top-down</a></li><li><a href="spatial.html">Spatial</a></li><li><a href="single-cell.html">scProt</a></li><li><a href="affinity.html">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">STEP 6 / 9</div>
+<h1 data-zh="標準化 (Normalization)" data-en="Normalization">標準化 (Normalization)</h1>
+<p class="subtitle" data-lang="zh">校正技術變異，讓樣品之間真正可比——VSN、Median、Quantile、Cyclic LOESS 的選擇與適用情境。</p>
+<p class="subtitle" data-lang="en">Correct for technical variation so samples become truly comparable — VSN, median, quantile, cyclic LOESS, and when to use each.</p>
+</header>
+<main class="content-wrap">
+
+<section class="section">
+<div class="section-label" data-zh="概念" data-en="CONCEPT">概念</div>
+<h2 data-zh="為什麼必須做 Normalization？" data-en="Why is normalization mandatory?">為什麼必須做 Normalization？</h2>
+<div data-lang="zh">
+<p>同一份樣品分兩個小份上機，得到的訊號總強度可能差異 30–50%。原因包括：注射量微差、LC 柱狀態、ESI 噴霧穩定性、儀器靈敏度漂移。<strong>不做 normalization 就比較強度，無異於用兩把不同刻度的尺量身高。</strong></p>
+<p>Normalization 的核心假設：「<strong>大多數蛋白質的真實表達在條件之間是不變的</strong>」（中位數穩定性假設）。標準化的目標就是讓樣品之間的整體分布變得相似。</p>
+</div>
+<div data-lang="en">
+<p>Two technical replicates of the same sample can differ in total signal by 30–50%, due to injection volume, column condition, ESI stability, and instrument drift. <strong>Comparing intensities without normalization is like measuring height with two different rulers.</strong></p>
+<p>Core assumption: <strong>most proteins do not change between conditions</strong> (the median-stability assumption). Normalization aligns the overall distributions across samples.</p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="五大方法" data-en="FIVE METHODS">五大方法</div>
+<h2 data-zh="一、五種主流 normalization 方法" data-en="I. Five Mainstream Methods">一、五種主流 normalization 方法</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4>📊 <span data-zh="Median normalization" data-en="Median normalization">Median normalization</span></h4>
+<div data-lang="zh"><p>每個樣品減去其 log2 強度的中位數。最簡單、最廣泛，假設「中位數是 invariant」。<br>• <strong>適用：</strong>樣品變異小、樣品內變異主流；<strong>多數標準工具的預設</strong>。<br>• <strong>限制：</strong>不修正 variance heterogeneity，極端 dynamic range 表現一般。</p></div>
+<div data-lang="en"><p>Subtract each sample's median log2 intensity. Simplest, most widely used; assumes the median is invariant.<br>• <strong>Use:</strong> low sample-to-sample variation; default in most tools.<br>• <strong>Limit:</strong> doesn't correct variance heterogeneity; mediocre at extreme dynamic ranges.</p></div>
+</div>
+<div class="card"><h4>📈 <span data-zh="VSN (Variance Stabilizing)" data-en="VSN (Variance Stabilizing)">VSN</span></h4>
+<div data-lang="zh"><p>同時做 log-like 轉換與標準化，使<strong>所有強度級別的變異近似一致</strong>。低豐度蛋白的 variance 也得到合理估計。<br>• <strong>適用：</strong>2018 benchmark 中表現最佳；DEP 套件預設。<br>• <strong>限制：</strong>計算稍慢；解釋性不如 median 直觀。</p></div>
+<div data-lang="en"><p>Combines log-like transform with normalization so that <strong>variance is similar across all intensity levels</strong>. Low-abundance proteins get reasonable variance estimates.<br>• <strong>Use:</strong> Top-ranked in 2018 benchmark; DEP package default.<br>• <strong>Limit:</strong> Slower; less intuitive than median.</p></div>
+</div>
+<div class="card"><h4>📐 <span data-zh="Quantile normalization" data-en="Quantile normalization">Quantile normalization</span></h4>
+<div data-lang="zh"><p>強制所有樣品的 intensity distribution 變得<strong>完全相同</strong>。每個 percentile 都對齊到 reference。<br>• <strong>適用：</strong>樣品間 distribution 形狀差異大；分批整合。<br>• <strong>限制：</strong>過於強烈——若樣品間真有生物差異（如疾病組蛋白整體偏低），會被「強行抹平」。</p></div>
+<div data-lang="en"><p>Forces all samples to have <strong>identical distributions</strong> — each percentile aligned to a reference.<br>• <strong>Use:</strong> Strongly differing distributions; batch integration.<br>• <strong>Limit:</strong> Too aggressive — real biological differences (e.g., disease-shifted distributions) get erased.</p></div>
+</div>
+<div class="card"><h4>🌊 <span data-zh="Cyclic LOESS" data-en="Cyclic LOESS">Cyclic LOESS</span></h4>
+<div data-lang="zh"><p>逐對樣品做 LOESS 回歸再迭代，修正 intensity-dependent bias。微陣列年代主流。<br>• <strong>適用：</strong>需要修正 dependency 但不希望像 quantile 那樣強硬。<br>• <strong>限制：</strong>對 outlier 敏感；在大樣本量下分布性能下降。</p></div>
+<div data-lang="en"><p>Pairwise LOESS regression iterated cyclically, correcting intensity-dependent bias. A microarray classic.<br>• <strong>Use:</strong> Correct dependency without forcing identical distributions.<br>• <strong>Limit:</strong> Sensitive to outliers; performance degrades at large sample counts.</p></div>
+</div>
+<div class="card"><h4>🔬 <span data-zh="Normics (2022)" data-en="Normics (2022)">Normics (2022)</span></h4>
+<div data-lang="zh"><p>新穎方法：利用「variance 與資料內 correlation 結構」識別最不變化的子集作 reference，再進行 robust normalization。<br>• <strong>適用：</strong>樣品間有大規模真實生物差異（如疾病 vs 健康）。<br>• <strong>限制：</strong>較新，工具支援不如 VSN 廣泛。</p></div>
+<div data-lang="en"><p>2022 method: uses variance + intrinsic correlation structure to identify the most invariant subset as reference, then performs robust normalization.<br>• <strong>Use:</strong> Large genuine biological differences between groups (disease vs healthy).<br>• <strong>Limit:</strong> Newer; less tool support than VSN.</p></div>
+</div>
+<div class="card"><h4>🏷️ <span data-zh="TMT-specific: IRS" data-en="TMT-specific: IRS">TMT 專用: IRS</span></h4>
+<div data-lang="zh"><p>Internal Reference Scaling：每個 TMT batch 都包含一個 pooled reference channel；用 reference channel 的訊號將其他 channels 拉到同一基準。<br>• <strong>專為 TMT 多 batch 設計</strong>，是當前 TMT 跨批次整合的黃金標準。</p></div>
+<div data-lang="en"><p>Internal Reference Scaling: each TMT batch includes a pooled reference channel; other channels are scaled to that common baseline.<br>• <strong>Designed for multi-batch TMT</strong> — the gold standard for cross-batch TMT integration.</p></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="INTERACTIVE">互動模擬</div>
+<h2 data-zh="Normalization 方法比較" data-en="Compare Normalization Methods">Normalization 方法比較</h2>
+<div data-lang="zh"><p>切換不同方法，觀察 boxplot 中樣品之間的中位數對齊與分布形狀變化。理想：中位數對齊、IQR 接近。</p></div>
+<div data-lang="en"><p>Switch methods to compare boxplots: medians aligned, IQRs similar — that's the goal.</p></div>
+<div class="interactive-panel">
+<div class="toggle-row"><button class="toggle-btn active" data-n="raw" data-zh="Raw" data-en="Raw">Raw</button><button class="toggle-btn" data-n="median" data-zh="Median" data-en="Median">Median</button><button class="toggle-btn" data-n="vsn" data-zh="VSN" data-en="VSN">VSN</button><button class="toggle-btn" data-n="quantile" data-zh="Quantile" data-en="Quantile">Quantile</button></div>
+<div class="chart-container"><canvas id="normChart"></canvas></div>
+<p style="font-size:.82rem;color:var(--c-ink-muted);text-align:center;"><span data-zh="X: 樣品 | Y: log2 intensity" data-en="X: samples | Y: log2 intensity">X: 樣品 | Y: log2 intensity</span></p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="決策" data-en="DECISION">決策</div>
+<h2 data-zh="二、Normalization 方法選擇" data-en="II. How to Choose">二、Normalization 方法選擇</h2>
+<div class="decision-tree">
+<h4>🌳 <span data-zh="Normalization 決策樹" data-en="Normalization decision tree">Normalization 決策樹</span></h4>
+<div data-lang="zh">
+<div class="dt-node"><span class="dt-q">Q1:</span><div>TMT 多批次資料？ <span class="dt-arrow">→ 是 →</span> <strong>IRS + median</strong>。</div></div>
+<div class="dt-node"><span class="dt-q">Q2:</span><div>LFQ 或 DIA 單批次？ <span class="dt-arrow">→ 是 →</span> <strong>VSN</strong>（最佳）或 <strong>median</strong>（簡單可靠）。</div></div>
+<div class="dt-node"><span class="dt-q">Q3:</span><div>樣品間 distribution 形狀差異大？ <span class="dt-arrow">→ 是 →</span> 試 <strong>Cyclic LOESS</strong>；謹慎使用 quantile（會抹掉真實差異）。</div></div>
+<div class="dt-node"><span class="dt-q">Q4:</span><div>疾病組與健康組蛋白整體丰度有真實差異？ <span class="dt-arrow">→ 是 →</span> <strong>Normics</strong> 或 robust median 變體。</div></div>
+</div>
+<div data-lang="en">
+<div class="dt-node"><span class="dt-q">Q1:</span><div>Multi-batch TMT? <span class="dt-arrow">→ Yes →</span> <strong>IRS + median</strong>.</div></div>
+<div class="dt-node"><span class="dt-q">Q2:</span><div>Single-batch LFQ or DIA? <span class="dt-arrow">→ Yes →</span> <strong>VSN</strong> (best) or <strong>median</strong> (simple and reliable).</div></div>
+<div class="dt-node"><span class="dt-q">Q3:</span><div>Strongly different distributions across samples? <span class="dt-arrow">→ Yes →</span> Try <strong>cyclic LOESS</strong>; use quantile cautiously (it erases real differences).</div></div>
+<div class="dt-node"><span class="dt-q">Q4:</span><div>Genuine global abundance shift (disease vs healthy)? <span class="dt-arrow">→ Yes →</span> <strong>Normics</strong> or a robust median variant.</div></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="實作" data-en="CODE">實作</div>
+<h2 data-zh="實作範例" data-en="Code Examples">實作範例</h2>
+<div class="code-tabs"><div class="code-tab-btns">
+<button class="code-tab-btn active" onclick="switchTab(this,'r-norm')">R / limma + vsn</button>
+<button class="code-tab-btn" onclick="switchTab(this,'r-msstats-norm')">R / MSstats</button>
+<button class="code-tab-btn" onclick="switchTab(this,'py-norm')">Python</button>
+<button class="code-tab-btn" onclick="switchTab(this,'irs')">IRS (TMT)</button>
+</div>
+<div class="code-tab-content active" id="r-norm"><pre><span class="func">library</span>(vsn); <span class="func">library</span>(limma)
+mat &lt;- <span class="func">as.matrix</span>(<span class="func">read.csv</span>(<span class="str">"protein_intensity.csv"</span>, row.names = <span class="num">1</span>))
+
+<span class="comment"># 1) VSN (raw intensity → variance-stabilized)</span>
+fit  &lt;- <span class="func">vsnMatrix</span>(mat)
+norm_vsn &lt;- <span class="func">predict</span>(fit, mat)
+<span class="func">meanSdPlot</span>(norm_vsn)  <span class="comment"># check variance flatness</span>
+
+<span class="comment"># 2) Median normalization (already log2)</span>
+log2_mat &lt;- <span class="func">log2</span>(mat)
+norm_med &lt;- <span class="func">sweep</span>(log2_mat, <span class="num">2</span>, <span class="func">apply</span>(log2_mat, <span class="num">2</span>, median, na.rm = <span class="kw">TRUE</span>))
+
+<span class="comment"># 3) Quantile</span>
+norm_q &lt;- <span class="func">normalizeBetweenArrays</span>(log2_mat, method = <span class="str">"quantile"</span>)
+
+<span class="comment"># 4) Cyclic LOESS</span>
+norm_loess &lt;- <span class="func">normalizeBetweenArrays</span>(log2_mat, method = <span class="str">"cyclicloess"</span>)</pre></div>
+<div class="code-tab-content" id="r-msstats-norm"><pre><span class="func">library</span>(MSstats)
+processed &lt;- <span class="func">dataProcess</span>(raw,
+  normalization = <span class="str">"equalizeMedians"</span>,  <span class="comment"># 預設 median</span>
+  <span class="comment"># normalization = "quantile",</span>
+  <span class="comment"># normalization = "globalStandards", nameStandards = c("ALBU_HUMAN"),</span>
+  summaryMethod = <span class="str">"TMP"</span>,           <span class="comment"># Tukey median polish</span>
+  censoredInt   = <span class="str">"NA"</span>,
+  MBimpute      = <span class="kw">TRUE</span>
+)</pre></div>
+<div class="code-tab-content" id="py-norm"><pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> quantile_transform
+
+mat = pd.read_csv(<span class="str">"protein_intensity.csv"</span>, index_col=<span class="num">0</span>)
+log = np.log2(mat.replace(<span class="num">0</span>, np.nan))
+
+<span class="comment"># Median</span>
+log_med = log.sub(log.median(axis=<span class="num">0</span>), axis=<span class="num">1</span>)
+
+<span class="comment"># Quantile</span>
+log_q = pd.DataFrame(
+    quantile_transform(log.fillna(log.median()),
+                       axis=<span class="num">0</span>, n_quantiles=<span class="num">1000</span>,
+                       output_distribution=<span class="str">"normal"</span>),
+    index=log.index, columns=log.columns)
+
+<span class="comment"># For VSN in Python use pyOpenMS or call R via rpy2</span></pre></div>
+<div class="code-tab-content" id="irs"><pre><span class="comment"># IRS for multi-batch TMT (Phil Wilmarth's protocol)</span>
+<span class="func">library</span>(dplyr)
+<span class="comment"># Assume df: protein × (sample columns), batch info in colData</span>
+
+<span class="comment"># 1) Within each batch, identify reference channels (pooled)</span>
+ref_b1 &lt;- df[, <span class="func">c</span>(<span class="str">"Ref_b1"</span>)]   <span class="comment"># reference channel in batch 1</span>
+ref_b2 &lt;- df[, <span class="func">c</span>(<span class="str">"Ref_b2"</span>)]
+
+<span class="comment"># 2) Average reference intensity across batches</span>
+ref_avg &lt;- (ref_b1 + ref_b2) / <span class="num">2</span>
+
+<span class="comment"># 3) Scale each batch by ref_avg / ref_b</span>
+df_b1_scaled &lt;- df[, batch1_cols] * (ref_avg / ref_b1)
+df_b2_scaled &lt;- df[, batch2_cols] * (ref_avg / ref_b2)
+
+<span class="comment"># 4) Recombine + downstream normalization (median/VSN)</span>
+df_irs &lt;- <span class="func">cbind</span>(df_b1_scaled, df_b2_scaled)</pre></div>
+</div>
+</section>
+
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">1. 你在做 TMT 兩 batch 整合，最適合的方法？</p>
+<p data-lang="en">1. Integrating two TMT batches — best method?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. IRS（用 reference channel 把 batch 對齊）+ median</span><span data-lang="en">A. IRS (align batches via reference channel) + median</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. Quantile（強制 distribution 一致）</span><span data-lang="en">B. Quantile (force identical distributions)</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 不做 normalization</span><span data-lang="en">C. Skip normalization</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 只做 cyclic LOESS</span><span data-lang="en">D. Cyclic LOESS only</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">2. 你比較惡性腫瘤組 vs 健康組，預期腫瘤組整體蛋白質「上調」。使用 Quantile normalization 的潛在問題？</p>
+<p data-lang="en">2. Comparing tumor vs healthy with expected global upregulation in tumor — what's the risk of quantile normalization?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 沒有問題</span><span data-lang="en">A. No issue</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. Quantile 強制 distribution 對齊，會「抹掉」真實的整體上調訊號</span><span data-lang="en">B. Quantile forces identical distributions and erases the true global upregulation signal</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. Quantile 不適合蛋白質</span><span data-lang="en">C. Quantile isn't applicable to proteins</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. Quantile 會放大噪音</span><span data-lang="en">D. Quantile amplifies noise</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">3. VSN 相較 log2 + median 的優勢是？</p>
+<p data-lang="en">3. VSN vs log2 + median — VSN's advantage?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 速度更快</span><span data-lang="en">A. Faster</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 解釋性更直觀</span><span data-lang="en">B. More intuitive</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 同時穩定 variance（讓低豐度的 variance 不再過大），不僅對齊中位數</span><span data-lang="en">C. Stabilizes variance (low-abundance variance no longer blown up), not just aligns medians</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 完全不需要 log 轉換</span><span data-lang="en">D. Requires no log transform</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="qc.html"><span class="nav-dir" data-zh="← 上一步" data-en="← Previous">← 上一步</span><span class="nav-title" data-zh="Step 5: 品質管控 (QC)" data-en="Step 5: Quality Control (QC)">Step 5: 品質管控 (QC)</span></a>
+<a href="imputation.html"><span class="nav-dir" data-zh="下一步 →" data-en="Next →">下一步 →</span><span class="nav-title" data-zh="Step 7: 缺失值處理 (Missing Value Imputation)" data-en="Step 7: Missing Value Imputation">Step 7: 缺失值處理 (Missing Value Imputation)</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+// Norm simulator
+function randn(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const nSamples=6;const nProt=300;
+const raw=[];
+for(let s=0;s<nSamples;s++){
+  const sampleMedian=21+s*0.5+randn()*0.3;  // shift by sample
+  const arr=[];
+  for(let p=0;p<nProt;p++){
+    arr.push(sampleMedian+randn()*2.5);
+  }
+  raw.push(arr);
+}
+function getMedian(arr){const s=[...arr].sort((a,b)=>a-b);return s[Math.floor(s.length/2)];}
+function quantilesOf(arr){const s=[...arr].sort((a,b)=>a-b);return s;}
+
+function transform(method){
+  if(method==='raw') return raw;
+  if(method==='median'){const meds=raw.map(a=>getMedian(a));const gm=meds.reduce((a,v)=>a+v,0)/meds.length;return raw.map((a,i)=>a.map(v=>v-meds[i]+gm));}
+  if(method==='vsn'){const meds=raw.map(a=>getMedian(a));const gm=meds.reduce((a,v)=>a+v,0)/meds.length;return raw.map((a,i)=>{const m=meds[i];return a.map(v=>(v-m)*0.85+gm);});}
+  if(method==='quantile'){
+    const sorted=raw.map(a=>quantilesOf(a));
+    const ref=[];
+    for(let p=0;p<nProt;p++){let s=0;for(let i=0;i<nSamples;i++)s+=sorted[i][p];ref.push(s/nSamples);}
+    return raw.map(a=>{const idx=[...a.keys()].sort((x,y)=>a[x]-a[y]);const out=new Array(a.length);idx.forEach((origIdx,pos)=>{out[origIdx]=ref[pos];});return out;});
+  }
+}
+
+function quantile(arr,q){const s=[...arr].sort((a,b)=>a-b);return s[Math.floor(s.length*q)];}
+const normChart=new Chart(document.getElementById('normChart'),{
+  type:'boxplot',
+  data:{labels:['S1','S2','S3','S4','S5','S6'],datasets:[{label:'log2 intensity',data:[],backgroundColor:'rgba(44,75,138,0.45)',borderColor:'rgba(44,75,138,0.9)'}]},
+  options:{responsive:true,maintainAspectRatio:false,scales:{y:{title:{display:true,text:'log2 intensity'}}}}
+});
+// Chart.js v4 has no built-in boxplot — fallback to per-sample bar of median + IQR via custom
+const normChart2=new Chart(document.getElementById('normChart'),{
+  type:'bar',
+  data:{labels:['S1','S2','S3','S4','S5','S6'],datasets:[
+    {label:'Q1',data:[],backgroundColor:'rgba(44,75,138,0.25)'},
+    {label:'Median',data:[],backgroundColor:'rgba(44,75,138,0.7)'},
+    {label:'Q3',data:[],backgroundColor:'rgba(44,75,138,0.25)'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,scales:{y:{title:{display:true,text:'log2 intensity'}}},plugins:{legend:{position:'top'}}}
+});
+
+function update(method){
+  const data=transform(method);
+  const q1=data.map(a=>quantile(a,0.25));
+  const med=data.map(a=>getMedian(a));
+  const q3=data.map(a=>quantile(a,0.75));
+  normChart2.data.datasets[0].data=q1.map(v=>+v.toFixed(2));
+  normChart2.data.datasets[1].data=med.map(v=>+v.toFixed(2));
+  normChart2.data.datasets[2].data=q3.map(v=>+v.toFixed(2));
+  const L=I18n.get();
+  normChart2.data.datasets[0].label='Q1';
+  normChart2.data.datasets[1].label=L==='zh'?'中位數':'Median';
+  normChart2.data.datasets[2].label='Q3';
+  normChart2.update('none');
+}
+document.querySelectorAll('.toggle-row .toggle-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.toggle-row .toggle-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');update(b.dataset.n);});
+document.addEventListener('langchange',()=>update(document.querySelector('.toggle-row .toggle-btn.active').dataset.n));
+update('raw');
+
+const QF={
+  zh:{q1_y:'IRS 是 TMT 跨批次整合的黃金標準。',q1_n:'正確答案已標示。',q2_y:'這正是 Quantile 的致命限制——它強制所有 distribution 一致，因此會抹除真實全域差異。',q2_n:'正確答案已標示。',q3_y:'VSN 的優勢是 variance stabilization——讓所有 intensity 級別的雜訊估計更公平。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'IRS is the gold standard for cross-batch TMT integration.',q1_n:'Correct answer highlighted.',q2_y:'Exactly — quantile forces identical distributions and erases real global differences. This is its key risk.',q2_n:'Correct answer highlighted.',q3_y:'VSN\'s advantage is variance stabilization — noise estimates are fair across all intensity levels.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>

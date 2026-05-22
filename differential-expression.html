@@ -1,0 +1,260 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Step 8: DE Analysis — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html">Prep</a></li><li><a href="acquisition.html">MS</a></li><li><a href="identification.html">ID</a></li><li><a href="quantification.html">Quant</a></li><li><a href="qc.html">QC</a></li><li><a href="normalization.html">Norm</a></li><li><a href="imputation.html">Impute</a></li><li><a href="differential-expression.html" class="active">DE</a></li><li><a href="enrichment.html">Enrich</a></li><li><a href="ptm.html">PTM</a></li><li><a href="targeted.html">Target</a></li><li><a href="top-down.html">Top-down</a></li><li><a href="spatial.html">Spatial</a></li><li><a href="single-cell.html">scProt</a></li><li><a href="affinity.html">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">STEP 8 / 9</div>
+<h1 data-zh="差異表達分析 (Differential Expression)" data-en="Differential Expression">差異表達分析 (Differential Expression)</h1>
+<p class="subtitle" data-lang="zh">limma、MSstats、DEP——三大主流框架的設計哲學、適用情境與最佳實踐。</p>
+<p class="subtitle" data-lang="en">limma, MSstats, DEP — three frameworks, their design philosophies, use cases, and best practices.</p>
+</header>
+<main class="content-wrap">
+
+<section class="section">
+<div class="section-label" data-zh="概念" data-en="CONCEPT">概念</div>
+<h2 data-zh="為什麼蛋白質體學不適用簡單的 t-test？" data-en="Why simple t-tests fail for proteomics">為什麼蛋白質體學不適用簡單的 t-test？</h2>
+<div data-lang="zh">
+<p>樣品數通常 3–6/組，<strong>變異估計極不穩定</strong>——某些蛋白看似 p-value 很小，但實際上只是因為偶然觀測到極小 variance。t-test 不會「借用」其他蛋白的資訊。</p>
+<p>解決方案是 <strong>moderated t-statistics</strong>（empirical Bayes 變異收縮）：將每個蛋白的 variance 估計往群體中位數方向「拉一拉」，得到更穩健的 t 統計量。這就是 <strong>limma</strong> 的核心。</p>
+</div>
+<div data-lang="en">
+<p>With only 3–6 samples per group, <strong>variance estimates are extremely unstable</strong> — some proteins look significant only because of an accidentally tiny variance. A plain t-test cannot "borrow" information from other proteins.</p>
+<p>The solution is <strong>moderated t-statistics</strong> (empirical Bayes variance shrinkage): shrink each protein's variance toward the population median to get more stable t-values. This is the core idea of <strong>limma</strong>.</p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="三框架比較" data-en="THREE FRAMEWORKS">三框架比較</div>
+<h2 data-zh="一、limma vs MSstats vs DEP" data-en="I. limma vs MSstats vs DEP">一、limma vs MSstats vs DEP</h2>
+<table class="comp-table">
+<thead><tr><th></th><th>limma</th><th>MSstats</th><th>DEP</th></tr></thead>
+<tbody>
+<tr><td data-zh="原始用途" data-en="Origin"><strong>原始用途</strong></td><td data-lang="zh">microarray, RNA-seq</td><td data-lang="zh">專為 proteomics 設計</td><td data-lang="zh">基於 limma 的 proteomics 套件</td><td data-lang="en">Microarray, RNA-seq</td><td data-lang="en">Designed for proteomics</td><td data-lang="en">Proteomics wrapper around limma</td></tr>
+<tr><td data-zh="核心方法" data-en="Method"><strong>核心方法</strong></td><td data-lang="zh">empirical Bayes 收縮 + linear model</td><td data-lang="zh">linear mixed model（peptide + protein 兩層）</td><td data-lang="zh">limma + 額外 imputation + 視覺化</td><td data-lang="en">Empirical Bayes shrinkage + linear model</td><td data-lang="en">Linear mixed model (peptide + protein levels)</td><td data-lang="en">limma + extra imputation + viz</td></tr>
+<tr><td data-zh="處理 missing" data-en="Missing handling"><strong>處理 missing</strong></td><td data-lang="zh">需先 imputation</td><td data-lang="zh">內建（mixed model）</td><td data-lang="zh">內建 imputation pipeline</td><td data-lang="en">Requires pre-imputation</td><td data-lang="en">Built-in (mixed model)</td><td data-lang="en">Built-in imputation pipeline</td></tr>
+<tr><td data-zh="輸入" data-en="Input"><strong>輸入</strong></td><td data-lang="zh">log2 matrix</td><td data-lang="zh">peptide-level long-format</td><td data-lang="zh">MaxQuant evidence/proteinGroups</td><td data-lang="en">log2 matrix</td><td data-lang="en">Peptide-level long format</td><td data-lang="en">MaxQuant evidence/proteinGroups</td></tr>
+<tr><td data-zh="推薦使用" data-en="Best for"><strong>推薦使用</strong></td><td data-lang="zh">已 summarised matrix、有經驗的使用者</td><td data-lang="zh">peptide-level、新手友善的 proteomics 統計</td><td data-lang="zh">需要 imputation + 視覺化一站式</td><td data-lang="en">Pre-summarised matrices, experienced users</td><td data-lang="en">Peptide-level, beginner-friendly proteomics stats</td><td data-lang="en">One-stop imputation + viz</td></tr>
+</tbody></table>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>2024 benchmark：</strong>在多個 spike-in 資料集中，<strong>limma（peptide-level）</strong> 普遍優於 t-test、ANOVA、與基礎 MSstats。原因正是 empirical Bayes 跨蛋白的變異 sharing。最近的 prolfqua 套件進一步整合 ensemble inference，表現更穩健。</span>
+<span data-lang="en"><strong>2024 benchmark:</strong> Across spike-in datasets, <strong>limma at peptide-level</strong> outperforms t-test, ANOVA, and basic MSstats. The reason is empirical Bayes variance sharing across proteins. The recent <code>prolfqua</code> package adds ensemble inference for even more robust results.</span>
+</div></div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="互動火山圖" data-en="VOLCANO">互動火山圖</div>
+<h2 data-zh="火山圖閾值模擬器" data-en="Volcano Threshold Simulator">火山圖閾值模擬器</h2>
+<div data-lang="zh"><p>火山圖是 DE 結果最直觀的呈現：X 軸 log2FC、Y 軸 -log10(adj.p)。調整下方閾值，觀察 up/down 候選數量變化。</p></div>
+<div data-lang="en"><p>Volcano plot is the most intuitive DE result: X = log2FC, Y = -log10(adj.p). Move the cutoffs to see up/down candidate counts change.</p></div>
+<div class="interactive-panel">
+<div class="sim-stats"><span class="sim-stat pass" id="statUp">—</span><span class="sim-stat fail" id="statDown">—</span><span class="sim-stat neutral" id="statNS">—</span></div>
+<div class="slider-group"><label><span data-zh="|log2FC| 閾值" data-en="|log2FC| cutoff">|log2FC| 閾值</span> <span id="valFC">1.0</span></label><input type="range" id="sliderFC" min="0" max="2.5" value="1.0" step="0.1"></div>
+<div class="slider-group"><label><span data-zh="adj.p 閾值" data-en="adj.p cutoff">adj.p 閾值</span> <span id="valP">0.05</span></label><input type="range" id="sliderP" min="0.001" max="0.2" value="0.05" step="0.001"></div>
+<div class="chart-container"><canvas id="volcChart"></canvas></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="實作" data-en="CODE">實作</div>
+<h2 data-zh="二、執行 DE 的程式碼" data-en="II. Running a DE analysis">二、執行 DE 的程式碼</h2>
+<div class="code-tabs"><div class="code-tab-btns">
+<button class="code-tab-btn active" onclick="switchTab(this,'r-limma')">R / limma</button>
+<button class="code-tab-btn" onclick="switchTab(this,'r-msstats-de')">R / MSstats</button>
+<button class="code-tab-btn" onclick="switchTab(this,'r-dep-de')">R / DEP</button>
+<button class="code-tab-btn" onclick="switchTab(this,'py-de')">Python</button>
+</div>
+<div class="code-tab-content active" id="r-limma"><pre><span class="func">library</span>(limma)
+mat &lt;- <span class="func">as.matrix</span>(<span class="func">read.csv</span>(<span class="str">"protein_log2.csv"</span>, row.names = <span class="num">1</span>))
+group &lt;- <span class="func">factor</span>(<span class="func">c</span>(<span class="str">"Ctl"</span>,<span class="str">"Ctl"</span>,<span class="str">"Ctl"</span>,<span class="str">"Tr"</span>,<span class="str">"Tr"</span>,<span class="str">"Tr"</span>))
+
+design   &lt;- <span class="func">model.matrix</span>(~<span class="num">0</span>+group)
+<span class="func">colnames</span>(design) &lt;- <span class="func">c</span>(<span class="str">"Ctl"</span>,<span class="str">"Tr"</span>)
+contrast &lt;- <span class="func">makeContrasts</span>(Tr-Ctl, levels=design)
+
+fit  &lt;- <span class="func">lmFit</span>(mat, design)
+fit2 &lt;- <span class="func">contrasts.fit</span>(fit, contrast)
+fit2 &lt;- <span class="func">eBayes</span>(fit2)            <span class="comment"># 關鍵：moderated t</span>
+
+res &lt;- <span class="func">topTable</span>(fit2, number = <span class="kw">Inf</span>, sort.by = <span class="str">"P"</span>)
+<span class="func">head</span>(res)  <span class="comment"># logFC, t, P.Value, adj.P.Val, B</span>
+
+<span class="comment"># Significant cutoff</span>
+sig &lt;- res[<span class="func">abs</span>(res$logFC) &gt; <span class="num">1</span> &amp; res$adj.P.Val &lt; <span class="num">0.05</span>, ]
+<span class="func">nrow</span>(sig)</pre></div>
+
+<div class="code-tab-content" id="r-msstats-de"><pre><span class="func">library</span>(MSstats)
+
+processed &lt;- <span class="func">dataProcess</span>(raw_msstats_format,
+  normalization = <span class="str">"equalizeMedians"</span>,
+  summaryMethod = <span class="str">"TMP"</span>,
+  MBimpute      = <span class="kw">TRUE</span>)
+
+contrast &lt;- <span class="func">matrix</span>(<span class="func">c</span>(-<span class="num">1</span>, <span class="num">1</span>), nrow = <span class="num">1</span>,
+  dimnames = <span class="func">list</span>(<span class="str">"Tr-Ctl"</span>, <span class="func">c</span>(<span class="str">"Ctl"</span>, <span class="str">"Tr"</span>)))
+
+result &lt;- <span class="func">groupComparison</span>(contrast.matrix = contrast,
+                          data = processed)
+
+<span class="comment"># Volcano</span>
+<span class="func">groupComparisonPlots</span>(result$ComparisonResult,
+  type = <span class="str">"VolcanoPlot"</span>,
+  logBase.pvalue = <span class="num">10</span>,
+  FCcutoff = <span class="num">2</span>, sig = <span class="num">0.05</span>)</pre></div>
+
+<div class="code-tab-content" id="r-dep-de"><pre><span class="func">library</span>(DEP)
+
+<span class="comment"># Read MaxQuant proteinGroups.txt</span>
+data &lt;- <span class="func">read.delim</span>(<span class="str">"proteinGroups.txt"</span>)
+data &lt;- <span class="func">filter_missval</span>(<span class="func">make_se</span>(data, columns, exp_design), thr = <span class="num">0</span>)
+data_norm &lt;- <span class="func">normalize_vsn</span>(data)
+data_imp  &lt;- <span class="func">impute</span>(data_norm, fun = <span class="str">"MinProb"</span>, q = <span class="num">0.01</span>)
+
+<span class="comment"># DE analysis</span>
+data_diff &lt;- <span class="func">test_diff</span>(data_imp, type = <span class="str">"control"</span>, control = <span class="str">"Ctl"</span>)
+
+<span class="comment"># Apply cutoffs</span>
+dep &lt;- <span class="func">add_rejections</span>(data_diff, alpha = <span class="num">0.05</span>, lfc = <span class="num">1</span>)
+<span class="func">plot_volcano</span>(dep, contrast = <span class="str">"Tr_vs_Ctl"</span>, label_size = <span class="num">3</span>)
+<span class="func">plot_heatmap</span>(dep, type = <span class="str">"centered"</span>, kmeans = <span class="kw">TRUE</span>, k = <span class="num">6</span>)</pre></div>
+
+<div class="code-tab-content" id="py-de"><pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> scipy <span class="kw">import</span> stats
+<span class="kw">from</span> statsmodels.stats.multitest <span class="kw">import</span> multipletests
+
+df = pd.read_csv(<span class="str">"protein_log2.csv"</span>, index_col=<span class="num">0</span>)
+ctl = df[[<span class="str">"C1"</span>,<span class="str">"C2"</span>,<span class="str">"C3"</span>]].values
+trt = df[[<span class="str">"T1"</span>,<span class="str">"T2"</span>,<span class="str">"T3"</span>]].values
+
+<span class="comment"># Note: SciPy ttest_ind isn't moderated; for moderated t use R/limma via rpy2</span>
+t, p = stats.ttest_ind(trt, ctl, axis=<span class="num">1</span>, nan_policy=<span class="str">"omit"</span>)
+log2fc = trt.mean(axis=<span class="num">1</span>) - ctl.mean(axis=<span class="num">1</span>)
+
+<span class="comment"># BH correction</span>
+_, p_adj, _, _ = multipletests(p, method=<span class="str">"fdr_bh"</span>)
+
+res = pd.DataFrame({<span class="str">"log2FC"</span>:log2fc, <span class="str">"pvalue"</span>:p, <span class="str">"padj"</span>:p_adj},
+                   index=df.index).sort_values(<span class="str">"padj"</span>)
+sig = res[(res[<span class="str">"padj"</span>] &lt; <span class="num">0.05</span>) &amp; (res[<span class="str">"log2FC"</span>].abs() &gt; <span class="num">1</span>)]
+<span class="func">print</span>(<span class="func">f</span><span class="str">"# significant: {len(sig)}"</span>)</pre></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="專家建議" data-en="EXPERT TIPS">專家建議</div>
+<h2 data-zh="三、避免常見錯誤" data-en="III. Common Pitfalls to Avoid">三、避免常見錯誤</h2>
+<div class="callout danger"><span class="callout-icon">🚨</span><div>
+<div data-lang="zh"><strong>❌ 不要犯這些錯誤：</strong><br>① 用<strong>未校正的 p-value</strong>篩選——3000 個蛋白做 t-test 後沒有 BH 校正，等於拿 5% 假陽性率 × 3000 = 150 個假陽性。<br>② 樣品數 = 3 卻看到「絕對 t-test」結果——應用 limma 等 moderated 方法。<br>③ 混合 imputation 與 t-test 但未將「imputation indicator」納入 design matrix。<br>④ 在 TMT 多 batch 資料未做 IRS 就比較不同 batch。</div>
+<div data-lang="en"><strong>❌ Don't make these mistakes:</strong><br>① Filtering by <strong>uncorrected p-values</strong> — 3000 t-tests at α=0.05 gives 150 false positives without BH correction.<br>② n = 3 per group with naive t-test — use moderated methods like limma.<br>③ Imputing + t-testing without flagging "imputation indicator" in the design matrix.<br>④ Comparing across TMT batches without IRS first.</div>
+</div></div>
+<div class="callout tip"><span class="callout-icon">✅</span><div>
+<div data-lang="zh"><strong>✅ 推薦流程：</strong><br>① QC + Normalization + Diagnose missingness (前面 3 步)<br>② 在 design matrix 加入 batch / sex / age 等 confounders 作 covariate<br>③ 使用 <strong>limma</strong>（peptide-level 最強）或 <strong>MSstats</strong><br>④ BH adjustment → adj.p &lt; 0.05<br>⑤ 若 log2FC 過小（&lt; 0.5）即使顯著也應慎用——考慮 biological relevance<br>⑥ 將結果送入 enrichment（下一步）</div>
+<div data-lang="en"><strong>✅ Recommended workflow:</strong><br>① QC + normalization + diagnose missingness (the prior 3 steps)<br>② Add confounders (batch, sex, age) to the design matrix as covariates<br>③ Use <strong>limma</strong> (peptide-level is strongest) or <strong>MSstats</strong><br>④ BH adjustment → adj.p &lt; 0.05<br>⑤ Reject tiny effect sizes (|log2FC| &lt; 0.5) even if significant — biological relevance matters<br>⑥ Pipe results into enrichment (next step)</div>
+</div></div>
+</section>
+
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">1. 你只有 3 個 Control + 3 個 Treatment 樣品。為何不該用一般 t-test？</p>
+<p data-lang="en">1. You have 3 Control + 3 Treatment samples. Why avoid plain t-test?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. t-test 不能處理連續變數</span><span data-lang="en">A. t-test can't handle continuous variables</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 小樣本下 variance 估計極不穩定，會產生大量假陽性；moderated t（limma）可借用其他蛋白的資訊穩定估計</span><span data-lang="en">B. Small-sample variance estimates are unstable; moderated t (limma) borrows from other proteins</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. t-test 太快，看起來不專業</span><span data-lang="en">C. t-test is too fast and looks unprofessional</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. t-test 只能比較 RNA</span><span data-lang="en">D. t-test only works for RNA</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">2. 一個蛋白 log2FC = 0.15、adj.p = 0.001。最合理的解讀？</p>
+<p data-lang="en">2. A protein has log2FC = 0.15 and adj.p = 0.001. Best interpretation?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 強訊號，列為主要 hit</span><span data-lang="en">A. Strong signal — promote to top hit</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 統計不顯著，移除</span><span data-lang="en">B. Not significant, remove</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 統計顯著但 effect size 太小（&lt; 11% 變化），需要結合生物學上下文判斷</span><span data-lang="en">C. Significant but effect size is tiny (&lt;11% change); needs biological context to interpret</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 假陽性</span><span data-lang="en">D. False positive</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">3. 你有 6 個樣品中有 2 個來自不同 batch。DE 分析時最佳做法？</p>
+<p data-lang="en">3. 6 samples with 2 from a different batch. Best DE practice?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 在 design matrix 加入 batch 作為 covariate（如 ~ group + batch）</span><span data-lang="en">A. Add batch as a covariate in the design matrix (~ group + batch)</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 刪除 batch B 的 2 個樣品</span><span data-lang="en">B. Drop the 2 batch-B samples</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 忽略 batch 差異</span><span data-lang="en">C. Ignore batch differences</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 把 batch B 與 A 的樣品平均</span><span data-lang="en">D. Average batch A and B samples together</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="imputation.html"><span class="nav-dir" data-zh="← 上一步" data-en="← Previous">← 上一步</span><span class="nav-title" data-zh="Step 7: 缺失值處理 (Missing Value Imputation)" data-en="Step 7: Missing Value Imputation">Step 7: 缺失值處理 (Missing Value Imputation)</span></a>
+<a href="enrichment.html"><span class="nav-dir" data-zh="下一步 →" data-en="Next →">下一步 →</span><span class="nav-title" data-zh="Step 9: 功能富集分析 (Functional Enrichment)" data-en="Step 9: Functional Enrichment">Step 9: 功能富集分析 (Functional Enrichment)</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+function randn(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const N=2500;
+const points=[];
+for(let i=0;i<N;i++){
+  let fc, p;
+  const r=Math.random();
+  if(r<0.08){fc=1.5+randn()*0.6;p=Math.max(0.0001,Math.exp(-randn()*1.2-3));}     // true up
+  else if(r<0.16){fc=-1.5+randn()*0.6;p=Math.max(0.0001,Math.exp(-randn()*1.2-3));}// true down
+  else {fc=randn()*0.5;p=Math.exp(-randn()*0.5);}                                   // not changed
+  points.push({fc,p});
+}
+
+const volcChart=new Chart(document.getElementById('volcChart'),{
+  type:'scatter',
+  data:{datasets:[
+    {label:'Up',data:[],backgroundColor:'rgba(200,127,58,0.65)',radius:3},
+    {label:'Down',data:[],backgroundColor:'rgba(44,75,138,0.7)',radius:3},
+    {label:'NS',data:[],backgroundColor:'rgba(150,150,150,0.35)',radius:2}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{x:{title:{display:true,text:'log2 fold change'},min:-4,max:4},y:{title:{display:true,text:'-log10(adj.p)'},min:0,max:8}}}
+});
+
+function update(){
+  const fcC=+document.getElementById('sliderFC').value;
+  const pC=+document.getElementById('sliderP').value;
+  document.getElementById('valFC').textContent=fcC.toFixed(1);
+  document.getElementById('valP').textContent=pC.toFixed(3);
+  const up=[],down=[],ns=[];
+  points.forEach(pt=>{
+    const x=pt.fc, y=-Math.log10(pt.p);
+    if(pt.p<pC && Math.abs(pt.fc)>fcC){
+      if(pt.fc>0) up.push({x,y}); else down.push({x,y});
+    } else ns.push({x,y});
+  });
+  volcChart.data.datasets[0].data=up;
+  volcChart.data.datasets[1].data=down;
+  volcChart.data.datasets[2].data=ns;
+  const L=I18n.get();
+  document.getElementById('statUp').textContent=(L==='zh'?'上調: ':'Up: ')+up.length;
+  document.getElementById('statDown').textContent=(L==='zh'?'下調: ':'Down: ')+down.length;
+  document.getElementById('statNS').textContent=(L==='zh'?'未顯著: ':'NS: ')+ns.length;
+  volcChart.data.datasets[0].label=L==='zh'?'上調':'Up';
+  volcChart.data.datasets[1].label=L==='zh'?'下調':'Down';
+  volcChart.data.datasets[2].label=L==='zh'?'未顯著':'NS';
+  volcChart.update('none');
+}
+['sliderFC','sliderP'].forEach(id=>document.getElementById(id).addEventListener('input',update));
+document.addEventListener('langchange',update);
+update();
+
+const QF={
+  zh:{q1_y:'小樣本 t-test 的核心問題是 variance 不穩定；moderated 方法借用其他蛋白資訊大幅提升統計力。',q1_n:'正確答案已標示。',q2_y:'統計顯著不等於生物學重要——0.15 log2FC 約 11% 變化，需具體上下文評估。',q2_n:'正確答案已標示。',q3_y:'這是 limma 與 MSstats 都支援的標準做法。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'The core issue with small-n t-tests is unstable variance; moderation borrows information from other proteins.',q1_n:'Correct answer highlighted.',q2_y:'Statistical significance ≠ biological importance — 0.15 log2FC is only ~11% change; biological context required.',q2_n:'Correct answer highlighted.',q3_y:'This is the standard approach supported by both limma and MSstats.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>

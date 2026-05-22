@@ -1,0 +1,184 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Top-down Proteomics — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html">Prep</a></li><li><a href="acquisition.html">MS</a></li><li><a href="identification.html">ID</a></li><li><a href="quantification.html">Quant</a></li><li><a href="qc.html">QC</a></li><li><a href="normalization.html">Norm</a></li><li><a href="imputation.html">Impute</a></li><li><a href="differential-expression.html">DE</a></li><li><a href="enrichment.html">Enrich</a></li><li><a href="ptm.html">PTM</a></li><li><a href="targeted.html">Target</a></li><li><a href="top-down.html" class="active">Top-down</a></li><li><a href="spatial.html">Spatial</a></li><li><a href="single-cell.html">scProt</a></li><li><a href="affinity.html">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">ADVANCED</div>
+<h1 data-zh="Top-down 完整蛋白質分析" data-en="Top-down Proteomics">Top-down 完整蛋白質分析</h1>
+<p class="subtitle" data-lang="zh">不消化、直接分析完整蛋白——讓多重 PTM 與 splicing isoforms 一次顯現。</p>
+<p class="subtitle" data-lang="en">Skip digestion, analyze intact proteins — reveal co-occurring PTMs and splicing isoforms in a single spectrum.</p>
+</header>
+<main class="content-wrap">
+
+<section class="section">
+<div class="section-label" data-zh="本質差異" data-en="THE KEY DIFFERENCE">本質差異</div>
+<h2 data-zh="Bottom-up vs Top-down：基本對比" data-en="Bottom-up vs Top-down: head-to-head">Bottom-up vs Top-down：基本對比</h2>
+<table class="comp-table">
+<thead><tr><th></th><th>Bottom-up</th><th>Top-down</th></tr></thead>
+<tbody>
+<tr><td data-zh="是否消化" data-en="Digest?"><strong>消化？</strong></td><td data-lang="zh">是（trypsin）</td><td data-lang="zh">否</td><td data-lang="en">Yes (trypsin)</td><td data-lang="en">No</td></tr>
+<tr><td data-zh="分析對象" data-en="Target"><strong>分析對象</strong></td><td data-lang="zh">peptide (7–30 aa)</td><td data-lang="zh">完整蛋白 (3–30 kDa 最適)</td><td data-lang="en">Peptide (7–30 aa)</td><td data-lang="en">Intact protein (3–30 kDa ideal)</td></tr>
+<tr><td data-zh="優勢" data-en="Strength"><strong>優勢</strong></td><td data-lang="zh">蛋白覆蓋深、靈敏度高、技術成熟</td><td data-lang="zh">同時辨識所有 PTM 與 splicing isoforms（proteoform）</td><td data-lang="en">Deep proteome, high sensitivity, mature</td><td data-lang="en">Resolves all co-occurring PTMs and splicing isoforms (proteoforms)</td></tr>
+<tr><td data-zh="限制" data-en="Limitation"><strong>限制</strong></td><td data-lang="zh">peptide 不可避免遺失 PTM 共現訊息</td><td data-lang="zh">需要超高解析度；&gt;50 kDa 偵測難；通量低</td><td data-lang="en">Peptides lose PTM co-occurrence info</td><td data-lang="en">Ultra-high res needed; &gt;50 kDa hard; low throughput</td></tr>
+<tr><td data-zh="儀器" data-en="Instrument"><strong>儀器</strong></td><td>Orbitrap / Q-TOF</td><td>FT-ICR, Orbitrap UHMR/Eclipse, Astral</td></tr>
+<tr><td data-zh="碎裂方式" data-en="Fragmentation"><strong>碎裂方式</strong></td><td>HCD (CID)</td><td data-lang="zh">ETD / UVPD / ECD（避免破壞 PTM）</td><td data-lang="en">ETD / UVPD / ECD (preserve PTMs)</td></tr>
+</tbody></table>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="概念" data-en="CONCEPT">概念</div>
+<h2 data-zh="一、為什麼 Top-down 不可取代？" data-en="I. Why is top-down irreplaceable?">一、為什麼 Top-down 不可取代？</h2>
+<div data-lang="zh">
+<p>Bottom-up 把蛋白切碎成 peptide，所以雖然可以鑑定到「序列上哪個位點有 PTM」，但<strong>失去了「同一條蛋白上多個 PTM 是否共同存在」的資訊</strong>。例如：histone H3 上 K9me3 與 K27ac 是<strong>在同一分子上同時發生</strong>嗎？bottom-up 無法回答。</p>
+<p>Top-down 直接分析整段蛋白，可同時辨識：(1) 全部 PTM 種類與位置；(2) PTM 之間的<strong>共現/互斥關係</strong>；(3) splicing isoform；(4) 序列變異（如 SAAV）。這就是「<strong>proteoform</strong>」（單一分子層級的蛋白形式）概念的核心。</p>
+</div>
+<div data-lang="en">
+<p>Bottom-up shreds proteins into peptides — although you can map "which residue has the PTM", you <strong>lose the information about whether multiple PTMs co-occur on the same molecule</strong>. For example: are H3 K9me3 and K27ac on the same H3 protein at the same time? Bottom-up can't answer this.</p>
+<p>Top-down analyzes the full protein, simultaneously revealing: (1) all PTM types and positions; (2) <strong>co-occurrence / mutual exclusion of PTMs</strong>; (3) splicing isoforms; (4) sequence variants (SAAVs). This is the heart of the <strong>"proteoform"</strong> concept — protein forms at the single-molecule level.</p>
+</div>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh">2024 Nature Reviews Methods Primers 將 top-down 列為「unambiguous proteoform identification」的唯一方法。應用領域包括: histone PTM crosstalk、抗體 (mAb) charge variant、心肌肌鈣蛋白磷酸化 patterns、神經退化疾病蛋白聚集。</span>
+<span data-lang="en">The 2024 Nature Reviews Methods Primer lists top-down as the only method for "unambiguous proteoform identification". Applications: histone PTM crosstalk, mAb charge variants, cardiac troponin phospho patterns, neurodegenerative protein aggregates.</span>
+</div></div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="工作流程" data-en="WORKFLOW">工作流程</div>
+<h2 data-zh="二、Top-down 工作流程" data-en="II. Top-down Workflow">二、Top-down 工作流程</h2>
+<div class="workflow">
+<div class="workflow-step" data-step="1"><h4 data-zh="蛋白質提取與還原" data-en="Protein extraction & reduction">蛋白質提取與還原</h4>
+<p data-lang="zh">使用溫和裂解（avoid SDS），保留蛋白完整折疊；TCEP 還原雙硫鍵。</p><p data-lang="en">Gentle lysis (avoid SDS) preserves protein integrity; TCEP reduces disulfides.</p></div>
+<div class="workflow-step" data-step="2"><h4 data-zh="蛋白分離" data-en="Protein separation">蛋白分離</h4>
+<p data-lang="zh">RPLC、Size Exclusion Chromatography (SEC)、Capillary IEF (CIEF) 或 CZE 等分離法；目標縮小複雜度。</p><p data-lang="en">RPLC, SEC, capillary IEF (CIEF), or CZE — narrow complexity prior to MS.</p></div>
+<div class="workflow-step" data-step="3"><h4 data-zh="完整蛋白質譜" data-en="Intact MS">完整蛋白質譜 (MS1)</h4>
+<p data-lang="zh">使用高解析度儀器（Orbitrap UHMR、FT-ICR），記錄完整蛋白的 multi-charge 包絡，<strong>deconvolution</strong> 後得到單一 monoisotopic mass。</p><p data-lang="en">Use high-res instruments (Orbitrap UHMR, FT-ICR). Record multi-charge envelopes of intact proteins, then deconvolute to a single monoisotopic mass.</p></div>
+<div class="workflow-step" data-step="4"><h4 data-zh="碎裂與 MS2" data-en="Fragmentation & MS2">碎裂與 MS2</h4>
+<p data-lang="zh">用 ETD/UVPD/ECD 避免破壞 PTM；產生 c/z 系列碎片。連續碎片覆蓋整條序列即可推定 PTM 位置。</p><p data-lang="en">Use ETD/UVPD/ECD to preserve PTMs; generate c/z ion series. Continuous fragment coverage along the sequence pinpoints PTM positions.</p></div>
+<div class="workflow-step" data-step="5"><h4 data-zh="軟體分析" data-en="Software">軟體分析</h4>
+<p data-lang="zh">主流：<strong>TopPIC</strong>、<strong>ProSight Lite/PD</strong>、<strong>MASH Explorer</strong>、<strong>Informed-Proteomics</strong>。Proteoform 命名遵循 PSI 標準。</p><p data-lang="en">Major tools: <strong>TopPIC, ProSight Lite/PD, MASH Explorer, Informed-Proteomics</strong>. Proteoform naming follows PSI standards.</p></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="INTERACTIVE">互動模擬</div>
+<h2 data-zh="Proteoform 共現模擬" data-en="Proteoform Co-occurrence">Proteoform 共現模擬</h2>
+<div data-lang="zh"><p>Bottom-up 顯示「PTM A 與 PTM B 都存在於某 protein」，但無法判斷它們是「共存於同一分子」（cis）或「在不同分子」（trans）。Top-down 直接區分。</p></div>
+<div data-lang="en"><p>Bottom-up shows "both PTM A and B exist on this protein" but can't tell if they're on the same molecule (cis) or different molecules (trans). Top-down distinguishes these directly.</p></div>
+<div class="interactive-panel">
+<div class="slider-group"><label><span data-zh="cis (共現) 比例 (%)" data-en="cis (co-occurring) %">cis 比例</span> <span id="valCis">50</span></label><input type="range" id="sliderCis" min="0" max="100" value="50" step="5"></div>
+<div class="chart-container"><canvas id="tdChart"></canvas></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="範例" data-en="EXAMPLES">範例</div>
+<h2 data-zh="三、軟體與案例" data-en="III. Software & Case Studies">三、軟體與案例</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4>🛠️ TopPIC</h4>
+<div data-lang="zh"><p>開源工具，可在 PNNL 平台執行。輸入 deconvoluted MS1+MS2，輸出 proteoform identifications 與 site-localization probability。</p></div>
+<div data-lang="en"><p>Open-source pipeline on the PNNL platform. Input: deconvoluted MS1+MS2. Output: proteoform IDs and site-localization probabilities.</p></div>
+</div>
+<div class="card"><h4>🔬 ProSight PD (Thermo)</h4>
+<div data-lang="zh"><p>商用節點，與 Proteome Discoverer 整合。提供「Subsequence search」、「Δ mass」、與圖形化 proteoform browser，是 mAb characterization 的工業標準。</p></div>
+<div data-lang="en"><p>Commercial node integrated with Proteome Discoverer. Subsequence search, Δ-mass, and graphical proteoform browser — industry standard for mAb characterization.</p></div>
+</div>
+<div class="card"><h4>📚 Histone H3 PTM crosstalk</h4>
+<div data-lang="zh"><p>2024 Cell 研究使用 top-down 證明 H3K27ac 與 H3K9me3 「mutual exclusive」——同一 H3 分子不會同時 carry 兩者。這推翻了 bottom-up 推測的「共存」假設。</p></div>
+<div data-lang="en"><p>A 2024 Cell paper used top-down to prove H3K27ac and H3K9me3 are <strong>mutually exclusive</strong> on the same H3 molecule — overturning a "co-existence" hypothesis inferred from bottom-up.</p></div>
+</div>
+<div class="card"><h4>💊 mAb charge variants</h4>
+<div data-lang="zh"><p>單株抗體製造常出現 N/C 端裁切、Gln→Pyro-Glu、糖基化異質性。Top-down 可在生產線快速辨識並 quantify 各 charge variant，已成 QC 標準。</p></div>
+<div data-lang="en"><p>mAb manufacturing yields N/C-terminal clipping, Gln→pyro-Glu, and glycosylation heterogeneity. Top-down rapidly identifies and quantifies charge variants in production — now a QC standard.</p></div>
+</div>
+</div>
+</section>
+
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">1. 為什麼 top-down 不能完全取代 bottom-up？</p>
+<p data-lang="en">1. Why top-down can't fully replace bottom-up?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. Top-down 太貴</span><span data-lang="en">A. Too expensive</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 大蛋白 (&gt;50 kDa) 偵測效率低、通量低、proteome 覆蓋遠不及 bottom-up</span><span data-lang="en">B. Low efficiency for &gt;50 kDa proteins, low throughput, far less proteome coverage than bottom-up</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. Top-down 無法產生 fragment ions</span><span data-lang="en">C. Top-down can't produce fragment ions</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. Bottom-up 已被淘汰</span><span data-lang="en">D. Bottom-up is deprecated</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">2. 為何 top-down 偏好 ETD/UVPD 而非 HCD？</p>
+<p data-lang="en">2. Why does top-down prefer ETD/UVPD over HCD?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. ETD/UVPD 更便宜</span><span data-lang="en">A. Cheaper</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. ETD/UVPD 速度更快</span><span data-lang="en">B. Faster</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. ETD/UVPD 不破壞 labile PTMs（如磷酸化、糖基化）；能在完整大蛋白上覆蓋更完整的序列</span><span data-lang="en">C. ETD/UVPD preserves labile PTMs (phospho, glyco) and gives more complete sequence coverage on large proteins</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. HCD 對 top-down 無效</span><span data-lang="en">D. HCD doesn't work at all</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">3. 「proteoform」一詞最關鍵的概念是？</p>
+<p data-lang="en">3. The key concept behind "proteoform"?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 單一分子層級的蛋白變體形式（包含特定 PTM 組合、isoform、變異）</span><span data-lang="en">A. A single-molecule-level form of a protein (specific PTM combination, isoform, variant)</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 任何蛋白</span><span data-lang="en">B. Any protein</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 蛋白家族</span><span data-lang="en">C. A protein family</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 蛋白片段</span><span data-lang="en">D. A protein fragment</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="targeted.html"><span class="nav-dir" data-zh="← 上一篇" data-en="← Previous">← 上一篇</span><span class="nav-title" data-zh="靶向蛋白質體學 (Targeted Proteomics)" data-en="Targeted Proteomics">靶向蛋白質體學 (Targeted Proteomics)</span></a>
+<a href="spatial.html"><span class="nav-dir" data-zh="下一篇 →" data-en="Next →">下一篇 →</span><span class="nav-title" data-zh="空間蛋白質體學 (Spatial Proteomics)" data-en="Spatial Proteomics">空間蛋白質體學 (Spatial Proteomics)</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+const tdChart=new Chart(document.getElementById('tdChart'),{
+  type:'bar',
+  data:{labels:['Bottom-up 觀察','Top-down 觀察'],datasets:[
+    {label:'PTM A only',data:[],backgroundColor:'rgba(44,75,138,0.7)',stack:'a'},
+    {label:'PTM B only',data:[],backgroundColor:'rgba(200,127,58,0.7)',stack:'a'},
+    {label:'A + B (cis)',data:[],backgroundColor:'rgba(120,40,90,0.75)',stack:'a'},
+    {label:'No PTM',data:[],backgroundColor:'rgba(200,200,200,0.5)',stack:'a'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true},y:{stacked:true,max:100,title:{display:true,text:'% proteoforms'}}}}
+});
+
+function update(){
+  const cis=+document.getElementById('sliderCis').value;
+  document.getElementById('valCis').textContent=cis;
+  const aOnly=(100-cis)*0.3;
+  const bOnly=(100-cis)*0.3;
+  const none=(100-cis)*0.4;
+  // Bottom-up只看到「A 在」和「B 在」（無法區分 cis/trans）
+  tdChart.data.labels=[(I18n.get()==='zh'?'Bottom-up（無共現資訊）':'Bottom-up (no co-occur info)'),(I18n.get()==='zh'?'Top-down（看到 cis）':'Top-down (sees cis)')];
+  tdChart.data.datasets[0].data=[aOnly+cis/2,aOnly];
+  tdChart.data.datasets[1].data=[bOnly+cis/2,bOnly];
+  tdChart.data.datasets[2].data=[0,cis];
+  tdChart.data.datasets[3].data=[none,none];
+  const L=I18n.get();
+  tdChart.data.datasets[0].label=L==='zh'?'只見 PTM A':'PTM A only';
+  tdChart.data.datasets[1].label=L==='zh'?'只見 PTM B':'PTM B only';
+  tdChart.data.datasets[2].label=L==='zh'?'A + B 共存 (cis)':'A + B co-occur (cis)';
+  tdChart.data.datasets[3].label=L==='zh'?'未修飾':'Unmodified';
+  tdChart.update('none');
+}
+document.getElementById('sliderCis').addEventListener('input',update);
+document.addEventListener('langchange',update);
+update();
+
+const QF={
+  zh:{q1_y:'Top-down 對大蛋白 (&gt;50 kDa) 偵測有限，且整體 throughput / coverage 仍遠遜於 bottom-up。',q1_n:'正確答案已標示。',q2_y:'ETD/UVPD 對 labile PTM 友善並能在大蛋白上產生連續碎片，這是 top-down 的核心。',q2_n:'正確答案已標示。',q3_y:'Proteoform 是「該蛋白在單一分子上的特定組合（PTM、isoform、變異）」，是 top-down 的目標。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'Top-down struggles with &gt;50 kDa proteins and has far lower throughput/coverage than bottom-up.',q1_n:'Correct answer highlighted.',q2_y:'ETD/UVPD preserve labile PTMs and produce continuous fragments on large proteins — top-down\'s essence.',q2_n:'Correct answer highlighted.',q3_y:'A proteoform is "this protein\'s specific combination on a single molecule (PTM, isoform, variant)" — top-down\'s target.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>

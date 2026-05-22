@@ -1,0 +1,253 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PTM Analysis — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html">Prep</a></li><li><a href="acquisition.html">MS</a></li><li><a href="identification.html">ID</a></li><li><a href="quantification.html">Quant</a></li><li><a href="qc.html">QC</a></li><li><a href="normalization.html">Norm</a></li><li><a href="imputation.html">Impute</a></li><li><a href="differential-expression.html">DE</a></li><li><a href="enrichment.html">Enrich</a></li><li><a href="ptm.html" class="active">PTM</a></li><li><a href="targeted.html">Target</a></li><li><a href="top-down.html">Top-down</a></li><li><a href="spatial.html">Spatial</a></li><li><a href="single-cell.html">scProt</a></li><li><a href="affinity.html">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">ADVANCED</div>
+<h1 data-zh="轉譯後修飾 (PTM Analysis)" data-en="Post-Translational Modifications">轉譯後修飾 (PTM Analysis)</h1>
+<p class="subtitle" data-lang="zh">磷酸化、乙醯化、糖基化、泛素化——蛋白質功能調控的「動態語言」與富集策略。</p>
+<p class="subtitle" data-lang="en">Phospho-, acetyl-, glyco-, ubiquitin- — the "dynamic language" of protein regulation and the enrichment strategies behind it.</p>
+</header>
+<main class="content-wrap">
+
+<section class="section">
+<div class="section-label" data-zh="概覽" data-en="OVERVIEW">概覽</div>
+<h2 data-zh="為什麼 PTM 是蛋白質功能的核心？" data-en="Why PTMs are central to protein function">為什麼 PTM 是蛋白質功能的核心？</h2>
+<div data-lang="zh">
+<p>同一條蛋白序列在不同生理狀態下可能存在<strong>數十種不同的化學修飾形式</strong>（proteoforms）。一個磷酸化位點開或關，可能決定酵素活性、訊號傳遞、亞細胞定位、甚至細胞命運。</p>
+<p>關鍵挑戰：PTM 胜肽的<strong>豐度通常比 unmodified peptide 低 1000–10000 倍</strong>，必須先用「富集 (enrichment)」把它們從複雜的胜肽混合物中拉出來，才能在 MS 上有效偵測。</p>
+</div>
+<div data-lang="en">
+<p>A single protein sequence can exist in <strong>dozens of chemical forms (proteoforms)</strong> depending on physiological state. A single phosphosite toggle may decide enzyme activity, signaling, localization — even cell fate.</p>
+<p>Key challenge: modified peptides are typically <strong>1000–10000× less abundant than their unmodified counterparts</strong>. Without <strong>enrichment</strong>, MS can't see them in a complex mixture.</p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="主要 PTM 類型" data-en="MAJOR PTMs">主要 PTM 類型</h2>
+<h2 data-zh="一、五大主要 PTM 與其分析" data-en="I. Five Major PTMs">一、五大主要 PTM 與其分析</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4>⚡ <span data-zh="磷酸化 (Phosphorylation)" data-en="Phosphorylation">磷酸化 (Phosphorylation)</span></h4>
+<div data-lang="zh"><p>S/T/Y 上 +80 Da。佔最大宗（人類預估 &gt; 200k 位點）。<br>• <strong>富集：</strong>TiO₂ MOAC、Fe-IMAC（Fe³⁺/Ti⁴⁺-NTA），磁珠或 spin tip 格式<br>• <strong>儀器：</strong>HCD 為主，補 ETD 解析 PTM 位點<br>• <strong>分析：</strong>MaxQuant + Andromeda；FragPipe + Localization；PhosphoSitePlus 註釋</p></div>
+<div data-lang="en"><p>+80 Da on S/T/Y. Most abundant (&gt;200k human sites estimated).<br>• <strong>Enrichment:</strong> TiO₂ MOAC, Fe-IMAC (Fe³⁺/Ti⁴⁺-NTA) — magnetic beads or spin tips<br>• <strong>MS:</strong> HCD primary, ETD complements site localization<br>• <strong>Analysis:</strong> MaxQuant + Andromeda; FragPipe + PTM-Prophet; PhosphoSitePlus annotation</p></div>
+</div>
+<div class="card"><h4>🌸 <span data-zh="乙醯化 (Acetylation)" data-en="Acetylation">乙醯化 (Acetylation)</span></h4>
+<div data-lang="zh"><p>K 上 +42 Da。Histone 與代謝酵素的主要修飾。<br>• <strong>富集：</strong>抗 acetyl-K 抗體 (PTMScan)；無 affinity 替代物。<br>• <strong>注意：</strong>acetyl-K 與 trimethyl-K 質量近（差 0.036 Da），需高解析。<br>• <strong>分析：</strong>MaxQuant variable mod + 抗體富集樣品；OpenSearch 可挖掘新位點。</p></div>
+<div data-lang="en"><p>+42 Da on K. Major modification on histones and metabolic enzymes.<br>• <strong>Enrichment:</strong> Anti-acetyl-K antibody (PTMScan) — no affinity surrogate.<br>• <strong>Note:</strong> acetyl-K and trimethyl-K differ by only 0.036 Da; high resolution required.<br>• <strong>Analysis:</strong> MaxQuant variable mod + antibody-enriched sample; OpenSearch finds novel sites.</p></div>
+</div>
+<div class="card"><h4>🍬 <span data-zh="糖基化 (Glycosylation)" data-en="Glycosylation">糖基化 (Glycosylation)</span></h4>
+<div data-lang="zh"><p>N-glyco (NXS/T motif)、O-glyco (S/T)。質量高度異質，分析最具挑戰。<br>• <strong>富集：</strong>HILIC、Lectin (ConA/WGA)、ZIC-HILIC、固相硼酸<br>• <strong>儀器：</strong>必須 stepped HCD 或 EThcD<br>• <strong>分析：</strong>Byonic、pGlyco3、MSFragger-Glyco</p></div>
+<div data-lang="en"><p>N-glyco (NXS/T motif) and O-glyco (S/T). Highly heterogeneous masses; most challenging.<br>• <strong>Enrichment:</strong> HILIC, lectin (ConA/WGA), ZIC-HILIC, solid-phase boronate<br>• <strong>MS:</strong> Stepped HCD or EThcD required<br>• <strong>Analysis:</strong> Byonic, pGlyco3, MSFragger-Glyco</p></div>
+</div>
+<div class="card"><h4>🔗 <span data-zh="泛素化 (Ubiquitination)" data-en="Ubiquitination">泛素化 (Ubiquitination)</span></h4>
+<div data-lang="zh"><p>K 上連接 Ub。Trypsin 消化後，K 上殘留 <strong>GG (-Gly-Gly) 標記</strong>，質量 +114.04。<br>• <strong>富集：</strong>抗 K-εGG 抗體 (PTMScan Ub)<br>• <strong>限制：</strong>無法區分 Ub vs NEDD8 (兩者切後皆遺留 GG)<br>• <strong>分析：</strong>MaxQuant；Open search 可發現 K-branching</p></div>
+<div data-lang="en"><p>Ubiquitin chains attached to K. Trypsin leaves a <strong>GG (-Gly-Gly) remnant</strong> (+114.04) on the modified K.<br>• <strong>Enrichment:</strong> Anti-K-εGG antibody (PTMScan Ub)<br>• <strong>Limit:</strong> Cannot distinguish Ub vs NEDD8 (both leave GG)<br>• <strong>Analysis:</strong> MaxQuant; open search reveals K-branching</p></div>
+</div>
+<div class="card"><h4>📝 <span data-zh="甲基化 (Methylation)" data-en="Methylation">甲基化 (Methylation)</span></h4>
+<div data-lang="zh"><p>K 或 R 上 mono/di/tri-methyl。重要 histone & RNA-binding 蛋白修飾。<br>• <strong>富集：</strong>無 universal affinity；用 SCX 或 SCX + IMAC 反向<br>• <strong>分析：</strong>Open search，搭配 PTM 位點機率定位 (Ascore / ptmRS)</p></div>
+<div data-lang="en"><p>Mono/di/tri-methyl on K or R. Important on histones and RNA-binding proteins.<br>• <strong>Enrichment:</strong> No universal affinity; use SCX or SCX-reverse + IMAC<br>• <strong>Analysis:</strong> Open search + site localization probability (Ascore / ptmRS)</p></div>
+</div>
+<div class="card"><h4>♻️ <span data-zh="其他重要 PTM" data-en="Other key PTMs">其他重要 PTM</span></h4>
+<div data-lang="zh"><p>SUMOylation, palmitoylation, ADP-ribosylation, citrullination, hydroxylation, S-glutathionylation 等。每種有獨特化學策略——多數需專屬 antibody 或化學標籤。</p></div>
+<div data-lang="en"><p>SUMOylation, palmitoylation, ADP-ribosylation, citrullination, hydroxylation, S-glutathionylation, etc. Each has a unique chemistry — most need a dedicated antibody or chemical handle.</p></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="磷酸化深入" data-en="PHOSPHO DEEP DIVE">磷酸化深入</div>
+<h2 data-zh="二、磷酸化富集策略比較 (2024 benchmark)" data-en="II. Phospho-enrichment strategies (2024 benchmark)">二、磷酸化富集策略比較 (2024 benchmark)</h2>
+<table class="comp-table">
+<thead><tr><th data-zh="方法" data-en="Method">方法</th><th data-zh="原理" data-en="Principle">原理</th><th data-zh="覆蓋率" data-en="Coverage">覆蓋率</th><th data-zh="偏好" data-en="Bias">偏好</th></tr></thead>
+<tbody>
+<tr><td><strong>TiO₂ MOAC</strong></td><td data-lang="zh">Ti 在 Lewis acid 條件下捕獲 phosphate</td><td data-lang="en">Ti captures phosphate via Lewis acid</td><td>★★★★</td><td data-lang="zh">偏 mono-phospho</td><td data-lang="en">Biased to mono-phospho</td></tr>
+<tr><td><strong>Fe³⁺-IMAC / Ti⁴⁺-IMAC</strong></td><td data-lang="zh">金屬螯合柱捕獲</td><td data-lang="en">Metal-affinity column</td><td>★★★★★</td><td data-lang="zh">multi-phospho 較佳</td><td data-lang="en">Better at multi-phospho</td></tr>
+<tr><td><strong>Fe-NTA 磁珠 (Sequential)</strong></td><td data-lang="zh">Fe-NTA → TiO₂ → 再 Fe-NTA 三步驟</td><td data-lang="en">Fe-NTA → TiO₂ → Fe-NTA (3 steps)</td><td>★★★★★ (best)</td><td data-lang="zh">2024 已提升 20% 覆蓋</td><td data-lang="en">+20% coverage in 2024 study</td></tr>
+<tr><td><strong>PolyMAC</strong></td><td data-lang="zh">高分子聚合 IMAC，提升選擇性</td><td data-lang="en">Polymer-based IMAC, higher specificity</td><td>★★★★</td><td data-lang="zh">減少 acidic 胜肽干擾</td><td data-lang="en">Reduces acidic peptide interference</td></tr>
+<tr><td><strong>Anti-pY antibody (Y-only)</strong></td><td data-lang="zh">抗 phospho-Tyr 抗體</td><td data-lang="en">Anti-pY antibody</td><td data-lang="zh">僅 1% pY 但專一</td><td data-lang="en">Only ~1% pY but specific</td><td data-lang="zh">激酶訊號專用</td><td data-lang="en">Kinase signaling-only</td></tr>
+</tbody></table>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>2024 最佳實踐：</strong>使用 <strong>Fe-NTA → TiO₂ → Fe-NTA 三步驟富集</strong>，搭配 Orbitrap Astral DIA，30 分鐘 LC 可從 0.5M HeLa 細胞鑑定 &gt; 32,000 phosphopeptide。不同方法的重疊只有 ~36%——綜合多種方法是業界共識。</span>
+<span data-lang="en"><strong>2024 best practice:</strong> The <strong>Fe-NTA → TiO₂ → Fe-NTA tandem workflow</strong> combined with Orbitrap Astral DIA identifies &gt;32,000 phosphopeptides from 0.5M HeLa cells in 30 min LC. Different methods overlap by only ~36% — combining methods is the field consensus.</span>
+</div></div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="位點定位" data-en="LOCALIZATION">位點定位</div>
+<h2 data-zh="三、PTM 位點定位 (Site Localization)" data-en="III. PTM Site Localization">三、PTM 位點定位 (Site Localization)</h2>
+<div data-lang="zh">
+<p>許多 PTM 胜肽包含多個可能位點（例如 S-T-Y 都可被磷酸化）。即使精確定位質量，MS2 譜中 <strong>diagnostic ions</strong> 才能區分哪個 specific 殘基被修飾。</p>
+<p><strong>主流評分系統：</strong></p>
+<ul style="margin-left:24px;color:var(--c-ink-light);">
+<li><strong>Ascore</strong> (Beausoleil 2006) — 經典，二項統計</li>
+<li><strong>ptmRS</strong> (Taus 2011) — 整合於 Proteome Discoverer</li>
+<li><strong>PhosphoRS / PTMLocalizer</strong> — site probability output</li>
+<li><strong>Class I sites</strong>: localization probability &gt; 0.75，<strong>delta score &gt; 8</strong> 為高信心位點</li>
+</ul>
+</div>
+<div data-lang="en">
+<p>Many PTM peptides contain multiple potential sites (e.g., S-T-Y can all be phosphorylated). Even with exact mass, only the MS2 <strong>diagnostic ions</strong> distinguish which residue is modified.</p>
+<p><strong>Major scoring systems:</strong></p>
+<ul style="margin-left:24px;color:var(--c-ink-light);">
+<li><strong>Ascore</strong> (Beausoleil 2006) — classic binomial statistic</li>
+<li><strong>ptmRS</strong> (Taus 2011) — integrated in Proteome Discoverer</li>
+<li><strong>PhosphoRS / PTMLocalizer</strong> — site probability output</li>
+<li><strong>Class I sites</strong>: localization probability &gt; 0.75 and <strong>delta score &gt; 8</strong> — high-confidence</li>
+</ul>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="INTERACTIVE">互動模擬</div>
+<h2 data-zh="phospho 富集前後比較" data-en="Phospho Enrichment Before/After">phospho 富集前後比較</h2>
+<div data-lang="zh"><p>觀察 phospho-peptide 在 unenriched vs enriched 樣品中的比例。富集後 phospho 應佔 60–80%。</p></div>
+<div data-lang="en"><p>Compare phospho-peptide ratios in unenriched vs enriched samples. After enrichment, phospho should be 60–80%.</p></div>
+<div class="interactive-panel">
+<div class="slider-group"><label><span data-zh="富集效率 (%)" data-en="Enrichment efficiency (%)">富集效率</span> <span id="valEff">75</span></label><input type="range" id="sliderEff" min="0" max="98" value="75" step="1"></div>
+<div class="chart-container"><canvas id="ptmChart"></canvas></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="實作" data-en="CODE">實作</div>
+<h2 data-zh="MaxQuant 與 FragPipe PTM 設定" data-en="MaxQuant & FragPipe PTM Setup">MaxQuant 與 FragPipe PTM 設定</h2>
+<div class="code-tabs"><div class="code-tab-btns">
+<button class="code-tab-btn active" onclick="switchTab(this,'mq-phos')">MaxQuant Phospho</button>
+<button class="code-tab-btn" onclick="switchTab(this,'fp-ptm')">FragPipe</button>
+<button class="code-tab-btn" onclick="switchTab(this,'r-phos')">R / PhosR</button>
+</div>
+<div class="code-tab-content active" id="mq-phos"><pre><span class="comment"># MaxQuant Phospho(STY) workflow</span>
+[Group-specific Parameters]
+Variable modifications:
+  - Oxidation (M)
+  - Acetyl (Protein N-term)
+  - <span class="kw">Phospho (STY)</span>          <span class="comment"># 關鍵</span>
+Fixed modifications:
+  - Carbamidomethyl (C)
+Max number of modifications per peptide: 5
+
+[Global Parameters]
+Min peptide length              = 7
+Match between runs              = TRUE  (LFQ phospho 建議)
+Re-quantify                     = TRUE
+PSM FDR / Protein FDR           = 0.01 / 0.01
+Site decoy FDR                  = 0.01
+
+<span class="comment"># 輸出: Phospho (STY)Sites.txt</span>
+<span class="comment"># 重要欄位: Localization prob, Score diff, Multiplicity (1/2/3 phospho-site)</span></pre></div>
+<div class="code-tab-content" id="fp-ptm"><pre><span class="comment"># FragPipe Phospho workflow</span>
+<span class="kw">Workflow:</span> LFQ-MBR (or TMT16-MS3) → enable "Phospho-STY"
+<span class="kw">MSFragger:</span>
+  variable_mod_01 = 79.96633 STY 3   <span class="comment"># up to 3 phospho per peptide</span>
+  variable_mod_02 = 15.9949 M 3
+  open_search     = false             <span class="comment"># closed for known PTM</span>
+
+<span class="kw">PTM-Prophet:</span>
+  enable           = true
+  STY localization = true
+  Threshold        = 0.75              <span class="comment"># Class I site</span>
+
+<span class="kw">Output:</span>
+  - psm.tsv             : PSM-level
+  - peptide.tsv         : peptide
+  - protein.tsv         : protein
+  - Phospho_*.tsv       : site-level localization scores</pre></div>
+<div class="code-tab-content" id="r-phos"><pre><span class="func">library</span>(PhosR)
+
+<span class="comment"># Phospho-site quantification matrix</span>
+ppe &lt;- <span class="func">read.csv</span>(<span class="str">"phosphosite_quant.csv"</span>, row.names = <span class="num">1</span>)
+ppe &lt;- <span class="func">PhosphoExperiment</span>(assays = <span class="func">list</span>(Quantification = <span class="func">as.matrix</span>(ppe)),
+                          colData = <span class="func">DataFrame</span>(group))
+
+<span class="comment"># Filter + normalize</span>
+ppe &lt;- <span class="func">selectGrps</span>(ppe, grps = group, percent = <span class="num">0.5</span>, n = <span class="num">1</span>)
+ppe &lt;- <span class="func">scImpute</span>(ppe, percent = <span class="num">0.5</span>, grps = group)
+ppe &lt;- <span class="func">tImpute</span>(ppe)
+ppe &lt;- <span class="func">normalize</span>(ppe, method = <span class="str">"medianScaling"</span>)
+
+<span class="comment"># Kinase-substrate enrichment (KSEA)</span>
+kinasescore &lt;- <span class="func">kinaseSubstrateScore</span>(
+  substrate.list = PhosphoSitePlus,
+  mat = SummarizedExperiment::assay(ppe, <span class="str">"Quantification"</span>),
+  numSubstrates = <span class="num">5</span>)</pre></div>
+</div>
+</section>
+
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">1. 你的磷酸化富集樣品中 phospho 佔比只有 25%，最可能的問題？</p>
+<p data-lang="en">1. Phospho fraction is only 25% after enrichment. Likely problem?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 蛋白質太多</span><span data-lang="en">A. Too many proteins</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 富集條件 sub-optimal（loading buffer、binding time、bead 比例失調）</span><span data-lang="en">B. Sub-optimal enrichment conditions (loading buffer, binding time, bead ratio)</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 質譜儀解析度不夠</span><span data-lang="en">C. Insufficient MS resolution</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. Trypsin 太活躍</span><span data-lang="en">D. Trypsin too active</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">2. PTM 位點 localization probability = 0.5 代表？</p>
+<p data-lang="en">2. PTM localization probability = 0.5 means?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 高信心位點</span><span data-lang="en">A. High-confidence site</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 不存在 PTM</span><span data-lang="en">B. No PTM present</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 位點不確定（兩個可能位置難以區分），不應作為 Class I 報告</span><span data-lang="en">C. Site is ambiguous (two possibilities indistinguishable); should not be reported as Class I</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 軟體錯誤</span><span data-lang="en">D. Software bug</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">3. 為何分析 ubiquitination 後常難以區分 Ub 與 NEDD8？</p>
+<p data-lang="en">3. Why is it hard to distinguish Ub from NEDD8 after trypsin digestion?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. Trypsin 切後兩者都留下相同的 GG remnant，質量無差異</span><span data-lang="en">A. Trypsin leaves identical GG remnants for both — no mass difference</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. NEDD8 不存在於人類細胞</span><span data-lang="en">B. NEDD8 doesn't exist in human cells</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 它們會互相反應</span><span data-lang="en">C. They react with each other</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 抗體不可靠</span><span data-lang="en">D. Antibodies are unreliable</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="enrichment.html"><span class="nav-dir" data-zh="← 上一步" data-en="← Previous">← 上一步</span><span class="nav-title" data-zh="Step 9: 功能富集分析 (Functional Enrichment)" data-en="Step 9: Functional Enrichment">Step 9: 功能富集分析 (Functional Enrichment)</span></a>
+<a href="targeted.html"><span class="nav-dir" data-zh="下一篇 →" data-en="Next →">下一篇 →</span><span class="nav-title" data-zh="靶向蛋白質體學 (Targeted Proteomics)" data-en="Targeted Proteomics">靶向蛋白質體學 (Targeted Proteomics)</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+const ptmChart=new Chart(document.getElementById('ptmChart'),{
+  type:'bar',
+  data:{labels:['Unenriched','Enriched'],datasets:[
+    {label:'Phospho-peptides',data:[],backgroundColor:'rgba(200,127,58,0.75)',stack:'a'},
+    {label:'Non-phospho',data:[],backgroundColor:'rgba(44,75,138,0.5)',stack:'a'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true},y:{stacked:true,max:100,title:{display:true,text:'% peptides'}}}}
+});
+function update(){
+  const eff=+document.getElementById('sliderEff').value;
+  document.getElementById('valEff').textContent=eff;
+  const unenrichedPhos=1.5;  // baseline ~1.5%
+  ptmChart.data.datasets[0].data=[unenrichedPhos, eff];
+  ptmChart.data.datasets[1].data=[100-unenrichedPhos, 100-eff];
+  const L=I18n.get();
+  ptmChart.data.datasets[0].label=L==='zh'?'磷酸化胜肽':'Phospho-peptides';
+  ptmChart.data.datasets[1].label=L==='zh'?'非磷酸化':'Non-phospho';
+  ptmChart.update('none');
+}
+document.getElementById('sliderEff').addEventListener('input',update);
+document.addEventListener('langchange',update);
+update();
+
+const QF={
+  zh:{q1_y:'富集效率 &lt; 50% 即代表優化空間大；2024 benchmark 建議檢查 glycolic acid 濃度與 NH₄OH 比例。',q1_n:'正確答案已標示。',q2_y:'p ≈ 0.5 代表兩個可能位點難分；應只在 ≥ 0.75 報告為 Class I。',q2_n:'正確答案已標示。',q3_y:'這是 K-εGG 抗體富集的固有限制——只能稱為「ubiquitin-like」修飾。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'< 50% phospho yield means lots of room to optimize; 2024 work recommends tuning glycolic acid and NH₄OH ratios.',q1_n:'Correct answer highlighted.',q2_y:'p ≈ 0.5 means two candidates are indistinguishable; only report ≥ 0.75 as Class I.',q2_n:'Correct answer highlighted.',q3_y:'A fundamental K-εGG enrichment limitation — Ub vs NEDD8 are indistinguishable after trypsin.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>

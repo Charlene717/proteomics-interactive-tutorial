@@ -1,0 +1,250 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Step 9: Enrichment — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html">Prep</a></li><li><a href="acquisition.html">MS</a></li><li><a href="identification.html">ID</a></li><li><a href="quantification.html">Quant</a></li><li><a href="qc.html">QC</a></li><li><a href="normalization.html">Norm</a></li><li><a href="imputation.html">Impute</a></li><li><a href="differential-expression.html">DE</a></li><li><a href="enrichment.html" class="active">Enrich</a></li><li><a href="ptm.html">PTM</a></li><li><a href="targeted.html">Target</a></li><li><a href="top-down.html">Top-down</a></li><li><a href="spatial.html">Spatial</a></li><li><a href="single-cell.html">scProt</a></li><li><a href="affinity.html">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">STEP 9 / 9</div>
+<h1 data-zh="功能富集分析 (Functional Enrichment)" data-en="Functional Enrichment">功能富集分析 (Functional Enrichment)</h1>
+<p class="subtitle" data-lang="zh">從蛋白清單到生物學故事——ORA、GSEA、STRING PPI 三種互補視角。</p>
+<p class="subtitle" data-lang="en">From a protein list to a biological story — ORA, GSEA, and STRING PPI as three complementary lenses.</p>
+</header>
+<main class="content-wrap">
+
+<section class="section">
+<div class="section-label" data-zh="兩大思路" data-en="TWO APPROACHES">兩大思路</div>
+<h2 data-zh="一、ORA vs GSEA 的本質差異" data-en="I. ORA vs GSEA — the core difference">一、ORA vs GSEA 的本質差異</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4>🎯 <span data-zh="ORA — Over-Representation Analysis" data-en="ORA — Over-Representation Analysis">ORA — Over-Representation</span></h4>
+<div data-lang="zh"><p>「我先把蛋白分成『顯著』與『不顯著』兩堆，再問每個 pathway 中『顯著』蛋白的比例是否超出隨機期望？」<br>用 <strong>Fisher's exact test</strong> 或 hypergeometric test。<br>• <strong>適用：</strong>已知 cutoff、結果清單明確的場合<br>• <strong>限制：</strong>會「丟掉」次顯著但具趨勢的蛋白；對 cutoff 敏感</p></div>
+<div data-lang="en"><p>"Split proteins into significant vs not, then ask whether each pathway is over-represented in the significant pile."<br>Tests with <strong>Fisher's exact</strong> or hypergeometric.<br>• <strong>Use:</strong> When you have a clear cutoff and confident hit list<br>• <strong>Limit:</strong> Throws away sub-significant trends; sensitive to cutoff</p></div>
+</div>
+<div class="card"><h4>📈 <span data-zh="GSEA — Gene Set Enrichment Analysis" data-en="GSEA — Gene Set Enrichment Analysis">GSEA</span></h4>
+<div data-lang="zh"><p>「全部蛋白按某個指標（如 log2FC * -log10(p)）排序，問每個 pathway 的成員是否『傾向集中在排序的某一端』。」<br>用 <strong>Kolmogorov-Smirnov 統計量 + permutation</strong>。<br>• <strong>適用：</strong>連續訊號、未必有明顯 cutoff、要捕捉協調性變化<br>• <strong>限制：</strong>需要 ranked list 而非 binary hit list；解釋複雜</p></div>
+<div data-lang="en"><p>"Rank all proteins by a metric (e.g., log2FC × -log10(p)) and ask whether each pathway's members cluster at one end."<br>Uses <strong>KS statistic + permutation</strong>.<br>• <strong>Use:</strong> Continuous signal, no clear cutoff, capturing coordinated changes<br>• <strong>Limit:</strong> Requires a ranked list, not a binary hit list; trickier to interpret</p></div>
+</div>
+</div>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>實務建議：</strong>兩者並行——ORA 給出「強訊號 pathway」，GSEA 給出「整體趨勢 pathway」。<strong>最重要的是仔細選擇 background</strong>：必須是「<strong>實驗中所有被測到的蛋白</strong>」，而非整個 UniProt 資料庫，否則會大幅膨脹假陽性。</span>
+<span data-lang="en"><strong>Practice:</strong> Run both — ORA gives "strong-signal pathways", GSEA gives "overall trend pathways". <strong>The most important detail is the background</strong>: it must be <strong>all proteins detected in your experiment</strong>, not the full UniProt — otherwise false positives explode.</span>
+</div></div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="主流資料庫" data-en="DATABASES">主流資料庫</div>
+<h2 data-zh="二、四大主流功能資料庫" data-en="II. Four Main Databases">二、四大主流功能資料庫</h2>
+<table class="comp-table">
+<thead><tr><th>Database</th><th data-zh="內容" data-en="Content">內容</th><th data-zh="優勢" data-en="Strength">優勢</th><th data-zh="限制" data-en="Limitation">限制</th></tr></thead>
+<tbody>
+<tr><td><strong>GO (Gene Ontology)</strong></td><td data-lang="zh">BP / MF / CC 三類本體</td><td data-lang="en">BP / MF / CC ontologies</td><td data-lang="zh">最廣泛、層次清晰</td><td data-lang="en">Broad, hierarchical</td><td data-lang="zh">許多 terms 高度冗餘</td><td data-lang="en">Many redundant terms</td></tr>
+<tr><td><strong>KEGG Pathway</strong></td><td data-lang="zh">人工策展的代謝/訊號通路</td><td data-lang="en">Curated metabolism/signaling</td><td data-lang="zh">清晰圖示、容易溝通</td><td data-lang="en">Clear diagrams, communicable</td><td data-lang="zh">商用授權；癌症通路偏重</td><td data-lang="en">Commercial license; cancer-biased</td></tr>
+<tr><td><strong>Reactome</strong></td><td data-lang="zh">事件導向通路（reaction-based）</td><td data-lang="en">Reaction-based event pathways</td><td data-lang="zh">免費、頻繁更新、整合層次強</td><td data-lang="en">Free, frequently updated, integrative</td><td data-lang="zh">概念較複雜</td><td data-lang="en">Conceptually denser</td></tr>
+<tr><td><strong>MSigDB / Hallmark</strong></td><td data-lang="zh">癌症/免疫 50 大主題基因集</td><td data-lang="en">50 cancer/immune hallmark sets</td><td data-lang="zh">最精煉、最易解讀</td><td data-lang="en">Most distilled, easy to read</td><td data-lang="zh">非完整 pathway</td><td data-lang="en">Not full pathways</td></tr>
+<tr><td><strong>STRING (PPI)</strong></td><td data-lang="zh">蛋白-蛋白交互網絡</td><td data-lang="en">Protein-protein interactions</td><td data-lang="zh">產生視覺網絡圖，挖掘 hub</td><td data-lang="en">Generates network diagrams, hub mining</td><td data-lang="zh">不同 evidence 品質差異大</td><td data-lang="en">Evidence quality varies widely</td></tr>
+</tbody></table>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="INTERACTIVE">互動模擬</div>
+<h2 data-zh="ORA 結果模擬器" data-en="ORA Result Simulator">ORA 結果模擬器</h2>
+<div data-lang="zh"><p>調整 DE hit list 中的「上調」與「下調」蛋白比例，觀察 ORA 主題分布。柱狀越長代表 -log10(adj.p) 越大。</p></div>
+<div data-lang="en"><p>Adjust the up/down split in the DE hit list; watch ORA topic distribution. Longer bars = higher -log10(adj.p).</p></div>
+<div class="interactive-panel">
+<div class="slider-group"><label><span data-zh="上調蛋白比例 (%)" data-en="% upregulated">上調蛋白比例</span> <span id="valUp">60</span></label><input type="range" id="sliderUp" min="0" max="100" value="60" step="5"></div>
+<div class="slider-group"><label><span data-zh="hit list 大小" data-en="Hit list size">hit list 大小</span> <span id="valHits">120</span></label><input type="range" id="sliderHits" min="20" max="500" value="120" step="20"></div>
+<div class="chart-container"><canvas id="oraChart"></canvas></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="實作" data-en="CODE">實作</div>
+<h2 data-zh="三、執行 enrichment 的程式碼" data-en="III. Running Enrichment">三、執行 enrichment 的程式碼</h2>
+<div class="code-tabs"><div class="code-tab-btns">
+<button class="code-tab-btn active" onclick="switchTab(this,'r-cp')">R / clusterProfiler</button>
+<button class="code-tab-btn" onclick="switchTab(this,'r-fgsea')">R / fgsea</button>
+<button class="code-tab-btn" onclick="switchTab(this,'py-gp')">Python / gseapy</button>
+<button class="code-tab-btn" onclick="switchTab(this,'string-gui')">STRING (web)</button>
+</div>
+<div class="code-tab-content active" id="r-cp"><pre><span class="func">library</span>(clusterProfiler); <span class="func">library</span>(org.Hs.eg.db); <span class="func">library</span>(enrichplot)
+
+<span class="comment"># 1) ORA — GO BP</span>
+ego &lt;- <span class="func">enrichGO</span>(gene = sig_genes,           <span class="comment"># Entrez IDs of significant proteins</span>
+                universe   = all_detected_genes,  <span class="comment"># background!</span>
+                OrgDb      = org.Hs.eg.db,
+                ont        = <span class="str">"BP"</span>,
+                pAdjustMethod = <span class="str">"BH"</span>,
+                pvalueCutoff  = <span class="num">0.05</span>,
+                readable      = <span class="kw">TRUE</span>)
+<span class="func">dotplot</span>(ego, showCategory = <span class="num">20</span>)
+<span class="func">emapplot</span>(<span class="func">pairwise_termsim</span>(ego))
+
+<span class="comment"># 2) GSEA — Reactome</span>
+ranks &lt;- res$logFC * -<span class="func">log10</span>(res$P.Value)
+<span class="func">names</span>(ranks) &lt;- res$entrez
+ranks &lt;- <span class="func">sort</span>(ranks, decreasing = <span class="kw">TRUE</span>)
+
+<span class="func">library</span>(ReactomePA)
+gse &lt;- <span class="func">gsePathway</span>(geneList = ranks, organism = <span class="str">"human"</span>,
+                  pvalueCutoff = <span class="num">0.05</span>, verbose = <span class="kw">FALSE</span>)
+<span class="func">ridgeplot</span>(gse)</pre></div>
+
+<div class="code-tab-content" id="r-fgsea"><pre><span class="func">library</span>(fgsea); <span class="func">library</span>(msigdbr)
+
+<span class="comment"># Use MSigDB hallmark sets</span>
+h_sets &lt;- <span class="func">msigdbr</span>(species = <span class="str">"Homo sapiens"</span>, category = <span class="str">"H"</span>) %&gt;%
+  <span class="func">split</span>(x = .$gene_symbol, f = .$gs_name)
+
+<span class="comment"># Ranked stat: signed log10(p)</span>
+ranks &lt;- <span class="func">sign</span>(res$logFC) * -<span class="func">log10</span>(res$P.Value)
+<span class="func">names</span>(ranks) &lt;- res$gene_symbol
+
+fgseaRes &lt;- <span class="func">fgsea</span>(pathways = h_sets, stats = ranks,
+                  minSize = <span class="num">15</span>, maxSize = <span class="num">500</span>)
+<span class="func">head</span>(fgseaRes[<span class="func">order</span>(pval), ], <span class="num">20</span>)</pre></div>
+
+<div class="code-tab-content" id="py-gp"><pre><span class="kw">import</span> gseapy <span class="kw">as</span> gp
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+de = pd.read_csv(<span class="str">"de_result.csv"</span>)
+sig = de.query(<span class="str">"padj &lt; 0.05 &amp; log2FC.abs() &gt; 1"</span>)[<span class="str">"gene"</span>].tolist()
+bg  = de[<span class="str">"gene"</span>].tolist()
+
+<span class="comment"># --- ORA via Enrichr API ---</span>
+en = gp.enrichr(gene_list=sig,
+                gene_sets=[<span class="str">"GO_Biological_Process_2023"</span>, <span class="str">"KEGG_2021_Human"</span>],
+                background=bg,
+                outdir=<span class="kw">None</span>)
+<span class="func">print</span>(en.results.sort_values(<span class="str">"Adjusted P-value"</span>).head(<span class="num">15</span>))
+
+<span class="comment"># --- GSEA prerank ---</span>
+ranks = de.assign(metric=de[<span class="str">"log2FC"</span>] * -de[<span class="str">"pvalue"</span>].apply(<span class="func">lambda</span> x: np.log10(x))) \
+          .sort_values(<span class="str">"metric"</span>, ascending=<span class="kw">False</span>)[[<span class="str">"gene"</span>,<span class="str">"metric"</span>]]
+pre = gp.prerank(rnk=ranks, gene_sets=<span class="str">"MSigDB_Hallmark_2020"</span>,
+                 outdir=<span class="kw">None</span>, permutation_num=<span class="num">1000</span>)
+pre.res2d.head()</pre></div>
+
+<div class="code-tab-content" id="string-gui"><pre><span class="comment"># STRING (https://string-db.org) 點擊式流程</span>
+<span class="kw">Step 1</span> Search → Multiple proteins → 貼上你的 hit list 與 species
+<span class="kw">Step 2</span> 取得網絡圖 → 點 "Settings" 將 confidence 設為 0.7+ (high)
+<span class="kw">Step 3</span> "Clusters" 標籤 → 做 MCL clustering，identify functional modules
+<span class="kw">Step 4</span> "Analysis" 標籤 → enrichment 結果（GO/KEGG/Reactome）
+<span class="kw">Step 5</span> 輸出 → Export → PNG / SVG / TSV
+<span class="kw">Step 6</span> 在 Cytoscape 中載入 → 結合 EnrichmentMap 美化發表圖</pre></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="決策" data-en="DECISION">決策</div>
+<h2 data-zh="四、選擇 enrichment 工具的決策" data-en="IV. Choosing the right tool">四、選擇 enrichment 工具的決策</h2>
+<div class="decision-tree">
+<h4>🌳 <span data-zh="enrichment 決策樹" data-en="Enrichment decision tree">enrichment 決策樹</span></h4>
+<div data-lang="zh">
+<div class="dt-node"><span class="dt-q">Q1:</span><div>已有明確 hit list（cutoff）？ <span class="dt-arrow">→ 是 →</span> <strong>ORA (clusterProfiler / g:Profiler / Enrichr)</strong>。</div></div>
+<div class="dt-node"><span class="dt-q">Q2:</span><div>想看「整體趨勢」、不希望 cutoff 卡死？ <span class="dt-arrow">→ 是 →</span> <strong>GSEA / fgsea</strong>，用 signed -log10(p) 或 log2FC 作 ranks。</div></div>
+<div class="dt-node"><span class="dt-q">Q3:</span><div>想看「蛋白如何互相連結」、找 hub 蛋白？ <span class="dt-arrow">→ 是 →</span> <strong>STRING + Cytoscape</strong>。</div></div>
+<div class="dt-node"><span class="dt-q">Q4:</span><div>要可發表的 figure？ <span class="dt-arrow">→ 是 →</span> <strong>EnrichmentMap (Cytoscape app)</strong> 是 Nature Protocols 推薦標準。</div></div>
+</div>
+<div data-lang="en">
+<div class="dt-node"><span class="dt-q">Q1:</span><div>Clear hit list with a cutoff? <span class="dt-arrow">→ Yes →</span> <strong>ORA (clusterProfiler / g:Profiler / Enrichr)</strong>.</div></div>
+<div class="dt-node"><span class="dt-q">Q2:</span><div>Want the overall trend without a hard cutoff? <span class="dt-arrow">→ Yes →</span> <strong>GSEA / fgsea</strong> with signed -log10(p) or log2FC as ranks.</div></div>
+<div class="dt-node"><span class="dt-q">Q3:</span><div>Want to see protein interconnections and hubs? <span class="dt-arrow">→ Yes →</span> <strong>STRING + Cytoscape</strong>.</div></div>
+<div class="dt-node"><span class="dt-q">Q4:</span><div>Need a publication-grade figure? <span class="dt-arrow">→ Yes →</span> <strong>EnrichmentMap (Cytoscape app)</strong> — the Nature Protocols standard.</div></div>
+</div>
+</div>
+</section>
+
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">1. 你做 ORA 時直接用 UniProt 全部 20000 個蛋白當 background，會有什麼問題？</p>
+<p data-lang="en">1. ORA with all 20000 UniProt proteins as background — what's the issue?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 沒問題，這是標準作法</span><span data-lang="en">A. None — this is standard</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 你的實驗只測到 5000 蛋白，背景過大會大幅膨脹 enrichment 顯著性（假陽性）</span><span data-lang="en">B. Your experiment detects only 5000; using 20000 as background inflates significance (false positives)</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 計算太慢</span><span data-lang="en">C. Too slow</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. UniProt 不正確</span><span data-lang="en">D. UniProt is wrong</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">2. ORA 與 GSEA 最關鍵的本質差異？</p>
+<p data-lang="en">2. The key difference between ORA and GSEA?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. ORA 更快</span><span data-lang="en">A. ORA is faster</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. GSEA 只支援 KEGG</span><span data-lang="en">B. GSEA only supports KEGG</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. ORA 用 binary（顯著/不顯著）hit list；GSEA 用整體排序、捕捉協調性趨勢</span><span data-lang="en">C. ORA uses a binary hit list; GSEA uses a full ranked list to catch coordinated trends</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 兩者完全相同</span><span data-lang="en">D. They are identical</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">3. 你想視覺化「上調蛋白間的協同網絡」，最佳工具？</p>
+<p data-lang="en">3. To visualize "synergistic networks among upregulated proteins"?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. STRING + Cytoscape (PPI 網絡 + functional clustering)</span><span data-lang="en">A. STRING + Cytoscape (PPI + functional clustering)</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. GSEA 火山圖</span><span data-lang="en">B. GSEA volcano plot</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 簡單 Excel barplot</span><span data-lang="en">C. A plain Excel bar plot</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 不需要視覺化</span><span data-lang="en">D. No visualization needed</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="differential-expression.html"><span class="nav-dir" data-zh="← 上一步" data-en="← Previous">← 上一步</span><span class="nav-title" data-zh="Step 8: 差異表達分析 (Differential Expression)" data-en="Step 8: Differential Expression">Step 8: 差異表達分析 (Differential Expression)</span></a>
+<a href="ptm.html"><span class="nav-dir" data-zh="進階 →" data-en="Advanced →">進階 →</span><span class="nav-title" data-zh="轉譯後修飾 (PTM Analysis)" data-en="Post-Translational Modifications">轉譯後修飾 (PTM Analysis)</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+const topicsZH=['免疫反應','細胞凋亡','氧化磷酸化','細胞週期','發炎反應','DNA 修復','上皮間質轉化','糖解作用','TGF-β 訊號','補體系統'];
+const topicsEN=['Immune response','Apoptosis','Oxidative phosphorylation','Cell cycle','Inflammatory response','DNA repair','EMT','Glycolysis','TGF-β signaling','Complement system'];
+const oraChart=new Chart(document.getElementById('oraChart'),{
+  type:'bar',
+  data:{labels:[],datasets:[{label:'-log10(adj.p)',data:[],backgroundColor:[]}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{title:{display:true,text:'-log10(adj.p)'}}},plugins:{legend:{display:false}}}
+});
+
+function update(){
+  const up=+document.getElementById('sliderUp').value;
+  const hits=+document.getElementById('sliderHits').value;
+  document.getElementById('valUp').textContent=up;
+  document.getElementById('valHits').textContent=hits;
+  const upWeight=up/100, downWeight=1-upWeight;
+  // pseudo-significance influenced by hits and direction
+  function gen(bias){return Math.max(0.5,Math.log10(hits)*2+Math.random()*2+bias);}
+  const values=[
+    gen(upWeight*4),       // immune
+    gen(downWeight*3.5),   // apoptosis
+    gen(downWeight*5),     // OXPHOS
+    gen(upWeight*3),       // cell cycle
+    gen(upWeight*3),       // inflammation
+    gen(downWeight*2),     // DNA repair
+    gen(upWeight*2.5),     // EMT
+    gen(downWeight*2),     // glycolysis
+    gen(upWeight*1.5),     // TGF-b
+    gen(upWeight*2.5)      // complement
+  ];
+  const L=I18n.get();
+  const topics=L==='zh'?topicsZH:topicsEN;
+  // sort by value
+  const idx=[...values.keys()].sort((a,b)=>values[b]-values[a]);
+  oraChart.data.labels=idx.map(i=>topics[i]);
+  oraChart.data.datasets[0].data=idx.map(i=>+values[i].toFixed(2));
+  oraChart.data.datasets[0].backgroundColor=idx.map(i=>i<3?'rgba(200,127,58,0.75)':'rgba(44,75,138,0.7)');
+  oraChart.update('none');
+}
+['sliderUp','sliderHits'].forEach(id=>document.getElementById(id).addEventListener('input',update));
+document.addEventListener('langchange',update);
+update();
+
+const QF={
+  zh:{q1_y:'這是 enrichment 最常見的錯誤——必須用「實驗中所有偵測到的蛋白」當 background，否則 p-value 被嚴重高估。',q1_n:'正確答案已標示。',q2_y:'ORA 是 binary、GSEA 是 ranked，兩者各有適用情境。',q2_n:'正確答案已標示。',q3_y:'STRING + Cytoscape 是 Nature Protocols 推薦的標準視覺化方案。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'This is the #1 enrichment mistake — background must be "all proteins detected in the experiment", not the full database.',q1_n:'Correct answer highlighted.',q2_y:'ORA is binary, GSEA is ranked — each fits different scenarios.',q2_n:'Correct answer highlighted.',q3_y:'STRING + Cytoscape is the Nature Protocols-recommended visualization pipeline.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>

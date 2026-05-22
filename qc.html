@@ -1,0 +1,234 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Step 5: QC — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html">Prep</a></li><li><a href="acquisition.html">MS</a></li><li><a href="identification.html">ID</a></li><li><a href="quantification.html">Quant</a></li><li><a href="qc.html" class="active">QC</a></li><li><a href="normalization.html">Norm</a></li><li><a href="imputation.html">Impute</a></li><li><a href="differential-expression.html">DE</a></li><li><a href="enrichment.html">Enrich</a></li><li><a href="ptm.html">PTM</a></li><li><a href="targeted.html">Target</a></li><li><a href="top-down.html">Top-down</a></li><li><a href="spatial.html">Spatial</a></li><li><a href="single-cell.html">scProt</a></li><li><a href="affinity.html">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">STEP 5 / 9</div>
+<h1 data-zh="品質管控 (QC)" data-en="Quality Control (QC)">品質管控 (QC)</h1>
+<p class="subtitle" data-lang="zh">從層析峰形到 PSM/peptide/protein 計數、CV、contaminants 與 batch effect——多層次 QC 是統計分析可信的前提。</p>
+<p class="subtitle" data-lang="en">From chromatographic peaks to PSM/peptide/protein counts, CV, contaminants, and batch effects — multi-layer QC is the prerequisite for trustworthy statistics.</p>
+</header>
+<main class="content-wrap">
+
+<section class="section">
+<div class="section-label" data-zh="概覽" data-en="OVERVIEW">概覽</div>
+<h2 data-zh="QC 的三個層次" data-en="Three Layers of QC">QC 的三個層次</h2>
+<div data-lang="zh">
+<p>蛋白質體學的 QC 必須跨越三個層次：(1) <strong>儀器層次</strong>——層析峰寬、ESI 噴霧穩定性、質量精度；(2) <strong>樣品層次</strong>——PSM/peptide/protein 計數、CV、missing rate、contaminants %；(3) <strong>群體層次</strong>——batch effect、PCA 結構、樣品聚類是否符合預期。</p>
+<p>跳過 QC 是新手最常犯的錯誤。一個 batch effect 失控的資料集，會讓所有下游分析（DE、enrichment）失去意義。</p>
+</div>
+<div data-lang="en">
+<p>Proteomics QC spans three layers: (1) <strong>Instrument</strong> — chromatographic peak width, ESI spray stability, mass accuracy; (2) <strong>Sample</strong> — PSM/peptide/protein counts, CV, missing rate, contaminants %; (3) <strong>Cohort</strong> — batch effects, PCA structure, expected sample clustering.</p>
+<p>Skipping QC is the most common newbie mistake. A dataset with uncontrolled batch effects renders all downstream analyses (DE, enrichment) meaningless.</p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="儀器 QC" data-en="INSTRUMENT QC">儀器 QC</h2>
+<h2 data-zh="一、儀器層次 QC：每天/每週檢查" data-en="I. Instrument QC: daily/weekly checks">一、儀器層次 QC：每天/每週檢查</h2>
+<div class="card-grid cols-3">
+<div class="card"><h4>🎯 <span data-zh="質量精度" data-en="Mass accuracy">質量精度</span></h4>
+<div data-lang="zh"><p>Orbitrap 應 ≤ 5 ppm 偏差。每次 run 後抽 50 個高分 PSM 計算 median error。長期漂移可由 lockmass 或 calibration 修正。</p></div>
+<div data-lang="en"><p>Orbitrap should keep ≤ 5 ppm. Pull 50 top PSMs after each run; compute median error. Long-term drift can be corrected by lockmass or calibration.</p></div>
+</div>
+<div class="card"><h4>📊 <span data-zh="峰寬 (FWHM)" data-en="Peak width (FWHM)">峰寬 (FWHM)</span></h4>
+<div data-lang="zh"><p>90 min 梯度典型 FWHM 約 18–35 秒。突然變寬代表柱子老化或樣品堆積；變窄可能流速異常。</p></div>
+<div data-lang="en"><p>For 90-min gradients, typical FWHM is 18–35 s. Sudden widening = column aging or sample carry-over; narrowing = flow issue.</p></div>
+</div>
+<div class="card"><h4>💨 <span data-zh="ESI 噴霧穩定性" data-en="ESI spray stability">ESI 噴霧穩定性</span></h4>
+<div data-lang="zh"><p>TIC (Total Ion Current) chromatogram 應為「滑順丘形」。突然 dropout（dip）暗示 spray 不穩，需檢查 emitter / 接頭。</p></div>
+<div data-lang="en"><p>The TIC chromatogram should be a smooth hump. Sudden dropouts indicate unstable spray — check emitter and connections.</p></div>
+</div>
+<div class="card"><h4>🔄 <span data-zh="保留時間穩定性" data-en="RT stability">RT 穩定性</span></h4>
+<div data-lang="zh"><p>同樣品的內標胜肽 RT 應 ≤ 30 秒漂移。系統性漂移可在 search 時設更大 RT tolerance；隨機漂移多為層析問題。</p></div>
+<div data-lang="en"><p>RT of internal-standard peptides should drift ≤ 30 s across runs. Systematic drift can be tolerated in search; random drift = chromatography issue.</p></div>
+</div>
+<div class="card"><h4>🧂 <span data-zh="碎裂效率" data-en="Fragmentation efficiency">碎裂效率</span></h4>
+<div data-lang="zh"><p>HCD NCE 過低 → b/y 不足；過高 → 內部碎片過多。理想 b/y 共佔 MS2 強度 70% 以上。</p></div>
+<div data-lang="en"><p>HCD NCE too low → too few b/y ions; too high → too many internal fragments. Ideally b/y account for &gt;70% of MS2 intensity.</p></div>
+</div>
+<div class="card"><h4>📍 <span data-zh="使用 HeLa QC sample" data-en="HeLa QC sample">用 HeLa QC sample</span></h4>
+<div data-lang="zh"><p>每天/每批跑一次 HeLa 標準（如 Pierce HeLa Digest）。長期追蹤 # protein、# peptide、% MT、retention 等指標可早期發現儀器衰退。</p></div>
+<div data-lang="en"><p>Run a HeLa standard (e.g., Pierce HeLa Digest) daily/per-batch. Long-term tracking of # protein / # peptide / % MT / RT detects instrument degradation early.</p></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="樣品 QC" data-en="SAMPLE QC">樣品 QC</h2>
+<h2 data-zh="二、樣品層次 QC 指標" data-en="II. Sample-level QC Metrics">二、樣品層次 QC 指標</h2>
+<table class="comp-table">
+<thead><tr><th data-zh="指標" data-en="Metric">指標</th><th data-zh="健康範圍" data-en="Healthy range">健康範圍</th><th data-zh="異常含義" data-en="Anomaly meaning">異常含義</th></tr></thead>
+<tbody>
+<tr><td><strong># Proteins</strong></td><td data-lang="zh">細胞: 4500–8000<br>血漿: 350–800<br>單細胞: 1500–4000</td><td data-lang="en">Cells: 4500–8000<br>Plasma: 350–800<br>Single-cell: 1500–4000</td><td data-lang="zh">過少：消化失敗、樣品損失</td><td data-lang="en">Too low: failed digestion, sample loss</td></tr>
+<tr><td><strong># Peptides / protein</strong></td><td>≥ 3 (median)</td><td data-lang="zh">過低：定量信心差，難 DE</td><td data-lang="en">Too low: poor quant confidence, hard DE</td></tr>
+<tr><td><strong>CV (replicates)</strong></td><td>≤ 20% (LFQ), ≤ 10% (TMT)</td><td data-lang="zh">過高：技術變異 / 樣品異質</td><td data-lang="en">Too high: technical variation / heterogeneity</td></tr>
+<tr><td><strong>Missing rate</strong></td><td>&lt; 30% (LFQ), &lt; 5% (DIA)</td><td data-lang="zh">過高：MBR 失敗或 stochastic 嚴重</td><td data-lang="en">Too high: MBR failure or excess stochasticity</td></tr>
+<tr><td><strong>Contaminants (Keratins, BSA)</strong></td><td>&lt; 5% total intensity</td><td data-lang="zh">過高：環境污染（皮膚屑）</td><td data-lang="en">Too high: environmental contamination (skin)</td></tr>
+<tr><td><strong>Missed cleavage %</strong></td><td>&lt; 25%</td><td data-lang="zh">過高：消化不完全</td><td data-lang="en">Too high: incomplete digestion</td></tr>
+<tr><td><strong>Charge state distribution</strong></td><td data-lang="zh">2+ 占主流 (60–80%)</td><td data-lang="en">2+ dominant (60–80%)</td><td data-lang="zh">過多 1+：可能干擾物</td><td data-lang="en">Excess 1+: likely interferents</td></tr>
+</tbody></table>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="INTERACTIVE">互動模擬</div>
+<h2 data-zh="批次效應 PCA 模擬" data-en="Batch Effect PCA Simulator">批次效應 PCA 模擬</h2>
+<div data-lang="zh"><p>觀察樣品在 PCA 中是按<strong>生物條件</strong>（Treatment vs Control）分群，還是按<strong>批次</strong>（Batch 1 vs Batch 2）分群。若 batch 主導，則需要 ComBat、limma::removeBatchEffect 或 randomized design 處理。</p></div>
+<div data-lang="en"><p>Do samples cluster by <strong>biological condition</strong> (Treatment vs Control) or by <strong>batch</strong> (Batch 1 vs 2)? If batch dominates, apply ComBat, limma::removeBatchEffect, or randomized design.</p></div>
+<div class="interactive-panel">
+<div class="sim-stats"><span class="sim-stat pass" id="statBio">—</span><span class="sim-stat fail" id="statBatch">—</span></div>
+<div class="slider-group"><label><span data-zh="批次效應強度" data-en="Batch effect magnitude">批次效應強度</span> <span id="valBatch">1.0</span></label><input type="range" id="sliderBatch" min="0" max="3" value="1" step="0.1"></div>
+<div class="slider-group"><label><span data-zh="生物學差異強度" data-en="Biological signal">生物學差異強度</span> <span id="valBio">1.5</span></label><input type="range" id="sliderBio" min="0" max="3" value="1.5" step="0.1"></div>
+<div class="chart-container"><canvas id="pcaChart"></canvas></div>
+<p style="font-size:.82rem;color:var(--c-ink-muted);text-align:center;">X: PC1 | Y: PC2 | <span data-zh="形狀：批次；顏色：條件" data-en="Shape: batch; Color: condition">形狀：批次；顏色：條件</span></p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="實作" data-en="CODE">實作</div>
+<h2 data-zh="QC 圖表程式碼" data-en="QC plotting code">QC 圖表程式碼</h2>
+<div class="code-tabs"><div class="code-tab-btns">
+<button class="code-tab-btn active" onclick="switchTab(this,'r-qc')">R / ggplot2</button>
+<button class="code-tab-btn" onclick="switchTab(this,'py-qc')">Python / seaborn</button>
+<button class="code-tab-btn" onclick="switchTab(this,'perseus')">Perseus (GUI)</button>
+</div>
+<div class="code-tab-content active" id="r-qc"><pre><span class="func">library</span>(ggplot2); <span class="func">library</span>(dplyr)
+qc &lt;- <span class="func">read.csv</span>(<span class="str">"sample_qc.csv"</span>)
+<span class="comment"># 1) Protein count distribution</span>
+<span class="func">ggplot</span>(qc, <span class="func">aes</span>(x = sample, y = n_protein, fill = batch)) +
+  <span class="func">geom_col</span>() + <span class="func">geom_hline</span>(yintercept = <span class="num">4000</span>, lty = <span class="num">2</span>, color = <span class="str">"red"</span>) +
+  <span class="func">theme_minimal</span>() + <span class="func">labs</span>(title = <span class="str">"# Proteins per sample"</span>)
+
+<span class="comment"># 2) CV across replicates</span>
+<span class="func">ggplot</span>(qc, <span class="func">aes</span>(x = group, y = cv_protein)) +
+  <span class="func">geom_boxplot</span>() + <span class="func">geom_hline</span>(yintercept = <span class="num">0.20</span>, lty = <span class="num">2</span>)
+
+<span class="comment"># 3) PCA</span>
+<span class="func">library</span>(FactoMineR)
+mat &lt;- <span class="func">read.csv</span>(<span class="str">"protein_log2.csv"</span>, row.names = <span class="num">1</span>)
+pca &lt;- <span class="func">PCA</span>(<span class="func">t</span>(mat), graph = <span class="kw">FALSE</span>)
+<span class="func">ggplot</span>(<span class="func">data.frame</span>(pca$ind$coord, qc),
+  <span class="func">aes</span>(Dim.1, Dim.2, color = group, shape = batch)) +
+  <span class="func">geom_point</span>(size = <span class="num">3</span>) + <span class="func">theme_classic</span>()</pre></div>
+<div class="code-tab-content" id="py-qc"><pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> seaborn <span class="kw">as</span> sns
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> sklearn.decomposition <span class="kw">import</span> PCA
+
+qc = pd.read_csv(<span class="str">"sample_qc.csv"</span>)
+prot = pd.read_csv(<span class="str">"protein_log2.csv"</span>, index_col=<span class="num">0</span>)
+
+sns.boxplot(data=qc, x=<span class="str">"group"</span>, y=<span class="str">"cv_protein"</span>)
+plt.axhline(<span class="num">0.20</span>, ls=<span class="str">"--"</span>, c=<span class="str">"red"</span>); plt.show()
+
+<span class="comment"># PCA</span>
+mat = prot.dropna().T
+pcs = PCA(n_components=<span class="num">2</span>).fit_transform(mat)
+plt.scatter(pcs[:, <span class="num">0</span>], pcs[:, <span class="num">1</span>],
+            c=qc[<span class="str">"group_color"</span>], s=<span class="num">60</span>)
+plt.xlabel(<span class="str">"PC1"</span>); plt.ylabel(<span class="str">"PC2"</span>); plt.show()</pre></div>
+<div class="code-tab-content" id="perseus"><pre><span class="comment"># Perseus (MaxQuant 套件) — 點擊式 QC 流程</span>
+<span class="kw">Step 1</span> File → Load matrix (proteinGroups.txt)
+<span class="kw">Step 2</span> Filter rows → Filter rows based on categorical column
+        → 移除 Reverse / Contaminants / Only identified by site
+<span class="kw">Step 3</span> Transform → log2(x)
+<span class="kw">Step 4</span> Visualization → Histogram   (檢查 distribution)
+<span class="kw">Step 5</span> Visualization → Scatter plot (replicates 相關性 r)
+<span class="kw">Step 6</span> Analysis → Principal component analysis
+        → 用 categorical row (batch / group) 上色觀察聚類
+<span class="kw">Step 7</span> Visualization → Multi-volcano / Heat map</pre></div>
+</div>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<div data-lang="zh"><strong>專家建議：</strong>① 在 QC 階段就<strong>移除 Contaminants 與 Reverse hits</strong>，否則會污染下游 DE。② 永遠先看 PCA，再決定是否要 batch correction。③ <strong>不要</strong>把所有樣品打散後集中分析；應先做 per-batch QC。</div>
+<div data-lang="en"><strong>Expert tips:</strong> ① <strong>Remove contaminants & reverse hits</strong> at the QC stage — else they corrupt DE. ② Always run PCA before deciding on batch correction. ③ <strong>Don't</strong> immediately pool all samples — do per-batch QC first.</div>
+</div></div>
+</section>
+
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">1. PCA 上 PC1 完全分開兩個批次而非生物條件，最佳處理？</p>
+<p data-lang="en">1. PC1 separates batches rather than biological conditions. Best response?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 忽略，直接做 DE</span><span data-lang="en">A. Ignore and proceed with DE</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 用 ComBat 或 limma::removeBatchEffect 進行 batch correction，並在 design matrix 中加入 batch 變數</span><span data-lang="en">B. Apply ComBat or limma::removeBatchEffect, and add batch as a covariate in the design matrix</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 重做實驗</span><span data-lang="en">C. Redo the experiment</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 將所有樣品平均成單一值</span><span data-lang="en">D. Average all samples into one</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">2. Keratin 占總強度 18%。最可能的原因？</p>
+<p data-lang="en">2. Keratins account for 18% of total intensity. Most likely cause?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 樣品真的富含 keratin</span><span data-lang="en">A. Sample is genuinely keratin-rich</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 質譜儀故障</span><span data-lang="en">B. MS malfunction</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 操作時皮膚屑污染（未戴手套或在開放實驗台處理）</span><span data-lang="en">C. Skin/hair contamination (no gloves, open-bench handling)</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. Trypsin 純度不夠</span><span data-lang="en">D. Trypsin purity issue</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">3. 為何 DIA 的 missing rate 通常遠低於 DDA？</p>
+<p data-lang="en">3. Why does DIA generally have a much lower missing rate than DDA?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. DIA 無差別碎裂所有窗內離子，不存在 DDA 的「Top-N 隨機選擇」缺失</span><span data-lang="en">A. DIA fragments everything within windows — no "Top-N stochastic selection" gaps</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. DIA 使用更高解析度</span><span data-lang="en">B. DIA uses higher resolution</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. DIA 自動填補缺失</span><span data-lang="en">C. DIA auto-imputes missing values</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. DIA 樣品較濃</span><span data-lang="en">D. DIA samples are more concentrated</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="quantification.html"><span class="nav-dir" data-zh="← 上一步" data-en="← Previous">← 上一步</span><span class="nav-title" data-zh="Step 4: 定量策略" data-en="Step 4: Quantification Strategies">Step 4: 定量策略</span></a>
+<a href="normalization.html"><span class="nav-dir" data-zh="下一步 →" data-en="Next →">下一步 →</span><span class="nav-title" data-zh="Step 6: 標準化 (Normalization)" data-en="Step 6: Normalization">Step 6: 標準化 (Normalization)</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+// PCA simulator
+function randn(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const pcaChart=new Chart(document.getElementById('pcaChart'),{
+  type:'scatter',
+  data:{datasets:[
+    {label:'Ctl B1',data:[],backgroundColor:'rgba(44,75,138,0.7)',pointStyle:'circle',radius:8},
+    {label:'Ctl B2',data:[],backgroundColor:'rgba(44,75,138,0.7)',pointStyle:'triangle',radius:9},
+    {label:'Tr B1',data:[],backgroundColor:'rgba(200,127,58,0.75)',pointStyle:'circle',radius:8},
+    {label:'Tr B2',data:[],backgroundColor:'rgba(200,127,58,0.75)',pointStyle:'triangle',radius:9}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{x:{title:{display:true,text:'PC1'}},y:{title:{display:true,text:'PC2'}}}}
+});
+
+function update(){
+  const batch=+document.getElementById('sliderBatch').value;
+  const bio=+document.getElementById('sliderBio').value;
+  document.getElementById('valBatch').textContent=batch.toFixed(1);
+  document.getElementById('valBio').textContent=bio.toFixed(1);
+  function gen(bioOffset,batchOffset,n){return Array.from({length:n},()=>({x:bio*bioOffset+batch*batchOffset+randn()*0.4,y:randn()*0.6+(bioOffset*bio*0.3)}));}
+  pcaChart.data.datasets[0].data=gen(-1,-1,4);
+  pcaChart.data.datasets[1].data=gen(-1,1,4);
+  pcaChart.data.datasets[2].data=gen(1,-1,4);
+  pcaChart.data.datasets[3].data=gen(1,1,4);
+  const L=I18n.get();
+  const bioDom=bio>batch;
+  document.getElementById('statBio').textContent=(L==='zh'?'生物分群: ':'Bio split: ')+(bioDom?'★ '+(L==='zh'?'明顯':'clear'):(L==='zh'?'弱':'weak'));
+  document.getElementById('statBatch').textContent=(L==='zh'?'批次干擾: ':'Batch contamination: ')+(batch>1.5?(L==='zh'?'嚴重':'severe'):(batch>0.5?(L==='zh'?'中等':'moderate'):(L==='zh'?'可忽略':'negligible')));
+  pcaChart.update('none');
+}
+['sliderBatch','sliderBio'].forEach(id=>document.getElementById(id).addEventListener('input',update));
+document.addEventListener('langchange',update);
+update();
+
+const QF={
+  zh:{q1_y:'ComBat / removeBatchEffect 是標準作法；加入 design matrix 同樣有效並更靈活。',q1_n:'正確答案已標示。',q2_y:'Keratins 是最常見的環境污染源，務必在乾淨環境戴手套處理。',q2_n:'正確答案已標示。',q3_y:'這是 DIA 最大優勢——所有窗內離子都會被 MS2 觸發，不存在 DDA 的隨機跳過。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'ComBat / removeBatchEffect is standard; adding it to the design matrix is equally valid and more flexible.',q1_n:'Correct answer highlighted.',q2_y:'Keratins are the #1 environmental contaminant — clean room and gloves required.',q2_n:'Correct answer highlighted.',q3_y:'This is DIA\'s biggest win — every window ion is fragmented, no stochastic skipping.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>

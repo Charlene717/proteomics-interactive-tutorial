@@ -1,0 +1,219 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Targeted Proteomics — Proteomics Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧫</span> <span data-zh="蛋白質體學教學" data-en="Proteomics Tutorial">蛋白質體學教學</span></a>
+  <ul class="top-nav-links"><li><a href="sample-prep.html">Prep</a></li><li><a href="acquisition.html">MS</a></li><li><a href="identification.html">ID</a></li><li><a href="quantification.html">Quant</a></li><li><a href="qc.html">QC</a></li><li><a href="normalization.html">Norm</a></li><li><a href="imputation.html">Impute</a></li><li><a href="differential-expression.html">DE</a></li><li><a href="enrichment.html">Enrich</a></li><li><a href="ptm.html">PTM</a></li><li><a href="targeted.html" class="active">Target</a></li><li><a href="top-down.html">Top-down</a></li><li><a href="spatial.html">Spatial</a></li><li><a href="single-cell.html">scProt</a></li><li><a href="affinity.html">Affinity</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+<header class="page-hero"><div class="step-badge">ADVANCED</div>
+<h1 data-zh="靶向蛋白質體學 (Targeted Proteomics)" data-en="Targeted Proteomics">靶向蛋白質體學 (Targeted Proteomics)</h1>
+<p class="subtitle" data-lang="zh">從 discovery 到 validation——SRM、MRM、PRM、SureQuant 在生物標誌物驗證中的角色。</p>
+<p class="subtitle" data-lang="en">From discovery to validation — the role of SRM, MRM, PRM, and SureQuant in biomarker validation.</p>
+</header>
+<main class="content-wrap">
+
+<section class="section">
+<div class="section-label" data-zh="概念" data-en="CONCEPT">概念</div>
+<h2 data-zh="為什麼需要 targeted？" data-en="Why do we need targeted MS?">為什麼需要 targeted？</h2>
+<div data-lang="zh">
+<p>Discovery MS (DDA/DIA) 一次嘗試「看到所有蛋白」，但對<strong>單一蛋白的靈敏度、線性範圍、跨樣品重現性</strong>仍有限。當你要做以下事情時，targeted MS 是首選：</p>
+<ul style="margin-left:24px;color:var(--c-ink-light);line-height:2;">
+<li>驗證 discovery 階段的 biomarker（FDA 等級的 validation）</li>
+<li>絕對定量（搭配同位素內標 AQUA / SIS）</li>
+<li>追蹤 PTM 隨時間動態</li>
+<li>跨 100+ 樣品的臨床定量</li>
+</ul>
+<p><strong>核心概念：</strong>儀器不再 scan「所有可能 m/z」，而是<strong>只關注少數預先選定的胜肽（target peptide）的特定碎片（transition）</strong>。這帶來 1000× 以上的靈敏度提升。</p>
+</div>
+<div data-lang="en">
+<p>Discovery MS (DDA/DIA) tries to "see everything", but <strong>sensitivity, linear range, and cross-sample reproducibility for single proteins</strong> remain limited. Targeted MS is preferred when you need:</p>
+<ul style="margin-left:24px;color:var(--c-ink-light);line-height:2;">
+<li>Validation of biomarkers (FDA-grade)</li>
+<li>Absolute quantitation (with AQUA / SIS isotope standards)</li>
+<li>Tracking PTM dynamics over time</li>
+<li>Clinical quantitation across 100+ samples</li>
+</ul>
+<p><strong>Core idea:</strong> The instrument no longer scans every possible m/z — it monitors <strong>only pre-selected peptides' specific fragments (transitions)</strong>. This yields &gt;1000× sensitivity gain.</p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="四種方法" data-en="FOUR METHODS">四種方法</h2>
+<h2 data-zh="一、SRM / MRM / PRM / SureQuant" data-en="I. SRM / MRM / PRM / SureQuant">一、SRM / MRM / PRM / SureQuant</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4>🔫 <span data-zh="SRM / MRM" data-en="SRM / MRM">SRM / MRM (Triple Quad)</span></h4>
+<div data-lang="zh"><p>在 triple quadrupole 上：Q1 篩選母離子 → Q2 碎裂 → Q3 篩選特定 fragment ion。<br>• <strong>原理：</strong>一次只監控少數「Q1 m/z → Q3 m/z」transition pair（通常 3–5 個 per peptide）<br>• <strong>優點：</strong>30+ 年成熟，動態範圍 5+ orders；多 lab 通用<br>• <strong>限制：</strong>單位解析度（unit resolution），對干擾物較敏感</p></div>
+<div data-lang="en"><p>On triple quadrupoles: Q1 selects precursor → Q2 fragments → Q3 selects specific fragment.<br>• <strong>Principle:</strong> Monitor only a few "Q1 m/z → Q3 m/z" transition pairs per peptide (typically 3–5)<br>• <strong>Pros:</strong> 30+ years mature, 5+ orders dynamic range; cross-lab standard<br>• <strong>Cons:</strong> Unit resolution; more sensitive to interference</p></div>
+</div>
+<div class="card"><h4>🎯 <span data-zh="PRM (Parallel Reaction Monitoring)" data-en="PRM">PRM</span></h4>
+<div data-lang="zh"><p>在 Q-Orbitrap 上：Q 選母離子 → HCD 碎裂 → Orbitrap 高解析度同時掃描<strong>所有 fragment ions</strong>。<br>• <strong>優點：</strong>高解析度 (15–60k) 大幅減少干擾；後處理可彈性選擇 transition<br>• <strong>限制：</strong>速度較 SRM 慢；通量 ~50–100 peptide</p></div>
+<div data-lang="en"><p>On Q-Orbitrap: Q selects precursor → HCD fragments → Orbitrap scans <strong>all fragments at high resolution</strong>.<br>• <strong>Pros:</strong> 15–60k resolution massively reduces interference; transitions chosen post-hoc<br>• <strong>Cons:</strong> Slower than SRM; ~50–100 peptides per method</p></div>
+</div>
+<div class="card"><h4>🚀 <span data-zh="SureQuant (IS-PRM)" data-en="SureQuant (IS-PRM)">SureQuant (IS-PRM)</span></h4>
+<div data-lang="zh"><p>Internal Standard-Triggered PRM：先加入 isotope-labeled internal standard (SIS)，儀器偵測到 SIS 時自動觸發其對應 endogenous peptide 的 PRM scan。<br>• <strong>優點：</strong>多工 &gt; 1000 peptide；無需嚴格 RT scheduling<br>• <strong>適用：</strong>大型 cohort 驗證 (Thermo Orbitrap 平台)</p></div>
+<div data-lang="en"><p>Internal Standard-triggered PRM: add isotope-labeled internal standards (SIS); when SIS is detected, the instrument triggers PRM for the matching endogenous peptide.<br>• <strong>Pros:</strong> &gt;1000 peptides multiplexed; no strict RT scheduling needed<br>• <strong>Use:</strong> Large cohort validation (Thermo Orbitrap)</p></div>
+</div>
+<div class="card"><h4>📏 <span data-zh="AQUA / SIS (absolute quant)" data-en="AQUA / SIS">AQUA / SIS</span></h4>
+<div data-lang="zh"><p>合成<strong>同位素標記胜肽</strong>（¹³C₆-K 或 ¹³C₆¹⁵N₄-R）作為內標，以已知濃度加入樣品。<br>• <strong>輸出：</strong>真正 absolute amount (fmol/µg)<br>• <strong>限制：</strong>每個 target 都需訂製 SIS，成本高</p></div>
+<div data-lang="en"><p>Synthesize <strong>isotope-labeled peptides</strong> (¹³C₆-K or ¹³C₆¹⁵N₄-R) at known concentration; spike them into samples.<br>• <strong>Output:</strong> True absolute amount (fmol/µg)<br>• <strong>Limit:</strong> Each target needs a custom SIS — expensive</p></div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="INTERACTIVE">互動模擬</div>
+<h2 data-zh="Discovery vs Targeted 靈敏度比較" data-en="Discovery vs Targeted Sensitivity">Discovery vs Targeted 靈敏度比較</h2>
+<div data-lang="zh"><p>觀察同一個低豐度蛋白在 DIA、PRM、與 SRM 中的訊號比較。降低樣品濃度看哪個方法最先「失明」。</p></div>
+<div data-lang="en"><p>Compare a low-abundance protein's signal in DIA, PRM, and SRM. Decrease sample concentration to see which "blinds out" first.</p></div>
+<div class="interactive-panel">
+<div class="slider-group"><label><span data-zh="樣品稀釋倍數 (10^x)" data-en="Dilution (10^x)">樣品稀釋倍數</span> <span id="valDil">0</span></label><input type="range" id="sliderDil" min="0" max="5" value="0" step="0.5"></div>
+<div class="chart-container"><canvas id="trgChart"></canvas></div>
+<p style="font-size:.82rem;color:var(--c-ink-muted);text-align:center;"><span data-zh="紅線為偵測極限（LOD）" data-en="Red line: limit of detection (LOD)">紅線為偵測極限（LOD）</span></p>
+</div>
+</section>
+
+<section class="section">
+<div class="section-label" data-zh="實作" data-en="CODE">實作</div>
+<h2 data-zh="二、Skyline & MSstats Targeted" data-en="II. Skyline & MSstats Targeted">二、Skyline & MSstats Targeted</h2>
+<div class="code-tabs"><div class="code-tab-btns">
+<button class="code-tab-btn active" onclick="switchTab(this,'skyline')">Skyline (GUI)</button>
+<button class="code-tab-btn" onclick="switchTab(this,'r-msstats-prm')">R / MSstats PRM</button>
+<button class="code-tab-btn" onclick="switchTab(this,'py-prm')">Python / pyprophet</button>
+</div>
+<div class="code-tab-content active" id="skyline"><pre><span class="comment"># Skyline (https://skyline.ms) PRM/SRM 設計流程</span>
+<span class="kw">Step 1</span> File → New → 選擇 PRM 或 SRM 模板
+<span class="kw">Step 2</span> Settings → Peptide Settings → 加入消化規則 (Trypsin), modifications
+<span class="kw">Step 3</span> Settings → Transition Settings:
+        - Filter: charge 2+/3+, ion types b/y, 6 most intense
+        - Library: import spectral library (e.g., from DDA 預掃)
+<span class="kw">Step 4</span> Edit → Insert → Peptide List
+        - 貼上 candidate peptide 序列
+        - Skyline 自動產生 transition list (Q1 → Q3 pairs)
+<span class="kw">Step 5</span> File → Export → Method
+        - 輸出儀器方法檔 (Thermo .meth / Sciex .dam)
+<span class="kw">Step 6</span> 跑樣後 → File → Import → Results
+        - 自動 peak picking + integration
+<span class="kw">Step 7</span> Tools → External Tools → MSstats
+        - 統計分析 (linear mixed model)</pre></div>
+<div class="code-tab-content" id="r-msstats-prm"><pre><span class="func">library</span>(MSstats)
+
+<span class="comment"># Skyline 輸出 transition-level table</span>
+raw &lt;- <span class="func">SkylinetoMSstatsFormat</span>(<span class="func">read.csv</span>(<span class="str">"skyline_export.csv"</span>),
+  removeOxidationMpeptides = <span class="kw">TRUE</span>,
+  removeProtein_with1Feature = <span class="kw">TRUE</span>)
+
+processed &lt;- <span class="func">dataProcess</span>(raw,
+  normalization = <span class="str">"equalizeMedians"</span>,
+  summaryMethod = <span class="str">"TMP"</span>,
+  censoredInt   = <span class="str">"NA"</span>,
+  MBimpute      = <span class="kw">TRUE</span>)
+
+contrast &lt;- <span class="func">matrix</span>(<span class="func">c</span>(-<span class="num">1</span>, <span class="num">1</span>), nrow = <span class="num">1</span>,
+  dimnames = <span class="func">list</span>(<span class="str">"D-H"</span>, <span class="func">c</span>(<span class="str">"Healthy"</span>, <span class="str">"Disease"</span>)))
+
+result &lt;- <span class="func">groupComparison</span>(contrast.matrix = contrast, data = processed)
+
+<span class="comment"># Quantification linearity check with heavy SIS</span>
+<span class="func">dataProcessPlots</span>(data = processed, type = <span class="str">"QCPlot"</span>)</pre></div>
+<div class="code-tab-content" id="py-prm"><pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="comment"># PRM peak integration table (from Skyline export)</span>
+df = pd.read_csv(<span class="str">"prm_peak_area.csv"</span>)
+
+<span class="comment"># Light/Heavy ratio for absolute quant via SIS</span>
+df[<span class="str">"ratio"</span>] = df[<span class="str">"area_light"</span>] / df[<span class="str">"area_heavy"</span>]
+df[<span class="str">"fmol_per_ug"</span>] = df[<span class="str">"ratio"</span>] * df[<span class="str">"sis_amount_fmol"</span>] / df[<span class="str">"sample_ug"</span>]
+
+<span class="comment"># Calibration curve (linearity)</span>
+<span class="kw">from</span> scipy.stats <span class="kw">import</span> linregress
+cal = df.query(<span class="str">"sample_type == 'standard'"</span>)
+slope, intercept, r, *_ = linregress(cal[<span class="str">"known_conc"</span>], cal[<span class="str">"ratio"</span>])
+<span class="func">print</span>(<span class="func">f</span><span class="str">"R² = {r**2:.4f}"</span>)
+<span class="func">assert</span> r**<span class="num">2</span> &gt; <span class="num">0.99</span>, <span class="str">"Linearity check failed"</span></pre></div>
+</div>
+</section>
+
+<section class="quiz-section">
+<h3>📝 <span data-zh="自我檢測" data-en="Self-Check">自我檢測</span></h3>
+<div class="quiz-q" data-answer="1">
+<p data-lang="zh">1. 從 DIA discovery 找到 12 個 candidate biomarker，現在要在 200 個臨床樣本驗證。最佳方法？</p>
+<p data-lang="en">1. 12 candidates from DIA discovery; validate on 200 clinical samples. Best method?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 重做 DIA 200 次</span><span data-lang="en">A. Repeat DIA 200 times</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. PRM 或 SureQuant + SIS 標準（精準、可重現、絕對定量）</span><span data-lang="en">B. PRM or SureQuant + SIS standards (precise, reproducible, absolute quant)</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 把樣本平均</span><span data-lang="en">C. Average all samples</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. Western Blot</span><span data-lang="en">D. Western blot</span></div>
+</div><div class="quiz-feedback" id="fb1"></div></div>
+<div class="quiz-q" data-answer="2">
+<p data-lang="zh">2. PRM 相較傳統 SRM 的關鍵優勢？</p>
+<p data-lang="en">2. PRM's key advantage over traditional SRM?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. PRM 速度更快</span><span data-lang="en">A. PRM is faster</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. PRM 通量更高</span><span data-lang="en">B. PRM has higher throughput</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 高解析度 + 同時掃描所有 fragment ions，干擾物大幅減少，且 transition 可後處理選擇</span><span data-lang="en">C. High resolution + scans all fragments simultaneously — much less interference, and transitions chosen post-hoc</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. PRM 不需要 internal standard</span><span data-lang="en">D. PRM needs no internal standards</span></div>
+</div><div class="quiz-feedback" id="fb2"></div></div>
+<div class="quiz-q" data-answer="0">
+<p data-lang="zh">3. SureQuant (IS-PRM) 的核心創新？</p>
+<p data-lang="en">3. SureQuant (IS-PRM)'s core innovation?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-idx="0"><span data-lang="zh">A. 偵測到內標 (SIS) 時才觸發對應內源胜肽的 PRM scan，可監控 1000+ peptide</span><span data-lang="en">A. PRM scan is triggered only when the SIS is detected — enables 1000+ peptide monitoring</span></div>
+<div class="quiz-opt" data-idx="1"><span data-lang="zh">B. 無需 LC 分離</span><span data-lang="en">B. No need for LC separation</span></div>
+<div class="quiz-opt" data-idx="2"><span data-lang="zh">C. 比 SRM 便宜</span><span data-lang="en">C. Cheaper than SRM</span></div>
+<div class="quiz-opt" data-idx="3"><span data-lang="zh">D. 適用所有質譜儀</span><span data-lang="en">D. Works on every MS</span></div>
+</div><div class="quiz-feedback" id="fb3"></div></div>
+</section>
+
+<nav class="page-nav"><a href="ptm.html"><span class="nav-dir" data-zh="← 上一篇" data-en="← Previous">← 上一篇</span><span class="nav-title" data-zh="轉譯後修飾 (PTM Analysis)" data-en="Post-Translational Modifications">轉譯後修飾 (PTM Analysis)</span></a>
+<a href="top-down.html"><span class="nav-dir" data-zh="下一篇 →" data-en="Next →">下一篇 →</span><span class="nav-title" data-zh="Top-down 完整蛋白質分析" data-en="Top-down Proteomics">Top-down 完整蛋白質分析</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — Proteomics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100+'%';});
+function switchTab(b,id){const p=b.closest('.code-tabs');p.querySelectorAll('.code-tab-btn').forEach(x=>x.classList.remove('active'));p.querySelectorAll('.code-tab-content').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(id).classList.add('active');}
+
+const trgChart=new Chart(document.getElementById('trgChart'),{
+  type:'line',
+  data:{labels:['0','0.5','1','1.5','2','2.5','3','3.5','4','4.5','5'],datasets:[
+    {label:'DIA',data:[],borderColor:'rgba(150,150,150,0.9)',backgroundColor:'rgba(150,150,150,0.2)',fill:false},
+    {label:'PRM',data:[],borderColor:'rgba(44,75,138,0.9)',backgroundColor:'rgba(44,75,138,0.2)',fill:false},
+    {label:'SRM',data:[],borderColor:'rgba(200,127,58,0.9)',backgroundColor:'rgba(200,127,58,0.2)',fill:false},
+    {label:'LOD',data:[],borderColor:'rgba(181,58,43,0.9)',borderDash:[5,5],fill:false,pointRadius:0}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,scales:{x:{title:{display:true,text:'log10 dilution'}},y:{title:{display:true,text:'log10 signal'},min:0,max:8}},plugins:{legend:{position:'top'}}}
+});
+
+function update(){
+  const dilStop=+document.getElementById('sliderDil').value;
+  document.getElementById('valDil').textContent=dilStop;
+  // Different methods have different baselines & LOD
+  const dilutions=[0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5];
+  const dia=dilutions.map(d=>Math.max(0,6.5-d*1.2-(d>2?(d-2)*0.5:0)));
+  const prm=dilutions.map(d=>Math.max(0,7.2-d*0.95));
+  const srm=dilutions.map(d=>Math.max(0,7.8-d*0.85));
+  const lod=dilutions.map(_=>3);
+  trgChart.data.datasets[0].data=dia.map(v=>+v.toFixed(2));
+  trgChart.data.datasets[1].data=prm.map(v=>+v.toFixed(2));
+  trgChart.data.datasets[2].data=srm.map(v=>+v.toFixed(2));
+  trgChart.data.datasets[3].data=lod;
+  trgChart.update('none');
+}
+document.getElementById('sliderDil').addEventListener('input',update);
+document.addEventListener('langchange',update);
+update();
+
+const QF={
+  zh:{q1_y:'這是 targeted MS 的典型用途——validation 階段需要精準、可重現的定量，並能跨臨床多 site。',q1_n:'正確答案已標示。',q2_y:'PRM 的高解析度與 post-hoc transition 選擇是相較 SRM 的關鍵優勢。',q2_n:'正確答案已標示。',q3_y:'IS-觸發機制讓 SureQuant 可同時監控數千 peptide，不需嚴格 RT scheduling。',q3_n:'正確答案已標示。'},
+  en:{q1_y:'A classic use case — validation needs precise, reproducible quantitation deliverable across clinical sites.',q1_n:'Correct answer highlighted.',q2_y:'High resolution and post-hoc transition selection are PRM\'s key advantages over SRM.',q2_n:'Correct answer highlighted.',q3_y:'IS-triggering enables SureQuant to monitor thousands of peptides without strict RT scheduling.',q3_n:'Correct answer highlighted.'}
+};
+document.querySelectorAll('.quiz-q').forEach((q,qi)=>{const ans=+q.dataset.answer;q.querySelectorAll('.quiz-opt').forEach(o=>{o.addEventListener('click',()=>{if(q.classList.contains('answered'))return;q.classList.add('answered');const fb=document.getElementById('fb'+(qi+1));const ok=+o.dataset.idx===ans;o.classList.add(ok?'correct':'wrong');if(!ok)q.querySelectorAll('.quiz-opt')[ans].classList.add('correct');const L=I18n.get();fb.className='quiz-feedback show '+(ok?'correct-fb':'wrong-fb');fb.textContent=(ok?'✅ ':'❌ ')+(QF[L]['q'+(qi+1)+'_'+(ok?'y':'n')]||'');});});});
+</script>
+</body></html>
